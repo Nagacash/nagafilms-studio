@@ -11,7 +11,6 @@ const STUDIOS = [
   { name: 'Video Studio', desc: 'Text-to-video and image-to-video — Kling, Veo, Sora, Runway, Seedance, Hailuo, Wan.' },
   { name: 'Cinema Studio', desc: 'Shot-level control: camera moves, lens language and framing for sequences that cut together.' },
   { name: 'Lip Sync', desc: 'Nine models for portrait and video lip sync — performance from a still or an existing take.' },
-  { name: 'Workflows', desc: 'Chain models into repeatable multi-step pipelines instead of re-prompting by hand.' },
 ];
 
 const STATS = [
@@ -121,7 +120,7 @@ export default function Home() {
       {/* capabilities */}
       <section id="capabilities" className="relative z-10 border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Five studios, one key</h2>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Four studios, one key</h2>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
             Built for real production work — concept art, pre-visualisation, motion tests and finished shots.
           </p>

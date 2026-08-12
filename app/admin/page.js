@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import LogoutButton from '@/components/LogoutButton';
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -112,7 +113,7 @@ export default function AdminPage() {
               <strong className="text-white/70">MuAPI</strong> (what you pay providers with).
             </p>
           </div>
-          <div className="flex gap-3 text-xs">
+          <div className="flex items-center gap-3 text-xs">
             <button type="button" onClick={load} className="text-white/50 hover:text-[#00ff88]">
               Refresh
             </button>
@@ -122,6 +123,7 @@ export default function AdminPage() {
             <Link href="/credits" className="text-white/50 hover:text-[#00ff88]">
               Buy packs →
             </Link>
+            <LogoutButton />
           </div>
         </div>
 

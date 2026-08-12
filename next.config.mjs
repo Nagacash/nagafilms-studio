@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['studio', 'workflow-builder'],
+  transpilePackages: ['studio'],
 };
 
 export default nextConfig;

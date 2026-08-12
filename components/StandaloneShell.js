@@ -2,17 +2,17 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio, WorkflowStudio, getUserBalance } from 'studio';
+import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio, getUserBalance } from 'studio';
 import axios from 'axios';
 import ApiKeyModal from './ApiKeyModal';
+import LogoutButton, { logoutEverywhere } from './LogoutButton';
 
 const TABS = [
-  { id: 'image',   label: 'Image Studio' },
-  { id: 'video',   label: 'Video Studio' },
+  { id: 'image', label: 'Image Studio' },
+  { id: 'video', label: 'Video Studio' },
   { id: 'lipsync', label: 'Lip Sync' },
-  { id: 'cinema',  label: 'Cinema Studio' },
+  { id: 'cinema', label: 'Cinema Studio' },
   { id: 'marketing', label: 'Marketing Studio' },
-  { id: 'workflows', label: 'Workflows' },
 ];
 
 const STORAGE_KEY = 'muapi_key';
@@ -20,81 +20,33 @@ const STORAGE_KEY = 'muapi_key';
 export default function StandaloneShell() {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug || []; 
-  const idFromParams = params?.id;
-  const tabFromParams = params?.tab;
+  const slug = params?.slug || [];
 
-  // Helper to extract workflow details precisely from either route structure
-  const getWorkflowInfo = useCallback(() => {
-    if (idFromParams) {
-        return { id: idFromParams, tab: tabFromParams || null };
-    }
-    const wfIndex = slug.findIndex(s => s === 'workflows' || s === 'workflow');
-    if (wfIndex === -1) return { id: null, tab: null };
-    return {
-      id: slug[wfIndex + 1] || null,
-      tab: slug[wfIndex + 2] || null
-    };
-  }, [slug, idFromParams, tabFromParams]);
-
-  const { id: urlWorkflowId } = getWorkflowInfo();
-
-  // Initialize activeTab from URL slug/params or default to 'image'
   const getInitialTab = () => {
-    if (idFromParams || slug.includes('workflow')) return 'workflows';
     const firstSegment = slug[0];
-    if (firstSegment && TABS.find(t => t.id === firstSegment)) return firstSegment;
+    if (firstSegment && TABS.find((t) => t.id === firstSegment)) return firstSegment;
     return 'image';
   };
-  
+
   const [apiKey, setApiKey] = useState(null);
-  const [activeTab, setActiveTab] = useState(getInitialTab());
-  
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [balance, setBalance] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [hasMounted, setHasMounted] = useState(false);
-
-  // Drag and Drop State
   const [isDragging, setIsDragging] = useState(false);
   const [droppedFiles, setDroppedFiles] = useState(null);
 
-  // Sync tab with URL if user navigates manually or via browser back/forward
   useEffect(() => {
-    const info = getWorkflowInfo();
-    if (info.id) {
-        setActiveTab('workflows');
-    } else {
-        const firstSegment = slug[0];
-        if (firstSegment && TABS.find(t => t.id === firstSegment)) {
-          setActiveTab(firstSegment);
-        }
+    const firstSegment = slug[0];
+    if (firstSegment && TABS.find((t) => t.id === firstSegment)) {
+      setActiveTab(firstSegment);
     }
-  }, [slug, getWorkflowInfo]);
+  }, [slug]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     router.push(`/studio/${tabId}`);
   };
-
-  // Auto-hide header when inside a specific workflow view
-  useEffect(() => {
-    const isEditingWorkflow = (activeTab === 'workflows' || !!idFromParams) && urlWorkflowId;
-    if (isEditingWorkflow) {
-      setIsHeaderVisible(false);
-    } else {
-      setIsHeaderVisible(true);
-    }
-  }, [activeTab, urlWorkflowId, idFromParams]);
-
-  // Global builder CSS cleanup when switching away from Workflows tab
-  useEffect(() => {
-    const fromBuilder = sessionStorage.getItem("fromWorkflowBuilder");
-    if (fromBuilder && activeTab !== 'workflows') {
-      sessionStorage.removeItem("fromWorkflowBuilder");
-      window.location.reload();
-    }
-  }, [activeTab]);
 
   const fetchBalance = useCallback(async (key) => {
     try {
@@ -111,52 +63,45 @@ export default function StandaloneShell() {
     if (stored) {
       setApiKey(stored);
       fetchBalance(stored);
-      // Sync cookie immediately on mount to establish identity for background requests
       document.cookie = `muapi_key=${encodeURIComponent(stored)}; path=/; max-age=31536000; SameSite=Lax`;
     }
   }, [fetchBalance]);
 
-  const handleKeySave = useCallback((key) => {
-    localStorage.setItem(STORAGE_KEY, key);
-    setApiKey(key);
-    fetchBalance(key);
-    document.cookie = `muapi_key=${encodeURIComponent(key)}; path=/; max-age=31536000; SameSite=Lax`;
-  }, [fetchBalance]);
+  const handleKeySave = useCallback(
+    (key) => {
+      localStorage.setItem(STORAGE_KEY, key);
+      setApiKey(key);
+      fetchBalance(key);
+      document.cookie = `muapi_key=${encodeURIComponent(key)}; path=/; max-age=31536000; SameSite=Lax`;
+    },
+    [fetchBalance]
+  );
 
   const handleKeyChange = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     setApiKey(null);
     setBalance(null);
-    document.cookie = "muapi_key=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = 'muapi_key=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   }, []);
 
-  // Full sign-out: clear credentials and return to the landing page.
   const handleLogout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
     setApiKey(null);
     setBalance(null);
     setShowSettings(false);
-    document.cookie = "muapi_key=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    router.push('/');
-  }, [router]);
+    logoutEverywhere({ redirectTo: '/' });
+  }, []);
 
-  // Inject API key into all outgoing Axios requests (prop-based approach)
-  // We use an interceptor to be selective and NOT send the key to external domains like S3
   useEffect(() => {
-    // Safety: Clear any global defaults that might have been set previously
     delete axios.defaults.headers.common['x-api-key'];
-
     if (!apiKey) return;
 
     const interceptorId = axios.interceptors.request.use((config) => {
-      // Check if URL is local/proxied
       const isRelative = config.url.startsWith('/') || !config.url.startsWith('http');
-      const isInternalProxy = config.url.includes('/api/app') || config.url.includes('/api/workflow') || config.url.includes('/api/api') || config.url.includes('/api/v1');
-
+      const isInternalProxy =
+        config.url.includes('/api/api') || config.url.includes('/api/v1');
       if (isRelative || isInternalProxy) {
         config.headers['x-api-key'] = apiKey;
       }
-      
       return config;
     });
 
@@ -165,14 +110,12 @@ export default function StandaloneShell() {
     };
   }, [apiKey]);
 
-  // Poll for balance every 30 seconds if key is present
   useEffect(() => {
     if (!apiKey) return;
     const interval = setInterval(() => fetchBalance(apiKey), 30000);
     return () => clearInterval(interval);
   }, [apiKey, fetchBalance]);
 
-  // Drag and Drop Handlers
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -189,7 +132,6 @@ export default function StandaloneShell() {
   const handleDragLeave = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only set to false if we're leaving the container itself, not moving between children
     if (e.currentTarget.contains(e.relatedTarget)) return;
     setIsDragging(false);
   }, []);
@@ -198,42 +140,40 @@ export default function StandaloneShell() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      setDroppedFiles(files);
-    }
+    if (files.length > 0) setDroppedFiles(files);
   }, []);
 
   const handleFilesHandled = useCallback(() => {
     setDroppedFiles(null);
   }, []);
 
-  if (!hasMounted) return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-      <div className="animate-spin text-[#00ff88] text-3xl">◌</div>
-    </div>
-  );
+  if (!hasMounted) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="animate-spin text-[#00ff88] text-3xl">◌</div>
+      </div>
+    );
+  }
 
   if (!apiKey) {
     return <ApiKeyModal onSave={handleKeySave} />;
   }
 
   return (
-    <div 
+    <div
       className="h-screen bg-[#030303] flex flex-col overflow-hidden text-white relative"
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* Drag Overlay */}
       {isDragging && (
         <div className="fixed inset-0 z-[100] bg-[#00ff88]/10 backdrop-blur-md border-4 border-dashed border-[#00ff88]/50 flex items-center justify-center pointer-events-none transition-all duration-300">
           <div className="bg-[#0a0a0a] p-8 rounded-3xl border border-white/10 shadow-2xl flex flex-col items-center gap-4 scale-110 animate-pulse">
             <div className="w-20 h-20 bg-[#00ff88] rounded-2xl flex items-center justify-center">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
               </svg>
             </div>
             <div className="flex flex-col items-center">
@@ -244,72 +184,68 @@ export default function StandaloneShell() {
         </div>
       )}
 
-      {/* Header */}
-      {isHeaderVisible && (
-        <header className="flex-shrink-0 h-14 border-b border-white/[0.03] flex items-center justify-between px-6 bg-black/20 backdrop-blur-md z-40">
-          {/* Left: Logo */}
-          <div className="flex items-center gap-3">
-            <img src="/naga-mark.svg" alt="Naga Films" className="w-9 h-9 object-contain" />
-            <span className="text-sm font-bold tracking-tight hidden lg:block">NAGA FILMS <span className="text-white/40 font-medium">Studio</span></span>
-          </div>
+      <header className="flex-shrink-0 h-14 border-b border-white/[0.03] flex items-center justify-between px-6 bg-black/20 backdrop-blur-md z-40">
+        <div className="flex items-center gap-3">
+          <img src="/naga-mark.svg" alt="Naga Films" className="w-9 h-9 object-contain" />
+          <span className="text-sm font-bold tracking-tight hidden lg:block">
+            NAGA FILMS <span className="text-white/40 font-medium">Studio</span>
+          </span>
+        </div>
 
-          {/* Center: Navigation */}
-          <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-6">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`relative py-4 text-[13px] font-medium transition-all whitespace-nowrap px-1 ${
-                  activeTab === tab.id
-                    ? 'text-[#00ff88]'
-                    : 'text-white/50 hover:text-white'
-                }`}
-              >
-                {tab.label}
-                {activeTab === tab.id && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00ff88] rounded-full" />
-                )}
-              </button>
-            ))}
-          </nav>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 transition-colors">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-white/90">
-                  ${balance !== null ? `${balance}` : '---'}
-                </span>
-              </div>
-            </div>
-
+        <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-6">
+          {TABS.map((tab) => (
             <button
-              onClick={() => setShowSettings(true)}
-              title="Settings — API key, local models, preferences"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-[13px] font-bold text-white/80 hover:text-white hover:bg-white/10 hover:border-white/20 transition-colors"
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`relative py-4 text-[13px] font-medium transition-all whitespace-nowrap px-1 ${
+                activeTab === tab.id ? 'text-[#00ff88]' : 'text-white/50 hover:text-white'
+              }`}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
-              <span>Settings</span>
+              {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00ff88] rounded-full" />
+              )}
             </button>
-          </div>
-        </header>
-      )}
+          ))}
+        </nav>
 
-      {/* Studio Content */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 transition-colors">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-white/90">
+                ${balance !== null ? `${balance}` : '---'}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowSettings(true)}
+            title="Settings — API key, preferences"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-[13px] font-bold text-white/80 hover:text-white hover:bg-white/10 hover:border-white/20 transition-colors"
+          >
+            <span>Settings</span>
+          </button>
+          <LogoutButton />
+        </div>
+      </header>
+
       <div className="flex-1 min-h-0 relative overflow-hidden">
-        {activeTab === 'image'   && <ImageStudio   apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />}
-        {activeTab === 'video'   && <VideoStudio   apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />}
-        {activeTab === 'lipsync' && <LipSyncStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />}
-        {activeTab === 'cinema'  && <CinemaStudio  apiKey={apiKey} />}
-        {activeTab === 'marketing' && <MarketingStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />}
-        {activeTab === 'workflows' && <WorkflowStudio apiKey={apiKey} isHeaderVisible={isHeaderVisible} onToggleHeader={setIsHeaderVisible} />}
+        {activeTab === 'image' && (
+          <ImageStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+        )}
+        {activeTab === 'video' && (
+          <VideoStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+        )}
+        {activeTab === 'lipsync' && (
+          <LipSyncStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+        )}
+        {activeTab === 'cinema' && <CinemaStudio apiKey={apiKey} />}
+        {activeTab === 'marketing' && (
+          <MarketingStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+        )}
       </div>
 
-      {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
           <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-8 w-full max-w-sm shadow-2xl">
@@ -317,12 +253,10 @@ export default function StandaloneShell() {
             <p className="text-white/40 text-[13px] mb-8">
               Manage your AI studio preferences and authentication.
             </p>
-            
+
             <div className="space-y-4 mb-8">
               <div className="bg-white/5 border border-white/[0.03] rounded-md p-4">
-                <label className="block text-xs font-bold text-white/30 mb-2">
-                   Active API Key
-                </label>
+                <label className="block text-xs font-bold text-white/30 mb-2">Active API Key</label>
                 <div className="text-[13px] font-mono text-white/80">
                   {apiKey.slice(0, 8)}••••••••••••••••
                 </div>
@@ -334,11 +268,6 @@ export default function StandaloneShell() {
                 onClick={handleLogout}
                 className="w-full h-10 rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 text-xs font-semibold transition-all flex items-center justify-center gap-2 border border-red-500/10"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
                 Log out
               </button>
               <div className="flex gap-3">
@@ -356,7 +285,7 @@ export default function StandaloneShell() {
                 </button>
               </div>
               <p className="text-center text-[11px] text-white/20 pt-1">
-                Logging out clears your key from this browser.
+                Logging out clears your key and ends your signed-in session.
               </p>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
+import LogoutButton from '@/components/LogoutButton';
 
 export default function CreditsClient() {
   const { data: session, status } = useSession();
@@ -58,9 +59,12 @@ export default function CreditsClient() {
               One-time purchases only. Credits unlock after Stripe payment. No cash refunds on packs.
             </p>
           </div>
-          <Link href="/" className="text-xs text-white/40 hover:text-[#00ff88]">
-            ← Home
-          </Link>
+          <div className="flex items-center gap-3">
+            {status === 'authenticated' && <LogoutButton />}
+            <Link href="/" className="text-xs text-white/40 hover:text-[#00ff88]">
+              ← Home
+            </Link>
+          </div>
         </div>
 
         {success && (

@@ -44,9 +44,6 @@ importers:
       studio:
         specifier: workspace:*
         version: link:packages/studio
-      workflow-builder:
-        specifier: file:./packages/Vibe-Workflow/packages/workflow-builder
-        version: link:packages/Vibe-Workflow/packages/workflow-builder
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -91,52 +88,6 @@ importers:
         specifier: ^5.4.0
         version: 5.4.21(@types/node@25.6.2)(lightningcss@1.32.0)
 
-  packages/Vibe-Workflow/packages/workflow-builder:
-    dependencies:
-      axios:
-        specifier: ^1.7.0
-        version: 1.16.0
-      react:
-        specifier: '>=18.0.0'
-        version: 19.2.6
-      react-dom:
-        specifier: '>=18.0.0'
-        version: 19.2.6(react@19.2.6)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.6.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-icons:
-        specifier: ^5.0.1
-        version: 5.6.0(react@19.2.6)
-      react-markdown:
-        specifier: ^9.0.0
-        version: 9.1.0(@types/react@19.2.14)(react@19.2.6)
-      reactflow:
-        specifier: ^11.11.4
-        version: 11.11.4(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      remark-gfm:
-        specifier: ^4.0.0
-        version: 4.0.1
-    devDependencies:
-      '@babel/cli':
-        specifier: ^7.28.3
-        version: 7.28.6(@babel/core@7.29.0)
-      '@babel/preset-env':
-        specifier: ^7.28.5
-        version: 7.29.5(@babel/core@7.29.0)
-      '@babel/preset-react':
-        specifier: ^7.28.5
-        version: 7.28.5(@babel/core@7.29.0)
-      autoprefixer:
-        specifier: ^10.4.14
-        version: 10.5.0(postcss@8.5.14)
-      postcss:
-        specifier: ^8.4.24
-        version: 8.5.14
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.19(tsx@4.23.12)
-
   packages/studio:
     dependencies:
       '@xyflow/react':
@@ -175,9 +126,6 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
-      workflow-builder:
-        specifier: file:../Vibe-Workflow/packages/workflow-builder
-        version: link:../Vibe-Workflow/packages/workflow-builder
     devDependencies:
       '@babel/cli':
         specifier: ^7.28.3
@@ -4701,12 +4649,6 @@ packages:
 
   react-markdown@10.1.0:
     resolution: {integrity: sha512-qKxVopLT/TyA6BX3Ue5NwabOsAzm0Q7kAPwq6L+wWDwisYs7R8vZ0nRXqq6rkueboxpkjvLGU9fWifiX/ZZFxQ==}
-    peerDependencies:
-      '@types/react': '>=18'
-      react: '>=18'
-
-  react-markdown@9.1.0:
-    resolution: {integrity: sha512-xaijuJB0kzGiUdG7nc2MOMDUDBWPyGAjZtUrow9XxUeua8IqeP+VlIfAZ3bphpcLTnSZXz6z9jcVC/TCwbfgdw==}
     peerDependencies:
       '@types/react': '>=18'
       react: '>=18'
@@ -10304,24 +10246,6 @@ snapshots:
   react-is@16.13.1: {}
 
   react-markdown@10.1.0(@types/react@19.2.14)(react@19.2.6):
-    dependencies:
-      '@types/hast': 3.0.4
-      '@types/mdast': 4.0.4
-      '@types/react': 19.2.14
-      devlop: 1.1.0
-      hast-util-to-jsx-runtime: 2.3.6
-      html-url-attributes: 3.0.1
-      mdast-util-to-hast: 13.2.1
-      react: 19.2.6
-      remark-parse: 11.0.0
-      remark-rehype: 11.1.2
-      unified: 11.0.5
-      unist-util-visit: 5.1.0
-      vfile: 6.0.3
-    transitivePeerDependencies:
-      - supports-color
-
-  react-markdown@9.1.0(@types/react@19.2.14)(react@19.2.6):
     dependencies:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4

@@ -27,7 +27,7 @@ export function Header(navigate) {
 
     const menu = document.createElement('nav');
     menu.className = 'hidden lg:flex items-center gap-6 text-[13px] font-bold text-secondary';
-    const items = ['Image', 'Video', 'Lip Sync', 'Cinema Studio', 'Workflows', 'MCP & CLI'];
+    const items = ['Image', 'Video', 'Lip Sync', 'Cinema Studio', 'MCP & CLI'];
 
     items.forEach(item => {
         const link = document.createElement('a');
@@ -51,7 +51,6 @@ export function Header(navigate) {
             else if (item === 'Video') navigate('video');
             else if (item === 'Lip Sync') navigate('lipsync');
             else if (item === 'Cinema Studio') navigate('cinema');
-            else if (item === 'Workflows') navigate('workflows');
             else if (item === 'MCP & CLI') navigate('mcp-cli');
         };
 

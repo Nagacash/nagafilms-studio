@@ -5,8 +5,7 @@
   "private": true,
   "version": "1.0.10",
   "workspaces": [
-    "packages/studio",
-    "packages/Vibe-Workflow/packages/workflow-builder"
+    "packages/studio"
   ],
   "scripts": {
     "dev": "next dev",
@@ -14,9 +13,8 @@
     "start": "next start",
     "lint": "next lint",
     "build:studio": "pnpm --filter ./packages/studio run build",
-    "build:workflow": "pnpm --filter ./packages/Vibe-Workflow/packages/workflow-builder run build",
     "build:packages": "node scripts/build-packages.js",
-    "setup": "git submodule update --init --recursive && pnpm install && pnpm run build:packages",
+    "setup": "pnpm install && pnpm run build:packages",
     "db:migrate": "node scripts/migrate-saas.js",
     "vite:dev": "vite",
     "vite:build": "vite build",
@@ -107,7 +105,6 @@
     "react-hot-toast": "^2.4.1",
     "stripe": "^22.5.0",
     "studio": "workspace:*",
-    "workflow-builder": "file:./packages/Vibe-Workflow/packages/workflow-builder",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },

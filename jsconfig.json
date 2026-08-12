@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@/*": ["./*"],
-      "workflow-builder": ["./packages/Vibe-Workflow/packages/workflow-builder/src/index.js"]
+      "@/*": ["./*"]
     }
   }
 }
