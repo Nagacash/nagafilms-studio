@@ -20,6 +20,14 @@ import LiveModelDropdown from "./LiveModelDropdown.jsx";
 import CharacterLibrary from "./CharacterLibrary.jsx";
 import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
 import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
+import {
+  isI2vModelId,
+  isLiveI2vModel,
+  isLiveT2vModel,
+  isPremiumI2vModel,
+  pickI2vTargetOnImageUpload,
+  resolveModelEndpoint,
+} from "../videoModelSelection.js";
 
 // ── tiny helpers ──────────────────────────────────────────────────────────────
 
@@ -158,6 +166,9 @@ export default function VideoStudio({
   const defaultModel = t2vModels[0];
   const [selectedModel, setSelectedModel] = useState(defaultModel.id);
   const [selectedModelName, setSelectedModelName] = useState(defaultModel.name);
+  const [selectedModelEndpoint, setSelectedModelEndpoint] = useState(
+    defaultModel.endpoint || defaultModel.id,
+  );
   const [selectedAr, setSelectedAr] = useState(
     defaultModel.inputs?.aspect_ratio?.default || "16:9",
   );
@@ -335,6 +346,35 @@ export default function VideoStudio({
     [],
   );
 
+  const applyImageUploadModeSwitch = useCallback(
+    (notify = true) => {
+      if (imageMode && isI2vModelId(selectedModel)) {
+        const endpoint =
+          selectedModelEndpoint ||
+          getI2VModelById(selectedModel)?.endpoint ||
+          selectedModel;
+        setSelectedModelEndpoint(endpoint);
+        return;
+      }
+
+      const target = pickI2vTargetOnImageUpload(selectedModel);
+      setImageMode(true);
+      setSelectedModel(target.modelId);
+      setSelectedModelName(target.modelName);
+      setSelectedModelEndpoint(target.endpoint);
+      applyControlsForModel(target.modelId, true, false);
+      if (notify && target.switched && target.reason) {
+        alert(target.reason);
+      }
+    },
+    [
+      imageMode,
+      selectedModel,
+      selectedModelEndpoint,
+      applyControlsForModel,
+    ],
+  );
+
   // ── Persistence: Load ────────────────────────────────────────────────────
   useEffect(() => {
     try {
@@ -345,6 +385,15 @@ export default function VideoStudio({
         if (data.v2vMode !== undefined) setV2vMode(data.v2vMode);
         if (data.selectedModel) setSelectedModel(data.selectedModel);
         if (data.selectedModelName) setSelectedModelName(data.selectedModelName);
+        if (data.selectedModelEndpoint) {
+          setSelectedModelEndpoint(data.selectedModelEndpoint);
+        } else if (data.selectedModel) {
+          const restoredEndpoint =
+            getI2VModelById(data.selectedModel)?.endpoint ||
+            t2vModels.find((m) => m.id === data.selectedModel)?.endpoint ||
+            data.selectedModel;
+          setSelectedModelEndpoint(restoredEndpoint);
+        }
         if (data.selectedAr) setSelectedAr(data.selectedAr);
         if (data.selectedDuration) setSelectedDuration(data.selectedDuration);
         if (data.selectedResolution) setSelectedResolution(data.selectedResolution);
@@ -399,6 +448,7 @@ export default function VideoStudio({
           v2vMode,
           selectedModel,
           selectedModelName,
+          selectedModelEndpoint,
           selectedAr,
           selectedDuration,
           selectedResolution,
@@ -422,6 +472,7 @@ export default function VideoStudio({
     v2vMode,
     selectedModel,
     selectedModelName,
+    selectedModelEndpoint,
     selectedAr,
     selectedDuration,
     selectedResolution,
@@ -456,20 +507,7 @@ export default function VideoStudio({
       setUploadedVideoUrl(null);
       setUploadedVideoName(null);
       setV2vMode(false);
-      if (!imageMode) {
-        const currentT2V = t2vModels.find((m) => m.id === selectedModel);
-        const sibling = currentT2V?.family
-          ? i2vModels.find((m) => m.family === currentT2V.family)
-          : null;
-        const omni =
-          i2vModels.find((m) => m.id === "seedance-2-vip-omni-reference") ||
-          i2vModels.find((m) => m.supportsCharacterTags);
-        const target = sibling || omni || i2vModels[0];
-        setImageMode(true);
-        setSelectedModel(target.id);
-        setSelectedModelName(target.name);
-        applyControlsForModel(target.id, true, false);
-      }
+      applyImageUploadModeSwitch();
       setPromptDisabled(false);
     } catch (err) {
       console.error("[VideoStudio] Dropped image upload failed:", err);
@@ -623,20 +661,7 @@ export default function VideoStudio({
         setUploadedVideoName(null);
         setV2vMode(false);
 
-        if (!imageMode) {
-          const currentT2V = t2vModels.find((m) => m.id === selectedModel);
-          const sibling = currentT2V?.family
-            ? i2vModels.find((m) => m.family === currentT2V.family)
-            : null;
-          const omni =
-            i2vModels.find((m) => m.id === "seedance-2-vip-omni-reference") ||
-            i2vModels.find((m) => m.supportsCharacterTags);
-          const target = sibling || omni || i2vModels[0];
-          setImageMode(true);
-          setSelectedModel(target.id);
-          setSelectedModelName(target.name);
-          applyControlsForModel(target.id, true, false);
-        }
+        applyImageUploadModeSwitch();
         setPromptDisabled(false);
       }
     } catch (err) {
@@ -756,6 +781,7 @@ export default function VideoStudio({
         }
         setSelectedModel(m.id);
         setSelectedModelName(m.name);
+        setSelectedModelEndpoint(m.endpoint || m.id);
         applyControlsForModel(m.id, false, true);
         if (isMC) {
           // Motion-control: prompt is editable, video+image are needed
@@ -771,9 +797,22 @@ export default function VideoStudio({
           setUploadedVideoName(null);
           setPromptDisabled(false);
         }
+        const nextImageMode = isLiveI2vModel(m)
+          ? true
+          : isLiveT2vModel(m)
+            ? false
+            : imageMode;
+        if (isLiveI2vModel(m)) {
+          setImageMode(true);
+        } else if (isLiveT2vModel(m)) {
+          setImageMode(false);
+        }
         setSelectedModel(m.id);
         setSelectedModelName(m.name);
-        applyControlsForModel(m.id, imageMode, false);
+        setSelectedModelEndpoint(
+          resolveModelEndpoint(m.id, { imageMode: nextImageMode, liveModel: m }),
+        );
+        applyControlsForModel(m.id, nextImageMode, false);
       }
     },
     [v2vMode, imageMode, applyControlsForModel],
@@ -843,6 +882,18 @@ export default function VideoStudio({
               ? "Upload 1–3 reference photos for the character sheet."
               : "Please upload a start frame / reference image first.",
         );
+        return;
+      }
+      if (!isI2vModelId(selectedModel)) {
+        alert("Please select an image-to-video model from the model picker.");
+        return;
+      }
+      if (
+        isPremiumI2vModel(selectedModel) &&
+        !window.confirm(
+          `${selectedModelName} is a premium model and can cost $1+ per clip. Continue with this model?`,
+        )
+      ) {
         return;
       }
     } else {
@@ -950,6 +1001,10 @@ export default function VideoStudio({
 
         const i2vParams = {
           model: selectedModel,
+          endpoint:
+            selectedModelEndpoint ||
+            getI2VModelById(selectedModel)?.endpoint ||
+            selectedModel,
           image_url: refs[0],
           images_list: refs,
         };
@@ -997,7 +1052,13 @@ export default function VideoStudio({
           });
       } else {
         // T2V (including extend mode)
-        const params = { model: selectedModel };
+        const params = {
+          model: selectedModel,
+          endpoint:
+            selectedModelEndpoint ||
+            t2vModels.find((m) => m.id === selectedModel)?.endpoint ||
+            selectedModel,
+        };
         if (trimmedPrompt) params.prompt = trimmedPrompt;
 
         if (isExtendMode) {
@@ -1060,6 +1121,8 @@ export default function VideoStudio({
     v2vMode,
     imageMode,
     selectedModel,
+    selectedModelName,
+    selectedModelEndpoint,
     selectedAr,
     selectedDuration,
     selectedResolution,
@@ -1563,6 +1626,9 @@ export default function VideoStudio({
                   </div>
                   <span className="text-xs font-semibold text-white/70 group-hover:text-[#00ff88] transition-colors">
                     {selectedModelName}
+                  </span>
+                  <span className="text-[9px] font-mono text-white/25 hidden sm:inline">
+                    {selectedModelEndpoint}
                   </span>
                   <svg
                     width="8"

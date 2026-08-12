@@ -130,7 +130,7 @@ export async function generateI2I(apiKey, params) {
 
 export async function generateVideo(apiKey, params) {
     const modelInfo = getVideoModelById(params.model);
-    const endpoint = modelInfo?.endpoint || params.model;
+    const endpoint = params.endpoint || modelInfo?.endpoint || params.model;
     const payload = {};
     if (params.prompt) payload.prompt = params.prompt;
     if (params.aspect_ratio) payload.aspect_ratio = params.aspect_ratio;
@@ -144,7 +144,7 @@ export async function generateVideo(apiKey, params) {
 
 export async function generateI2V(apiKey, params) {
     const modelInfo = getI2VModelById(params.model);
-    const endpoint = modelInfo?.endpoint || params.model;
+    const endpoint = params.endpoint || modelInfo?.endpoint || params.model;
     const payload = {};
     if (params.prompt) payload.prompt = params.prompt;
     const imageField = modelInfo?.imageField || 'image_url';

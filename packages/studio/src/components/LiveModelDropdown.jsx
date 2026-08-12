@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLiveModels, creditLabel } from "../useLiveModels.js";
+import { filterSupportedModels } from "../videoModelSelection.js";
 
 function CheckSvg() {
   return (
@@ -92,6 +93,7 @@ export default function LiveModelDropdown({
   fallbackModels = [],
   secondaryFallback = [],
   listTitle = "Available models",
+  supportedOnly = true,
 }) {
   const [search, setSearch] = useState("");
   const { models, loading, error, source } = useLiveModels(category);
@@ -99,8 +101,13 @@ export default function LiveModelDropdown({
     enabled: Boolean(secondaryCategory),
   });
 
-  const primaryModels = models.length ? models : fallbackModels;
-  const secondaryModels = secondary.models.length ? secondary.models : secondaryFallback;
+  const pickList = (live, fallback) => {
+    const base = live.length ? live : fallback;
+    return supportedOnly ? filterSupportedModels(base, fallback) : base;
+  };
+
+  const primaryModels = pickList(models, fallbackModels);
+  const secondaryModels = pickList(secondary.models, secondaryFallback);
   const totalCount = primaryModels.length + secondaryModels.length;
 
   return (

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import LandingFaq from '@/components/LandingFaq';
 import LandingShowreel from '@/components/LandingShowreel';
+import LandingShowcaseClip from '@/components/LandingShowcaseClip';
+import { SHOWCASE_CLIPS } from '@/lib/showcase-clips';
 
 export const metadata = {
   title: 'Naga Films Studio — Generative Production Stack',
@@ -288,6 +290,49 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* real studio generations — additive showcase; hero/showreel unchanged */}
+      {SHOWCASE_CLIPS.length > 0 && (
+        <section className="relative z-10 border-t border-white/[0.06] py-24">
+          <div className="mx-auto max-w-6xl px-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/70">
+              From the studio
+            </p>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
+              Real generations, not stock
+            </h2>
+            <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-white/45">
+              Clips made inside Naga Films Studio — same tools you get when you sign in.
+            </p>
+
+            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {SHOWCASE_CLIPS.map((clip) => (
+                <article
+                  key={clip.id}
+                  className="overflow-hidden border border-white/10 bg-[#080808]"
+                >
+                  <LandingShowcaseClip
+                    src={clip.src}
+                    className="aspect-video w-full object-cover"
+                  />
+                  <div className="border-t border-white/[0.06] p-4">
+                    <h3 className="text-[14px] font-bold tracking-tight">{clip.title}</h3>
+                    <p className="mt-1 text-[12px] leading-relaxed text-white/40">{clip.caption}</p>
+                    {clip.studioHref && (
+                      <Link
+                        href={clip.studioHref}
+                        className="mt-3 inline-flex text-[11px] font-semibold uppercase tracking-[0.08em] text-[#00ff88]/80 hover:text-[#00ff88]"
+                      >
+                        Try Video Studio →
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* capabilities */}
       <section id="capabilities" className="relative z-10 border-t border-white/[0.06] py-24">
