@@ -6,8 +6,7 @@
   "version": "1.0.10",
   "workspaces": [
     "packages/studio",
-    "packages/Vibe-Workflow/packages/workflow-builder",
-    "packages/Open-Poe-AI/packages/agents"
+    "packages/Vibe-Workflow/packages/workflow-builder"
   ],
   "scripts": {
     "dev": "next dev",
@@ -16,7 +15,6 @@
     "lint": "next lint",
     "build:studio": "pnpm --filter ./packages/studio run build",
     "build:workflow": "pnpm --filter ./packages/Vibe-Workflow/packages/workflow-builder run build",
-    "build:agent": "pnpm --filter ./packages/Open-Poe-AI/packages/agents run build",
     "build:packages": "node scripts/build-packages.js",
     "setup": "git submodule update --init --recursive && pnpm install && pnpm run build:packages",
     "db:migrate": "node scripts/migrate-saas.js",
@@ -99,7 +97,6 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.3",
     "@neondatabase/serverless": "^1.1.0",
-    "ai-agent": "file:./packages/Open-Poe-AI/packages/agents",
     "axios": "^1.7.0",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",

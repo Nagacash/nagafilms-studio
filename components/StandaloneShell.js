@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio, WorkflowStudio, AgentStudio, HyperframeStudio, AppsStudio, getUserBalance } from 'studio';
+import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio, WorkflowStudio, getUserBalance } from 'studio';
 import axios from 'axios';
 import ApiKeyModal from './ApiKeyModal';
 
@@ -13,9 +13,6 @@ const TABS = [
   { id: 'cinema',  label: 'Cinema Studio' },
   { id: 'marketing', label: 'Marketing Studio' },
   { id: 'workflows', label: 'Workflows' },
-  { id: 'agents', label: 'Agents' },
-  { id: 'hyperframes', label: 'Hyperframes' },
-  { id: 'apps', label: 'Explore Apps' },
 ];
 
 const STORAGE_KEY = 'muapi_key';
@@ -45,9 +42,6 @@ export default function StandaloneShell() {
   // Initialize activeTab from URL slug/params or default to 'image'
   const getInitialTab = () => {
     if (idFromParams || slug.includes('workflow')) return 'workflows';
-    if (slug.includes('agents')) return 'agents';
-    if (slug.includes('hyperframes')) return 'hyperframes';
-    if (slug.includes('apps')) return 'apps';
     const firstSegment = slug[0];
     if (firstSegment && TABS.find(t => t.id === firstSegment)) return firstSegment;
     return 'image';
@@ -70,10 +64,6 @@ export default function StandaloneShell() {
     const info = getWorkflowInfo();
     if (info.id) {
         setActiveTab('workflows');
-    } else if (slug.includes('agents')) {
-        setActiveTab('agents');
-    } else if (slug.includes('apps')) {
-        setActiveTab('apps');
     } else {
         const firstSegment = slug[0];
         if (firstSegment && TABS.find(t => t.id === firstSegment)) {
@@ -161,7 +151,7 @@ export default function StandaloneShell() {
     const interceptorId = axios.interceptors.request.use((config) => {
       // Check if URL is local/proxied
       const isRelative = config.url.startsWith('/') || !config.url.startsWith('http');
-      const isInternalProxy = config.url.includes('/api/app') || config.url.includes('/api/workflow') || config.url.includes('/api/agents') || config.url.includes('/api/api') || config.url.includes('/api/v1');
+      const isInternalProxy = config.url.includes('/api/app') || config.url.includes('/api/workflow') || config.url.includes('/api/api') || config.url.includes('/api/v1');
 
       if (isRelative || isInternalProxy) {
         config.headers['x-api-key'] = apiKey;
@@ -317,9 +307,6 @@ export default function StandaloneShell() {
         {activeTab === 'cinema'  && <CinemaStudio  apiKey={apiKey} />}
         {activeTab === 'marketing' && <MarketingStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />}
         {activeTab === 'workflows' && <WorkflowStudio apiKey={apiKey} isHeaderVisible={isHeaderVisible} onToggleHeader={setIsHeaderVisible} />}
-        {activeTab === 'agents' && <AgentStudio apiKey={apiKey} isHeaderVisible={isHeaderVisible} onToggleHeader={setIsHeaderVisible} />}
-        {activeTab === 'hyperframes' && <HyperframeStudio apiKey={apiKey} />}
-        {activeTab === 'apps' && <AppsStudio apiKey={apiKey} />}
       </div>
 
       {/* Settings Modal */}

@@ -12,7 +12,6 @@ const STUDIOS = [
   { name: 'Cinema Studio', desc: 'Shot-level control: camera moves, lens language and framing for sequences that cut together.' },
   { name: 'Lip Sync', desc: 'Nine models for portrait and video lip sync — performance from a still or an existing take.' },
   { name: 'Workflows', desc: 'Chain models into repeatable multi-step pipelines instead of re-prompting by hand.' },
-  { name: 'Agents', desc: 'Drive the studio programmatically and let agents run generation end to end.' },
 ];
 
 const STATS = [

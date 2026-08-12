@@ -3,7 +3,7 @@
  * Build all workspace packages required by the Next.js app.
  *
  * Designed to fail loudly on Vercel with diagnostic output if a submodule
- * (Vibe-Workflow, Open-Poe-AI) is missing or a build silently produces no dist.
+ * (Vibe-Workflow) is missing or a build silently produces no dist.
  */
 
 const { execSync } = require("node:child_process");
@@ -16,11 +16,6 @@ const PACKAGES = [
   {
     name: "workflow-builder",
     dir: "packages/Vibe-Workflow/packages/workflow-builder",
-    expect: "dist/tailwind.css",
-  },
-  {
-    name: "ai-agent",
-    dir: "packages/Open-Poe-AI/packages/agents",
     expect: "dist/tailwind.css",
   },
   {
@@ -97,7 +92,7 @@ for (const pkg of PACKAGES) {
   if (!fs.existsSync(abs)) {
     fail(
       `${pkg.dir} does not exist. ` +
-        `If this is a submodule (Vibe-Workflow / Open-Poe-AI), Vercel did not check it out. ` +
+        `If this is a submodule (Vibe-Workflow), Vercel did not check it out. ` +
         `Verify the submodule is registered in the git index and that submodule cloning is enabled.`
     );
   }
