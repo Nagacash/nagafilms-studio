@@ -28,7 +28,7 @@ export default function LogoutButton({
       }}
       className={
         className ||
-        'inline-flex items-center gap-2 rounded-md border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[13px] font-bold text-red-300 transition-colors hover:bg-red-500/20 hover:text-red-200'
+        'inline-flex items-center gap-2 rounded-none border border-white/15 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55 transition-colors hover:border-white/30 hover:text-white'
       }
     >
       <svg

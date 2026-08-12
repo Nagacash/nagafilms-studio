@@ -254,52 +254,60 @@ export default function StandaloneShell() {
         </div>
       )}
 
-      <header className="flex-shrink-0 h-14 border-b border-white/[0.03] flex items-center justify-between px-6 bg-black/20 backdrop-blur-md z-40">
+      <header className="z-40 grid h-16 flex-shrink-0 grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-white/10 bg-[var(--bg-panel,#0a0a0a)] px-6 lg:gap-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <img src="/naga-mark.svg" alt="Naga Films" className="w-9 h-9 object-contain" />
-          <span className="text-sm font-bold tracking-tight hidden lg:block">
-            NAGA FILMS <span className="text-white/40 font-medium">Studio</span>
+          <img src="/naga-mark.svg" alt="Naga Films" className="h-8 w-8 object-contain" />
+          <span className="hidden text-[11px] font-bold uppercase tracking-[0.12em] lg:block">
+            Naga Films <span className="font-medium text-white/40">Studio</span>
           </span>
         </div>
 
         <nav
-          className="absolute left-1/2 hidden max-w-[min(100vw-14rem,52rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto md:flex lg:gap-2"
+          className="hidden items-center justify-center gap-1 overflow-x-auto md:flex"
           aria-label="Studios"
         >
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => handleTabChange(tab.id)}
-              title={`${tab.label}: ${tab.blurb}`}
-              aria-current={activeTab === tab.id ? 'page' : undefined}
-              className={`relative whitespace-nowrap px-2 py-4 text-[12px] font-medium transition-all lg:px-2.5 lg:text-[13px] ${
-                activeTab === tab.id ? 'text-[#00ff88]' : 'text-white/50 hover:text-white'
-              }`}
-            >
-              {tab.label}
-              {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[#00ff88]" />
-              )}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => handleTabChange(tab.id)}
+                title={`${tab.label}: ${tab.blurb}`}
+                aria-current={isActive ? 'page' : undefined}
+                className={`whitespace-nowrap rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                  isActive
+                    ? 'bg-[#00ff88] text-black'
+                    : 'text-white/45 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="flex items-center gap-3 md:gap-4">
-          <div className="flex items-center gap-3 rounded-full border border-white/5 bg-white/5 px-3 py-1.5 transition-colors">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-            <div className="flex flex-col">
-              <span className="text-[10px] uppercase leading-none tracking-wider text-white/35">
-                Naga credits
+        <div className="flex items-center justify-end gap-2 sm:gap-3">
+          <Link
+            href="/credits"
+            title="Wallet balance and credit packs"
+            className="flex items-center gap-2 border border-white/15 bg-transparent px-3 py-2 transition-colors hover:border-white/30 hover:bg-white/[0.03]"
+          >
+            <span className="h-1.5 w-1.5 shrink-0 animate-pulse bg-[#00ff88]" aria-hidden />
+            <span className="flex flex-col leading-none">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-white/40">
+                Credits
               </span>
-              <span className="text-xs font-bold text-white/90">{balanceLabel}</span>
-            </div>
-          </div>
+              <span className="mt-1 text-[11px] font-bold tabular-nums text-white/90">
+                {balanceLabel}
+              </span>
+            </span>
+          </Link>
 
           <Link
             href="/credits"
             title="Buy a one-time credit pack. Credits land in your wallet after checkout."
-            className="hidden text-[12px] font-semibold text-[#00ff88]/80 transition-colors hover:text-[#00ff88] sm:block"
+            className="hidden bg-[#00ff88] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-black transition-colors hover:bg-[#33ffa3] sm:inline-flex"
           >
             Buy credits
           </Link>
@@ -308,42 +316,49 @@ export default function StandaloneShell() {
             type="button"
             onClick={() => setShowSettings(true)}
             title="Wallet balance, admin tools, and account settings"
-            className="flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-[13px] font-bold text-white/80 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
+            className="inline-flex items-center border border-white/15 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/70 transition-colors hover:border-white/30 hover:text-white"
           >
-            <span>Settings</span>
+            Settings
           </button>
-          <LogoutButton />
+          <LogoutButton
+            className="inline-flex items-center gap-2 border border-white/15 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55 transition-colors hover:border-white/30 hover:text-white"
+          />
         </div>
       </header>
 
       {activeTabMeta && (
-        <div className="flex-shrink-0 border-b border-white/[0.04] bg-black/30 px-4 py-2.5 sm:px-6">
-          <div className="mx-auto flex max-w-6xl flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+        <div className="flex-shrink-0 border-b border-white/10 bg-[#050505] px-6 py-3 lg:px-8">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
             <p className="text-[13px] text-white/70">
-              <span className="font-semibold text-white/90">{activeTabMeta.label}</span>
+              <span className="font-semibold uppercase tracking-[0.1em] text-white/90">
+                [ {activeTabMeta.label} ]
+              </span>
               <span className="text-white/35"> — </span>
               {activeTabMeta.blurb}
             </p>
-            <p className="text-[11px] font-medium tracking-wide text-white/40 sm:text-right">
+            <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-white/40 sm:text-right">
               {activeTabMeta.howTo}
             </p>
           </div>
           {/* Mobile studio picker */}
-          <div className="mt-2 flex gap-1 overflow-x-auto pb-1 md:hidden">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabChange(tab.id)}
-                className={`shrink-0 rounded-md px-3 py-2 text-[11px] font-semibold ${
-                  activeTab === tab.id
-                    ? 'bg-[#00ff88]/15 text-[#00ff88]'
-                    : 'bg-white/5 text-white/50'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="mt-3 flex gap-1 overflow-x-auto pb-0.5 md:hidden">
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`shrink-0 rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] ${
+                    isActive
+                      ? 'bg-[#00ff88] text-black'
+                      : 'border border-white/10 text-white/45 hover:text-white'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
