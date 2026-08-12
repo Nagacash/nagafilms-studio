@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -50,10 +50,39 @@ const TABS = [
 
 const STORAGE_KEY = 'muapi_key';
 const SESSION_KEY = 'session';
+const LOW_CREDITS_THRESHOLD = 100;
 
 function clearByoKey() {
   localStorage.removeItem(STORAGE_KEY);
   document.cookie = 'muapi_key=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+}
+
+function animateBalance(from, to, onTick) {
+  if (from == null || to == null || from === to) {
+    onTick(to);
+    return undefined;
+  }
+  const start = performance.now();
+  const duration = 520;
+  let frameId;
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - (1 - t) ** 3;
+    onTick(Math.round(from + (to - from) * eased));
+    if (t < 1) frameId = requestAnimationFrame(step);
+  };
+  frameId = requestAnimationFrame(step);
+  return () => {
+    if (frameId) cancelAnimationFrame(frameId);
+  };
+}
+
+function StudioLoadingShell() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#050505]">
+      <div className="animate-spin text-3xl text-[#00ff88]">◌</div>
+    </div>
+  );
 }
 
 export default function StandaloneShell() {
@@ -72,10 +101,15 @@ export default function StandaloneShell() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState(getInitialTab());
   const [balance, setBalance] = useState(null);
+  const [displayBalance, setDisplayBalance] = useState(null);
+  const [recentDelta, setRecentDelta] = useState(null);
   const [muapiOperatorBalance, setMuapiOperatorBalance] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [droppedFiles, setDroppedFiles] = useState(null);
+  const deltaTimerRef = useRef(null);
+  const walletAbortRef = useRef(null);
+  const walletRefreshTimerRef = useRef(null);
 
   useEffect(() => {
     const firstSegment = slug[0];
@@ -90,18 +124,50 @@ export default function StandaloneShell() {
   };
 
   const loadWallet = useCallback(async () => {
+    if (walletAbortRef.current) {
+      walletAbortRef.current.abort();
+    }
+    const controller = new AbortController();
+    walletAbortRef.current = controller;
+
     try {
-      const res = await fetch('/api/me', { credentials: 'include', cache: 'no-store' });
-      if (!res.ok) return null;
+      const res = await fetch('/api/me', {
+        credentials: 'include',
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          setBalance(null);
+          setDisplayBalance(null);
+        }
+        return null;
+      }
       const data = await res.json();
       setIsAdmin(data.user?.role === 'admin');
-      setBalance(typeof data.wallet?.balance === 'number' ? data.wallet.balance : 0);
+      const next =
+        typeof data.wallet?.balance === 'number' ? data.wallet.balance : 0;
+      setBalance(next);
+      setDisplayBalance(next);
       return data;
     } catch (err) {
-      console.error('Wallet fetch failed:', err);
+      if (controller.signal.aborted || err?.name === 'AbortError') return null;
       return null;
+    } finally {
+      if (walletAbortRef.current === controller) {
+        walletAbortRef.current = null;
+      }
     }
   }, []);
+
+  const scheduleWalletRefresh = useCallback(() => {
+    if (walletRefreshTimerRef.current) {
+      window.clearTimeout(walletRefreshTimerRef.current);
+    }
+    walletRefreshTimerRef.current = window.setTimeout(() => {
+      void loadWallet();
+    }, 1500);
+  }, [loadWallet]);
 
   const loadMuapiOperatorBalance = useCallback(async () => {
     try {
@@ -115,29 +181,18 @@ export default function StandaloneShell() {
   }, []);
 
   useEffect(() => {
-    if (status !== 'authenticated') {
-      if (status === 'unauthenticated') {
-        setApiKey(null);
-        setBalance(null);
-        setIsAdmin(false);
-      }
+    if (status === 'authenticated') {
+      clearByoKey();
+      setApiKey(SESSION_KEY);
+      void loadWallet();
       return;
     }
 
-    let cancelled = false;
-
-    (async () => {
-      clearByoKey();
-      const me = await loadWallet();
-      if (cancelled) return;
-      if (me) {
-        setApiKey(SESSION_KEY);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
+    if (status === 'unauthenticated') {
+      setApiKey(null);
+      setBalance(null);
+      setIsAdmin(false);
+    }
   }, [status, loadWallet]);
 
   useEffect(() => {
@@ -148,15 +203,60 @@ export default function StandaloneShell() {
   }, [showSettings, isAdmin, loadMuapiOperatorBalance]);
 
   useEffect(() => {
-    if (status !== 'authenticated' || !apiKey) return;
-    loadWallet();
-    const interval = setInterval(loadWallet, 30000);
+    if (status !== 'authenticated') return;
+    const interval = setInterval(loadWallet, balance != null && balance <= LOW_CREDITS_THRESHOLD ? 15000 : 30000);
     return () => clearInterval(interval);
-  }, [status, apiKey, loadWallet]);
+  }, [status, loadWallet, balance]);
+
+  useEffect(() => {
+    if (status !== 'authenticated') return undefined;
+
+    const onWallet = (event) => {
+      const detail = event?.detail || {};
+      const { walletBalance, costCredits, restoredCredits, phase } = detail;
+
+      if (typeof walletBalance === 'number') {
+        setBalance((prev) => {
+          if (prev != null && prev !== walletBalance) {
+            animateBalance(prev, walletBalance, setDisplayBalance);
+          } else {
+            setDisplayBalance(walletBalance);
+          }
+          return walletBalance;
+        });
+      }
+
+      if (phase === 'hold' && costCredits > 0) {
+        setRecentDelta({ amount: -costCredits, label: `−${Number(costCredits).toLocaleString()} cr` });
+      } else if (restoredCredits > 0) {
+        setRecentDelta({
+          amount: restoredCredits,
+          label: `+${Number(restoredCredits).toLocaleString()} cr restored`,
+        });
+      } else if (phase === 'denied') {
+        setRecentDelta({ amount: 0, label: 'Insufficient credits' });
+      }
+
+      if (deltaTimerRef.current) window.clearTimeout(deltaTimerRef.current);
+      deltaTimerRef.current = window.setTimeout(() => setRecentDelta(null), 2800);
+
+      if (typeof walletBalance !== 'number') {
+        scheduleWalletRefresh();
+      }
+    };
+
+    window.addEventListener('naga:wallet', onWallet);
+    return () => {
+      window.removeEventListener('naga:wallet', onWallet);
+      if (deltaTimerRef.current) window.clearTimeout(deltaTimerRef.current);
+      if (walletRefreshTimerRef.current) window.clearTimeout(walletRefreshTimerRef.current);
+      walletAbortRef.current?.abort();
+    };
+  }, [status, scheduleWalletRefresh]);
 
   useEffect(() => {
     delete axios.defaults.headers.common['x-api-key'];
-    if (!apiKey) return;
+    if (status !== 'authenticated') return;
 
     const interceptorId = axios.interceptors.request.use((config) => {
       const isRelative = config.url.startsWith('/') || !config.url.startsWith('http');
@@ -171,7 +271,7 @@ export default function StandaloneShell() {
     return () => {
       axios.interceptors.request.eject(interceptorId);
     };
-  }, [apiKey]);
+  }, [status]);
 
   const handleLogout = useCallback(async () => {
     clearByoKey();
@@ -215,18 +315,22 @@ export default function StandaloneShell() {
   }, []);
 
   const balanceLabel =
-    balance !== null ? `${Number(balance).toLocaleString()} cr` : '…';
+    displayBalance !== null
+      ? `${Number(displayBalance).toLocaleString()} cr`
+      : balance !== null
+        ? `${Number(balance).toLocaleString()} cr`
+        : '…';
+  const isLowCredits =
+    balance !== null && balance > 0 && balance <= LOW_CREDITS_THRESHOLD;
+  const isEmptyCredits = balance !== null && balance <= 0;
   const activeTabMeta = TABS.find((t) => t.id === activeTab) || TABS[0];
+  const studioKey = apiKey || SESSION_KEY;
 
   if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
-        <div className="animate-spin text-[#00ff88] text-3xl">◌</div>
-      </div>
-    );
+    return <StudioLoadingShell />;
   }
 
-  if (status === 'unauthenticated' || !apiKey) {
+  if (status === 'unauthenticated') {
     return <StudioLoginGate />;
   }
 
@@ -256,7 +360,7 @@ export default function StandaloneShell() {
 
       <header className="z-40 grid h-16 flex-shrink-0 grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-white/10 bg-[var(--bg-panel,#0a0a0a)] px-6 lg:gap-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <img src="/naga-mark.svg" alt="Naga Films" className="h-8 w-8 object-contain" />
+          <img src="/assets/NAGA_round.png" alt="Naga Films" className="h-8 w-8 object-contain" />
           <span className="hidden text-[11px] font-bold uppercase tracking-[0.12em] lg:block">
             Naga Films <span className="font-medium text-white/40">Studio</span>
           </span>
@@ -291,25 +395,60 @@ export default function StandaloneShell() {
           <Link
             href="/credits"
             title="Wallet balance and credit packs"
-            className="flex items-center gap-2 border border-white/15 bg-transparent px-3 py-2 transition-colors hover:border-white/30 hover:bg-white/[0.03]"
+            className={`relative flex items-center gap-2 border px-3 py-2 transition-colors ${
+              isEmptyCredits
+                ? 'border-red-500/40 bg-red-500/10 hover:border-red-400/60'
+                : isLowCredits
+                  ? 'border-amber-500/35 bg-amber-500/5 hover:border-amber-400/50'
+                  : 'border-white/15 bg-transparent hover:border-white/30 hover:bg-white/[0.03]'
+            }`}
           >
-            <span className="h-1.5 w-1.5 shrink-0 animate-pulse bg-[#00ff88]" aria-hidden />
+            <span
+              className={`h-1.5 w-1.5 shrink-0 ${
+                isEmptyCredits || isLowCredits
+                  ? 'animate-pulse bg-amber-400'
+                  : 'animate-pulse bg-[#00ff88]'
+              }`}
+              aria-hidden
+            />
             <span className="flex flex-col leading-none">
               <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-white/40">
                 Credits
               </span>
-              <span className="mt-1 text-[11px] font-bold tabular-nums text-white/90">
+              <span
+                className={`mt-1 text-[11px] font-bold tabular-nums transition-colors ${
+                  isEmptyCredits
+                    ? 'text-red-300'
+                    : isLowCredits
+                      ? 'text-amber-200'
+                      : 'text-white/90'
+                }`}
+              >
                 {balanceLabel}
               </span>
             </span>
+            {recentDelta && (
+              <span
+                className={`absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-bold tabular-nums ${
+                  recentDelta.amount >= 0 ? 'text-[#00ff88]' : 'text-red-400'
+                }`}
+                aria-live="polite"
+              >
+                {recentDelta.label}
+              </span>
+            )}
           </Link>
 
           <Link
             href="/credits"
             title="Buy a one-time credit pack. Credits land in your wallet after checkout."
-            className="hidden bg-[#00ff88] px-3 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-black transition-colors hover:bg-[#33ffa3] sm:inline-flex"
+            className={`hidden px-3 py-2 text-[11px] font-bold uppercase tracking-[0.08em] transition-colors sm:inline-flex ${
+              isLowCredits || isEmptyCredits
+                ? 'animate-pulse bg-amber-400 text-black hover:bg-amber-300'
+                : 'bg-[#00ff88] text-black hover:bg-[#33ffa3]'
+            }`}
           >
-            Buy credits
+            {isLowCredits || isEmptyCredits ? 'Top up' : 'Buy credits'}
           </Link>
 
           <button
@@ -325,6 +464,33 @@ export default function StandaloneShell() {
           />
         </div>
       </header>
+
+      {(isLowCredits || isEmptyCredits) && (
+        <div
+          className={`flex-shrink-0 border-b px-6 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.06em] lg:px-8 ${
+            isEmptyCredits
+              ? 'border-red-500/20 bg-red-500/10 text-red-200'
+              : 'border-amber-500/20 bg-amber-500/10 text-amber-100'
+          }`}
+        >
+          {isEmptyCredits ? (
+            <>
+              No credits left —{' '}
+              <Link href="/credits" className="underline underline-offset-2 hover:text-white">
+                top up to keep generating
+              </Link>
+            </>
+          ) : (
+            <>
+              Low balance ({balanceLabel}) —{' '}
+              <Link href="/credits" className="underline underline-offset-2 hover:text-white">
+                buy a credit pack
+              </Link>{' '}
+              before your next run
+            </>
+          )}
+        </div>
+      )}
 
       {activeTabMeta && (
         <div className="flex-shrink-0 border-b border-white/10 bg-[#050505] px-6 py-3 lg:px-8">
@@ -365,18 +531,18 @@ export default function StandaloneShell() {
 
       <div className="relative min-h-0 flex-1 overflow-hidden">
         {activeTab === 'image' && (
-          <ImageStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+          <ImageStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
         {activeTab === 'video' && (
-          <VideoStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+          <VideoStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
         {activeTab === 'lipsync' && (
-          <LipSyncStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+          <LipSyncStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
-        {activeTab === 'cinema' && <CinemaStudio apiKey={apiKey} />}
-        {activeTab === 'storyboard' && <StoryboardStudio apiKey={apiKey} />}
+        {activeTab === 'cinema' && <CinemaStudio apiKey={studioKey} />}
+        {activeTab === 'storyboard' && <StoryboardStudio apiKey={studioKey} />}
         {activeTab === 'marketing' && (
-          <MarketingStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+          <MarketingStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
       </div>
 

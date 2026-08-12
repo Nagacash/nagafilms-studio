@@ -72,7 +72,7 @@ export default function Home() {
       {/* nav — floats over hero */}
       <header className="absolute inset-x-0 top-0 z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-3">
-          <img src="/naga-mark.svg" alt="Naga Films" width={36} height={36} className="h-9 w-9 drop-shadow-[0_0_12px_rgba(0,0,0,0.6)]" />
+          <img src="/assets/NAGA_round.png" alt="Naga Films" width={36} height={36} className="h-9 w-9 object-contain drop-shadow-[0_0_12px_rgba(0,0,0,0.6)]" />
           <span className="text-sm font-bold tracking-tight drop-shadow-[0_1px_8px_rgba(0,0,0,0.7)]">
             NAGA FILMS <span className="font-medium text-white/50">Studio</span>
           </span>
@@ -372,7 +372,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[#050505]/70" />
         </div>
         <div className="relative mx-auto max-w-6xl px-6 text-center">
-          <img src="/naga-mark.svg" alt="" width={56} height={56} className="mx-auto mb-8 h-14 w-14 opacity-90" />
+          <img src="/assets/NAGA_round.png" alt="" width={56} height={56} className="mx-auto mb-8 h-14 w-14 object-contain opacity-90" />
           <h2 className="mx-auto max-w-xl text-3xl font-black leading-tight tracking-tight md:text-4xl">
             Start with the shot you can&apos;t get anywhere else.
           </h2>

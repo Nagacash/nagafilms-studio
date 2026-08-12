@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { uploadFile, generateMarketingStudioAd } from "../muapi.js";
+import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 const SCROLLBAR_STYLE = `
   .custom-scrollbar-thin::-webkit-scrollbar {
@@ -299,6 +301,13 @@ export default function MarketingStudio({ apiKey, droppedFiles, onFilesHandled }
     }
   };
 
+  const removeFromHistory = useCallback((entry, idx) => {
+    if (!window.confirm("Remove this ad from your gallery?")) return;
+    void deleteGenerationRecord(entry.dbGenerationId);
+    setHistory((prev) => removeHistoryEntry(prev, entry, idx));
+    if (fullscreenUrl === entry.url) setFullscreenUrl(null);
+  }, [fullscreenUrl]);
+
   const handleUpload = async (e, target) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
@@ -372,7 +381,7 @@ export default function MarketingStudio({ apiKey, droppedFiles, onFilesHandled }
       <div className="flex-1 overflow-y-auto custom-scrollbar p-6 pb-40">
         {history.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
-            {history.map(entry => (
+            {history.map((entry, idx) => (
               <div key={entry.id} className="relative group rounded-lg overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col">
                 <video 
                   src={entry.url} 
@@ -392,6 +401,12 @@ export default function MarketingStudio({ apiKey, droppedFiles, onFilesHandled }
                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                      </svg>
                    </button>
+                   <GalleryDeleteButton
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       removeFromHistory(entry, idx);
+                     }}
+                   />
                 </div>
 
                 <div className="p-3 bg-black/80 backdrop-blur-sm border-t border-white/5 flex flex-col gap-1.5 flex-1">

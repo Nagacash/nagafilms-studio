@@ -10,6 +10,8 @@ import {
   getResolutionsForLipSyncModel,
 } from "../models.js";
 import { useLiveModels, creditLabel } from "../useLiveModels.js";
+import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ---------------------------------------------------------------------------
 // Upload button states
@@ -608,6 +610,21 @@ export default function LipSyncStudio({
     setInternalHistory((prev) => [entry, ...prev].slice(0, 30));
   }, []);
 
+  const removeFromHistory = useCallback(
+    (entry, idx) => {
+      if (historyItems) return;
+      if (!window.confirm("Remove this clip from your gallery?")) return;
+      void deleteGenerationRecord(entry.dbGenerationId);
+      setInternalHistory((prev) => removeHistoryEntry(prev, entry, idx));
+      if (fullscreenUrl === entry.url) setFullscreenUrl(null);
+      if (activeResultUrl === entry.url) {
+        setActiveResultUrl(null);
+        setView("input");
+      }
+    },
+    [historyItems, fullscreenUrl, activeResultUrl],
+  );
+
   const downloadFile = async (url, filename) => {
     try {
       const response = await fetch(url);
@@ -798,6 +815,14 @@ export default function LipSyncStudio({
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                     </svg>
                   </button>
+                  {!historyItems && (
+                    <GalleryDeleteButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromHistory(entry, idx);
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Details */}

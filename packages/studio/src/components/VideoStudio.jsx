@@ -18,6 +18,8 @@ import {
 } from "../models.js";
 import LiveModelDropdown from "./LiveModelDropdown.jsx";
 import CharacterLibrary from "./CharacterLibrary.jsx";
+import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ── tiny helpers ──────────────────────────────────────────────────────────────
 
@@ -783,6 +785,22 @@ export default function VideoStudio({
     setActiveHistoryIdx(0);
   }, []);
 
+  const removeFromHistory = useCallback(
+    (entry, idx) => {
+      if (historyItems) return;
+      if (!window.confirm("Remove this clip from your gallery?")) return;
+      void deleteGenerationRecord(entry.dbGenerationId);
+      setLocalHistory((prev) => removeHistoryEntry(prev, entry, idx));
+      if (fullscreenUrl === entry.url) setFullscreenUrl(null);
+      if (canvasUrl === entry.url) {
+        setCanvasUrl(null);
+        setShowCanvas(false);
+      }
+      if (lastGenerationId === entry.id) setLastGenerationId(null);
+    },
+    [historyItems, fullscreenUrl, canvasUrl, lastGenerationId],
+  );
+
   // ── show result in canvas ─────────────────────────────────────────────────
   const showVideoInCanvas = useCallback((url, model) => {
     setCanvasUrl(url);
@@ -1198,6 +1216,14 @@ export default function VideoStudio({
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                       </button>
+                    )}
+                    {!historyItems && (
+                      <GalleryDeleteButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFromHistory(entry, idx);
+                        }}
+                      />
                     )}
                   </div>
 

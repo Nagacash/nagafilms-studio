@@ -80,3 +80,37 @@ export async function GET(_req, { params }) {
     return NextResponse.json({ error: err.message || 'Failed' }, { status: 500 });
   }
 }
+
+export async function DELETE(_req, { params }) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Login required' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const db = getDb();
+    const [row] = await db
+      .select({ id: schema.generations.id })
+      .from(schema.generations)
+      .where(
+        and(eq(schema.generations.id, id), eq(schema.generations.userId, session.user.id))
+      )
+      .limit(1);
+
+    if (!row) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
+    await db
+      .delete(schema.generations)
+      .where(
+        and(eq(schema.generations.id, id), eq(schema.generations.userId, session.user.id))
+      );
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error('[generations/:id DELETE]', err);
+    return NextResponse.json({ error: err.message || 'Failed' }, { status: 500 });
+  }
+}

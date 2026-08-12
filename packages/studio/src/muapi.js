@@ -1,4 +1,5 @@
 import { getModelById, getVideoModelById, getI2IModelById, getI2VModelById, getV2VModelById, getLipSyncModelById } from './models.js';
+import { emitWalletUpdate, parseNagaWalletPayload } from './walletEvents.js';
 
 const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://api.muapi.ai';
 /** Browser: /api/v1 → middleware rewrites to api.muapi.ai (NOT /api/api/v1 — that path is only for legacy double-api proxy). */
@@ -46,6 +47,8 @@ async function pollForResult(requestId, key, maxAttempts = 900, interval = 2000)
                 throw new Error(`Poll Failed: ${response.status} - ${errText.slice(0, 100)}`);
             }
             const data = await response.json();
+            const wallet = parseNagaWalletPayload(data);
+            if (wallet) emitWalletUpdate(wallet);
             const status = data.status?.toLowerCase();
             if (status === 'completed' || status === 'succeeded' || status === 'success') return data;
             if (status === 'failed' || status === 'error') throw new Error(`Generation failed: ${data.error || 'Unknown error'}`);
@@ -65,9 +68,16 @@ async function submitAndPoll(endpoint, payload, key, onRequestId, maxAttempts = 
     }, key);
     if (!response.ok) {
         const errText = await response.text();
+        try {
+            const errJson = JSON.parse(errText);
+            const wallet = parseNagaWalletPayload(errJson);
+            if (wallet) emitWalletUpdate(wallet);
+        } catch { /* plain text error */ }
         throw new Error(`API Request Failed: ${response.status} ${response.statusText} - ${errText.slice(0, 100)}`);
     }
     const submitData = await response.json();
+    const submitWallet = parseNagaWalletPayload(submitData);
+    if (submitWallet) emitWalletUpdate(submitWallet);
     const requestId = submitData.request_id || submitData.id;
     if (!requestId) return submitData;
     if (onRequestId) onRequestId(requestId);

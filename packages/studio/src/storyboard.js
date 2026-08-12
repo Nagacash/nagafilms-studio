@@ -1,4 +1,5 @@
 import { uploadFile } from './muapi.js';
+import { emitWalletUpdate, parseNagaWalletPayload } from './walletEvents.js';
 export {
   STORYBOARD_USD_ESTIMATES,
   defaultPricingConfig,
@@ -69,7 +70,9 @@ async function storyboardFetch(path, apiKey, { method = 'GET', body } = {}) {
   }
   if (!response.ok) {
     if (response.status === 402) {
-      const cost = data?.costCredits;
+      const cost = data?.costCredits ?? data?.naga?.costCredits;
+      const wallet = parseNagaWalletPayload(data);
+      if (wallet) emitWalletUpdate(wallet);
       throw new Error(
         data?.error ||
           `Insufficient credits${cost ? ` (~${cost} cr needed)` : ''}. Buy a pack to continue.`,
@@ -94,6 +97,8 @@ async function storyboardFetch(path, apiKey, { method = 'GET', body } = {}) {
         : JSON.stringify(detail).slice(0, 160),
     );
   }
+  const wallet = parseNagaWalletPayload(data);
+  if (wallet) emitWalletUpdate(wallet);
   return data;
 }
 

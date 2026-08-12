@@ -23,6 +23,18 @@ export async function GET() {
     });
   } catch (err) {
     console.error('[me]', err);
-    return NextResponse.json({ error: err.message || 'Failed' }, { status: 500 });
+    const message = err?.message || 'Failed';
+    const dbUnavailable =
+      message.includes('DATABASE_URL') || message.includes('connect');
+    if (dbUnavailable) {
+      return NextResponse.json(
+        {
+          error: 'Wallet temporarily unavailable',
+          wallet: { balance: null, unavailable: true },
+        },
+        { status: 503 },
+      );
+    }
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

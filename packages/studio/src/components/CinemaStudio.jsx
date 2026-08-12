@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { generateImage, uploadFile } from "../muapi.js";
+import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ─── Constants (inlined from promptUtils) ───────────────────────────────────
 
@@ -507,6 +509,21 @@ export default function CinemaStudio({
     setUploadedImage(null);
   };
 
+  const removeFromHistory = useCallback(
+    (entry, idx) => {
+      if (historyItems != null) return;
+      if (!window.confirm("Remove this shot from your gallery?")) return;
+      void deleteGenerationRecord(entry.dbGenerationId);
+      setInternalHistory((prev) => removeHistoryEntry(prev, entry, idx));
+      if (fullscreenUrl === entry.url) setFullscreenUrl(null);
+      if (canvasUrl === entry.url) {
+        setCanvasUrl(null);
+        setactiveHistoryIndex(null);
+      }
+    },
+    [historyItems, fullscreenUrl, canvasUrl],
+  );
+
   // ── Persistence: Load ────────────────────────────────────────────────────
   useEffect(() => {
     try {
@@ -770,6 +787,14 @@ export default function CinemaStudio({
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                     </svg>
                   </button>
+                  {historyItems == null && (
+                    <GalleryDeleteButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromHistory(entry, idx);
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Details */}

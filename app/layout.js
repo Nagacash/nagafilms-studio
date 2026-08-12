@@ -5,6 +5,7 @@ import Providers from '@/components/Providers';
 const inter = Inter({
   variable: '--font-inter',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const APP_URL =
@@ -21,6 +22,10 @@ export const viewport = {
 
 export const metadata = {
   metadataBase: new URL(APP_URL),
+  icons: {
+    icon: '/assets/NAGA_round.png',
+    apple: '/assets/NAGA_round.png',
+  },
   title: 'Naga Films Studio — AI Image, Video & Cinema',
   description:
     'Naga Films Studio — generate AI images, video, cinema shots and lip sync across 200+ models. Credit packs, no subscription.',

@@ -19,7 +19,7 @@ export default function ApiKeyModal({ onSave }) {
       <div className="w-full max-w-sm bg-[#0a0a0a]/40 backdrop-blur-xl border border-white/10 rounded-xl p-10 shadow-2xl">
         <div className="flex flex-col items-center text-center mb-10">
           <div className="w-14 h-14 bg-[#00ff88]/5 rounded-2xl flex items-center justify-center border border-[#00ff88]/10 mb-6 group hover:border-[#00ff88]/30 transition-colors">
-            <img src="/naga-mark.svg" alt="Naga Films" className="w-8 h-8 group-hover:scale-110 transition-transform" />
+            <img src="/assets/NAGA_round.png" alt="Naga Films" className="h-8 w-8 object-contain transition-transform group-hover:scale-110" />
           </div>
           <h1 className="text-xl font-bold text-white tracking-tight mb-1">
             NAGA FILMS <span className="text-[#00ff88]">Studio</span>

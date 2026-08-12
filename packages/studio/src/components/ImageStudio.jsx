@@ -15,6 +15,8 @@ import {
   isCharacterConsistencyI2I,
 } from "../models.js";
 import LiveModelDropdown from "./LiveModelDropdown.jsx";
+import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -901,6 +903,18 @@ export default function ImageStudio({
     [historyItems],
   );
 
+  const removeFromHistory = useCallback(
+    (entry, idx) => {
+      if (historyItems) return;
+      if (!window.confirm("Remove this image from your gallery?")) return;
+      void deleteGenerationRecord(entry.dbGenerationId);
+      setLocalHistory((prev) => removeHistoryEntry(prev, entry, idx));
+      if (fullscreenUrl === entry.url) setFullscreenUrl(null);
+      if (currentImageUrl === entry.url) setCurrentImageUrl(null);
+    },
+    [historyItems, fullscreenUrl, currentImageUrl],
+  );
+
   // ── View state ─────────────────────────────────────
 
   const resetToPrompt = () => {
@@ -1052,6 +1066,14 @@ export default function ImageStudio({
                       <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                     </svg>
                   </button>
+                  {!historyItems && (
+                    <GalleryDeleteButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromHistory(entry, idx);
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Prompt & Details */}

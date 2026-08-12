@@ -1,0 +1,11 @@
+# Naga Films Studio — user-facing routes (representative params for dynamic segments)
+http://127.0.0.1:3001/
+http://127.0.0.1:3001/login
+http://127.0.0.1:3001/signup
+http://127.0.0.1:3001/credits
+http://127.0.0.1:3001/policy
+http://127.0.0.1:3001/impressum
+http://127.0.0.1:3001/studio
+http://127.0.0.1:3001/studio/image
+http://127.0.0.1:3001/studio/video
+http://127.0.0.1:3001/admin
