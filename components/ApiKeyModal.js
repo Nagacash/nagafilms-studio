@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function ApiKeyModal({ onSave }) {
   const [key, setKey] = useState('');
@@ -25,14 +26,28 @@ export default function ApiKeyModal({ onSave }) {
           </h1>
           <p className="text-white/25 text-[11px] tracking-widest uppercase mb-3">Hamburg · Generative Production Stack</p>
           <p className="text-white/40 text-[13px] leading-relaxed px-4">
-            Enter your <a href="https://muapi.ai/access-keys" target="_blank" rel="noreferrer" className="text-[#00ff88] hover:text-[#33ffa3] transition-colors">Muapi.ai</a> API key to start creating
+            Sign in to use your <strong className="text-white/60 font-medium">Naga credits</strong>, or paste a{' '}
+            <a href="https://muapi.ai/access-keys" target="_blank" rel="noreferrer" className="text-[#00ff88] hover:text-[#33ffa3] transition-colors">Muapi.ai</a> key for direct billing.
           </p>
+        </div>
+
+        <Link
+          href="/login?callbackUrl=/studio/image"
+          className="flex w-full items-center justify-center bg-[#00ff88] text-black font-medium py-2.5 rounded-md hover:bg-[#33ffa3] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[#00ff88]/5 mb-6"
+        >
+          Log in with Naga credits
+        </Link>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-px flex-1 bg-white/10" />
+          <span className="text-[11px] text-white/25 uppercase tracking-wider">or BYO key</span>
+          <div className="h-px flex-1 bg-white/10" />
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="block text-xs font-bold text-white/30 ml-1">
-              API Access Key
+              MuAPI Access Key
             </label>
             <input
               type="password"
@@ -47,10 +62,10 @@ export default function ApiKeyModal({ onSave }) {
 
           <button
             type="submit"
-            className="w-full bg-[#00ff88] text-black font-medium py-2.5 rounded-md hover:bg-[#33ffa3] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-[#00ff88]/5"
+            className="w-full bg-white/5 text-white font-medium py-2.5 rounded-md hover:bg-white/10 border border-white/10 transition-all"
             suppressHydrationWarning
           >
-            Get Started
+            Continue with API key
           </button>
 
           <p className="text-center text-[12px] text-white/20 pt-2">
@@ -61,9 +76,9 @@ export default function ApiKeyModal({ onSave }) {
           </p>
 
           <p className="text-center text-[12px] pt-1">
-            <a href="/" className="text-white/20 hover:text-white/50 transition-colors">
+            <Link href="/" className="text-white/20 hover:text-white/50 transition-colors">
               ← Back to home
-            </a>
+            </Link>
           </p>
         </form>
       </div>

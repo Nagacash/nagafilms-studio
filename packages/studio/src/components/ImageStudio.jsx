@@ -13,6 +13,7 @@ import {
   getQualityFieldForI2IModel,
   getMaxImagesForI2IModel,
 } from "../models.js";
+import LiveModelDropdown from "./LiveModelDropdown.jsx";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -602,96 +603,6 @@ function UploadButton({ apiKey, maxImages, onSelect, onClear, initialUrls = [] }
   );
 }
 
-// ─── ModelDropdown ────────────────────────────────────────────────────────────
-
-function ModelDropdown({ models, selectedModel, onSelect, onClose }) {
-  const [search, setSearch] = useState("");
-
-  const filtered = models.filter(
-    (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.id.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  return (
-    <div className="flex flex-col gap-2 h-full max-h-[60vh]">
-      <div className="border-b border-white/5 shrink-0">
-        <div className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2.5 border border-white/5 focus-within:border-primary/50 transition-colors">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            className="text-muted"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search models..."
-            value={search}
-            onClick={(e) => e.stopPropagation()}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-transparent border-none text-xs text-white focus:ring-0 w-full p-0 focus:outline-none"
-          />
-        </div>
-      </div>
-      <div className="text-xs font-medium text-secondary py-2 shrink-0">
-        Available models
-      </div>
-      <div className="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar pr-1 pb-2">
-        {filtered.map((m) => (
-          <div
-            key={m.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect(m);
-              onClose();
-            }}
-            className={`flex items-center justify-between p-3.5 hover:bg-white/5 rounded-lg cursor-pointer transition-all border border-transparent hover:border-white/5 ${
-              selectedModel === m.id ? "bg-white/5 border-white/5" : ""
-            }`}
-          >
-            <div className="flex items-center gap-3.5">
-              <div
-                className={`w-10 h-10 ${
-                  m.family === "kontext"
-                    ? "bg-blue-500/10 text-blue-400"
-                    : m.family === "effects"
-                      ? "bg-purple-500/10 text-purple-400"
-                      : "bg-primary/10 text-primary"
-                } border border-white/5 rounded-full flex items-center justify-center font-bold text-xs shadow-inner uppercase`}
-              >
-                {m.name.charAt(0)}
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <span className="text-xs font-bold text-white tracking-tight">
-                  {m.name}
-                </span>
-              </div>
-            </div>
-            {selectedModel === m.id && (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#00ff88"
-                strokeWidth="4"
-              >
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── SimpleDropdown ───────────────────────────────────────────────────────────
 
 function SimpleDropdown({ title, options, selected, onSelect, onClose }) {
@@ -1261,8 +1172,9 @@ export default function ImageStudio({
                     onClick={(e) => e.stopPropagation()}
                     className="absolute bottom-[calc(100%+12px)] left-0 z-50 bg-[#0a0a0a] rounded-lg p-3 shadow-2xl border border-white/[0.05] w-[calc(100vw-3rem)] max-w-xs"
                   >
-                    <ModelDropdown
-                      models={currentModels}
+                    <LiveModelDropdown
+                      category={imageMode ? "i2i" : "t2i"}
+                      fallbackModels={currentModels}
                       selectedModel={selectedModelId}
                       onSelect={handleModelSelect}
                       onClose={() => setDropdownOpen(null)}

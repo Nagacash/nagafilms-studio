@@ -9,6 +9,7 @@ import {
   getLipSyncModelById,
   getResolutionsForLipSyncModel,
 } from "../models.js";
+import { useLiveModels, creditLabel } from "../useLiveModels.js";
 
 // ---------------------------------------------------------------------------
 // Upload button states
@@ -217,12 +218,22 @@ function Dropdown({ isOpen, items, selectedId, onSelect, onClose, anchorRef }) {
               : "text-white font-medium"
           }`}
         >
-          <div>{item.name}</div>
-          {item.description && (
-            <div className="text-xs text-muted mt-0.5">
-              {item.description.slice(0, 60)}...
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div>{item.name}</div>
+              <div className="text-[10px] text-white/35 font-mono truncate">{item.id}</div>
+              {item.description && (
+                <div className="text-xs text-muted mt-0.5">
+                  {item.description.slice(0, 60)}...
+                </div>
+              )}
             </div>
-          )}
+            {creditLabel(item) && (
+              <span className="text-[10px] font-semibold text-[#00ff88]/80 shrink-0">
+                {creditLabel(item)}
+              </span>
+            )}
+          </div>
         </button>
       ))}
     </div>
@@ -329,6 +340,7 @@ export default function LipSyncStudio({
 
   const currentModels =
     inputMode === "image" ? imageLipSyncModels : videoLipSyncModels;
+  const { models: liveLipModels } = useLiveModels("lipsync");
   const firstModel = currentModels[0];
 
   const [selectedModelId, setSelectedModelId] = useState(firstModel?.id ?? "");
@@ -716,7 +728,12 @@ export default function LipSyncStudio({
   const hasHistory = history.length > 0;
 
   // ── Dropdown item lists ─────────────────────────────────────────────────
-  const modelDropdownItems = currentModels;
+  const staticIds = new Set(currentModels.map((m) => m.id));
+  const modelDropdownItems = liveLipModels.length
+    ? liveLipModels.filter((m) => staticIds.has(m.id)).length
+      ? liveLipModels.filter((m) => staticIds.has(m.id))
+      : liveLipModels
+    : currentModels;
   const resolutionDropdownItems = resolutionOptions.map((r) => ({
     id: r,
     name: r,

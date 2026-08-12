@@ -7,10 +7,39 @@ const inter = Inter({
   subsets: ['latin'],
 });
 
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL || 'https://nagafilms-studio.vercel.app';
+
+const SOCIAL_IMAGE = '/assets/a93d164450bb4867af3a4af58d3c1470.png';
+
 export const metadata = {
+  metadataBase: new URL(APP_URL),
   title: 'Naga Films Studio — AI Image, Video & Cinema',
   description:
     'Naga Films Studio — generate AI images, video, cinema shots and lip sync across 200+ models. Credit packs, no subscription.',
+  openGraph: {
+    title: 'Naga Films Studio — AI Image, Video & Cinema',
+    description:
+      'Generate AI images, video, cinema shots and lip sync across 200+ models. Credit packs, no subscription.',
+    type: 'website',
+    siteName: 'Naga Films Studio',
+    url: APP_URL,
+    images: [
+      {
+        url: SOCIAL_IMAGE,
+        width: 1024,
+        height: 1024,
+        alt: 'Naga Films Studio — generative production stack',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Naga Films Studio — AI Image, Video & Cinema',
+    description:
+      'Generate AI images, video, cinema shots and lip sync across 200+ models. Credit packs, no subscription.',
+    images: [SOCIAL_IMAGE],
+  },
 };
 
 export default function RootLayout({ children }) {

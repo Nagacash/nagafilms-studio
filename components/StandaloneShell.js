@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio, getUserBalance } from 'studio';
 import axios from 'axios';
 import ApiKeyModal from './ApiKeyModal';
@@ -16,6 +17,7 @@ const TABS = [
 ];
 
 const STORAGE_KEY = 'muapi_key';
+const SESSION_KEY = 'session';
 
 export default function StandaloneShell() {
   const params = useParams();
@@ -29,10 +31,12 @@ export default function StandaloneShell() {
   };
 
   const [apiKey, setApiKey] = useState(null);
+  const [authMode, setAuthMode] = useState(null); // 'saas' | 'byo'
   const [activeTab, setActiveTab] = useState(getInitialTab);
   const [balance, setBalance] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [initDone, setInitDone] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [droppedFiles, setDroppedFiles] = useState(null);
 
@@ -48,44 +52,108 @@ export default function StandaloneShell() {
     router.push(`/studio/${tabId}`);
   };
 
-  const fetchBalance = useCallback(async (key) => {
+  const fetchSaasBalance = useCallback(async () => {
     try {
-      const data = await getUserBalance(key);
-      setBalance(data.balance);
+      const res = await fetch('/api/me', { credentials: 'include' });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.wallet?.balance ?? 0;
     } catch (err) {
-      console.error('Balance fetch failed:', err);
+      console.error('Naga balance fetch failed:', err);
+      return null;
     }
   }, []);
 
-  useEffect(() => {
-    setHasMounted(true);
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setApiKey(stored);
-      fetchBalance(stored);
-      document.cookie = `muapi_key=${encodeURIComponent(stored)}; path=/; max-age=31536000; SameSite=Lax`;
+  const fetchByoBalance = useCallback(async (key) => {
+    try {
+      const data = await getUserBalance(key);
+      return data.balance;
+    } catch (err) {
+      console.error('MuAPI balance fetch failed:', err);
+      return null;
     }
-  }, [fetchBalance]);
+  }, []);
+
+  const refreshBalance = useCallback(async () => {
+    if (authMode === 'saas') {
+      const bal = await fetchSaasBalance();
+      if (bal != null) setBalance(bal);
+    } else if (apiKey && apiKey !== SESSION_KEY) {
+      const bal = await fetchByoBalance(apiKey);
+      if (bal != null) setBalance(bal);
+    }
+  }, [authMode, apiKey, fetchSaasBalance, fetchByoBalance]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function init() {
+      setHasMounted(true);
+
+      try {
+        const meRes = await fetch('/api/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          if (!cancelled) {
+            setAuthMode('saas');
+            setApiKey(SESSION_KEY);
+            setBalance(me.wallet?.balance ?? 0);
+            setInitDone(true);
+          }
+          return;
+        }
+      } catch (err) {
+        console.error('Session check failed:', err);
+      }
+
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        if (!cancelled) {
+          setAuthMode('byo');
+          setApiKey(stored);
+          document.cookie = `muapi_key=${encodeURIComponent(stored)}; path=/; max-age=31536000; SameSite=Lax`;
+        }
+        const bal = await fetchByoBalance(stored);
+        if (!cancelled) {
+          if (bal != null) setBalance(bal);
+          setInitDone(true);
+        }
+        return;
+      }
+
+      if (!cancelled) setInitDone(true);
+    }
+
+    init();
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchByoBalance]);
 
   const handleKeySave = useCallback(
     (key) => {
       localStorage.setItem(STORAGE_KEY, key);
+      setAuthMode('byo');
       setApiKey(key);
-      fetchBalance(key);
+      fetchByoBalance(key).then((bal) => {
+        if (bal != null) setBalance(bal);
+      });
       document.cookie = `muapi_key=${encodeURIComponent(key)}; path=/; max-age=31536000; SameSite=Lax`;
     },
-    [fetchBalance]
+    [fetchByoBalance]
   );
 
   const handleKeyChange = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     setApiKey(null);
+    setAuthMode(null);
     setBalance(null);
     document.cookie = 'muapi_key=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   }, []);
 
   const handleLogout = useCallback(() => {
     setApiKey(null);
+    setAuthMode(null);
     setBalance(null);
     setShowSettings(false);
     logoutEverywhere({ redirectTo: '/' });
@@ -111,10 +179,11 @@ export default function StandaloneShell() {
   }, [apiKey]);
 
   useEffect(() => {
-    if (!apiKey) return;
-    const interval = setInterval(() => fetchBalance(apiKey), 30000);
+    if (!apiKey || !initDone) return;
+    refreshBalance();
+    const interval = setInterval(refreshBalance, 30000);
     return () => clearInterval(interval);
-  }, [apiKey, fetchBalance]);
+  }, [apiKey, initDone, refreshBalance]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -148,7 +217,14 @@ export default function StandaloneShell() {
     setDroppedFiles(null);
   }, []);
 
-  if (!hasMounted) {
+  const balanceLabel =
+    balance !== null
+      ? authMode === 'saas'
+        ? `${balance.toLocaleString()} cr`
+        : `$${balance}`
+      : '…';
+
+  if (!hasMounted || !initDone) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <div className="animate-spin text-[#00ff88] text-3xl">◌</div>
@@ -213,11 +289,21 @@ export default function StandaloneShell() {
           <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 transition-colors">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-white/90">
-                ${balance !== null ? `${balance}` : '---'}
+              <span className="text-[10px] text-white/35 uppercase tracking-wider leading-none">
+                {authMode === 'saas' ? 'Naga credits' : 'MuAPI balance'}
               </span>
+              <span className="text-xs font-bold text-white/90">{balanceLabel}</span>
             </div>
           </div>
+
+          {authMode === 'saas' && (
+            <Link
+              href="/credits"
+              className="text-[12px] font-semibold text-[#00ff88]/80 hover:text-[#00ff88] transition-colors hidden sm:block"
+            >
+              Buy credits
+            </Link>
+          )}
 
           <button
             onClick={() => setShowSettings(true)}
@@ -251,16 +337,28 @@ export default function StandaloneShell() {
           <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-8 w-full max-w-sm shadow-2xl">
             <h2 className="text-white font-bold text-lg mb-2">Settings</h2>
             <p className="text-white/40 text-[13px] mb-8">
-              Manage your AI studio preferences and authentication.
+              {authMode === 'saas'
+                ? 'Signed in with Naga credits. Generations use your studio wallet.'
+                : 'Manage your AI studio preferences and authentication.'}
             </p>
 
             <div className="space-y-4 mb-8">
-              <div className="bg-white/5 border border-white/[0.03] rounded-md p-4">
-                <label className="block text-xs font-bold text-white/30 mb-2">Active API Key</label>
-                <div className="text-[13px] font-mono text-white/80">
-                  {apiKey.slice(0, 8)}••••••••••••••••
+              {authMode === 'byo' ? (
+                <div className="bg-white/5 border border-white/[0.03] rounded-md p-4">
+                  <label className="block text-xs font-bold text-white/30 mb-2">Active API Key</label>
+                  <div className="text-[13px] font-mono text-white/80">
+                    {apiKey.slice(0, 8)}••••••••••••••••
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-white/5 border border-white/[0.03] rounded-md p-4">
+                  <label className="block text-xs font-bold text-white/30 mb-2">Billing mode</label>
+                  <div className="text-[13px] text-white/80">Naga credits (prepaid packs)</div>
+                  <p className="text-[11px] text-white/35 mt-2">
+                    Model costs are shown in the picker. Failed generations restore credits automatically.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -271,12 +369,14 @@ export default function StandaloneShell() {
                 Log out
               </button>
               <div className="flex gap-3">
-                <button
-                  onClick={handleKeyChange}
-                  className="flex-1 h-10 rounded-md bg-white/5 text-white/70 hover:bg-white/10 hover:text-white text-xs font-semibold transition-all border border-white/5"
-                >
-                  Change Key
-                </button>
+                {authMode === 'byo' && (
+                  <button
+                    onClick={handleKeyChange}
+                    className="flex-1 h-10 rounded-md bg-white/5 text-white/70 hover:bg-white/10 hover:text-white text-xs font-semibold transition-all border border-white/5"
+                  >
+                    Change Key
+                  </button>
+                )}
                 <button
                   onClick={() => setShowSettings(false)}
                   className="flex-1 h-10 rounded-md bg-white/5 text-white/80 hover:bg-white/10 text-xs font-semibold transition-all border border-white/5"

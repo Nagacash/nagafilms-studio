@@ -14,6 +14,7 @@ import {
   getResolutionsForI2VModel,
   getModesForModel,
 } from "../models.js";
+import LiveModelDropdown from "./LiveModelDropdown.jsx";
 
 // ── tiny helpers ──────────────────────────────────────────────────────────────
 
@@ -97,102 +98,6 @@ function DropdownItem({ label, selected, onClick }) {
         {label}
       </span>
       {selected && <CheckSvg />}
-    </div>
-  );
-}
-
-function ModelDropdown({ imageMode, selectedModel, onSelect, onClose }) {
-  const [search, setSearch] = useState("");
-
-  const generationModels = imageMode ? i2vModels : t2vModels;
-
-  const lf = search.toLowerCase();
-  const filteredMain = generationModels.filter(
-    (m) => m.name.toLowerCase().includes(lf) || m.id.toLowerCase().includes(lf),
-  );
-  const filteredV2V = v2vModels.filter(
-    (m) => m.name.toLowerCase().includes(lf) || m.id.toLowerCase().includes(lf),
-  );
-
-  const getIconColor = (m, isV2V) => {
-    if (isV2V) return "bg-orange-500/10 text-orange-400";
-    if (m.id.includes("kling")) return "bg-blue-500/10 text-blue-400";
-    if (m.id.includes("veo")) return "bg-purple-500/10 text-purple-400";
-    if (m.id.includes("sora")) return "bg-rose-500/10 text-rose-400";
-    return "bg-primary/10 text-primary";
-  };
-
-  const renderItem = (m, isV2V = false) => (
-    <div
-      key={m.id}
-      className={`flex items-center justify-between p-3.5 hover:bg-white/5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/5 ${selectedModel === m.id ? "bg-white/5 border-white/5" : ""}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(m, isV2V);
-        onClose();
-      }}
-    >
-      <div className="flex items-center gap-3.5">
-        <div
-          className={`w-10 h-10 ${getIconColor(m, isV2V)} border border-white/5 rounded-xl flex items-center justify-center font-black text-sm shadow-inner uppercase`}
-        >
-          {m.name.charAt(0)}
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-xs font-bold text-white tracking-tight">
-            {m.name}
-          </span>
-          {isV2V && (
-            <span className="text-[9px] text-orange-400/70">
-              {m.imageField ? "Upload a video and image" : "Upload a video to use"}
-            </span>
-          )}
-        </div>
-      </div>
-      {selectedModel === m.id && <CheckSvg />}
-    </div>
-  );
-
-  return (
-    <div className="flex flex-col h-full max-h-[70vh]">
-      <div className="px-2 pb-3 mb-2 border-b border-white/5 shrink-0">
-        <div className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2.5 border border-white/5 focus-within:border-primary/50 transition-colors">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            className="text-muted"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="M21 21l-4.35-4.35" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search models..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-transparent border-none text-xs text-white focus:ring-0 w-full p-0 outline-none"
-          />
-        </div>
-      </div>
-      <div className="text-xs font-bold text-secondary px-3 py-2 shrink-0">
-        Video models
-      </div>
-      <div className="flex flex-col gap-1.5 overflow-y-auto custom-scrollbar pr-1 pb-2">
-        {filteredMain.map((m) => renderItem(m, false))}
-        {filteredV2V.length > 0 && (
-          <>
-            <div className="text-xs font-bold text-orange-400/70 px-3 py-2 mt-1 border-t border-white/5">
-              Video Tools
-            </div>
-            {filteredV2V.map((m) => renderItem(m, true))}
-          </>
-        )}
-      </div>
     </div>
   );
 }
@@ -1496,11 +1401,21 @@ export default function VideoStudio({
                     onClick={(e) => e.stopPropagation()}
                     className="absolute bottom-[calc(100%+12px)] left-0 z-50 bg-[#0a0a0a] rounded-[1.5rem] p-3 shadow-2xl border border-white/[0.05] w-[calc(100vw-3rem)] max-w-xs"
                   >
-                    <ModelDropdown
-                      imageMode={imageMode}
+                    <LiveModelDropdown
+                      category={imageMode ? "i2v" : "t2v"}
+                      secondaryCategory={imageMode ? null : "v2v"}
+                      secondaryLabel="Video Tools"
+                      fallbackModels={imageMode ? i2vModels : t2vModels}
+                      secondaryFallback={v2vModels}
                       selectedModel={selectedModel}
-                      onSelect={handleModelSelect}
+                      onSelect={(m) => {
+                        const isV2V =
+                          v2vModels.some((v) => v.id === m.id) ||
+                          m.category === "Video to Video";
+                        handleModelSelect(m, isV2V);
+                      }}
                       onClose={() => setOpenDropdown(null)}
+                      listTitle="Video models"
                     />
                   </div>
                 )}

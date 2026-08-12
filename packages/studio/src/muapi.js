@@ -5,16 +5,31 @@ const BASE_URL = typeof window !== 'undefined' ? '/api' : 'https://api.muapi.ai'
 const V1_URL = typeof window !== 'undefined' ? '/api/v1' : 'https://api.muapi.ai/api/v1';
 
 /**
- * MuAPI is reached via same-origin rewrite (/api/v1, …). The browser would
- * normally send all site cookies; large dev cookies trigger upstream 400
- * "Request Header Or Cookie Too Large". Auth is x-api-key only — omit cookies.
+ * MuAPI is reached via same-origin rewrite (/api/v1, …). BYO key mode omits
+ * cookies (large dev cookies can trigger upstream 400). Session SaaS mode
+ * sends cookies so the server proxy can attach MUAPI_API_KEY + credit checks.
  */
-function apiFetch(url, init = {}) {
+function apiFetch(url, init = {}, apiKey) {
     const next = { ...init };
     if (typeof window !== 'undefined') {
-        next.credentials = init.credentials ?? 'omit';
+        next.credentials =
+            apiKey === 'session' ? 'include' : (init.credentials ?? 'omit');
     }
     return fetch(url, next);
+}
+
+function normalizeBalancePayload(data) {
+    const balance =
+        data?.balance ??
+        data?.credits ??
+        data?.amount ??
+        data?.data?.balance ??
+        null;
+    return {
+        balance,
+        currency: data?.currency || 'USD',
+        raw: data,
+    };
 }
 
 async function pollForResult(requestId, key, maxAttempts = 900, interval = 2000) {
@@ -24,7 +39,7 @@ async function pollForResult(requestId, key, maxAttempts = 900, interval = 2000)
         try {
             const response = await apiFetch(pollUrl, {
                 headers: { 'Content-Type': 'application/json', 'x-api-key': key }
-            });
+            }, key);
             if (!response.ok) {
                 const errText = await response.text();
                 if (response.status >= 500) continue;
@@ -47,7 +62,7 @@ async function submitAndPoll(endpoint, payload, key, onRequestId, maxAttempts = 
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': key },
         body: JSON.stringify(payload)
-    });
+    }, key);
     if (!response.ok) {
         const errText = await response.text();
         throw new Error(`API Request Failed: ${response.status} ${response.statusText} - ${errText.slice(0, 100)}`);
@@ -180,7 +195,7 @@ export function uploadFile(apiKey, file, onProgress) {
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', url);
-        xhr.withCredentials = false;
+        xhr.withCredentials = apiKey === 'session';
         xhr.setRequestHeader('x-api-key', apiKey);
 
         if (onProgress) {
@@ -228,14 +243,14 @@ export async function getUserBalance(apiKey) {
             'Content-Type': 'application/json',
             'x-api-key': apiKey
         }
-    });
+    }, apiKey);
     const raw = await response.text();
     if (!response.ok) {
         const snippet = raw.slice(0, 120).replace(/\s+/g, ' ');
         throw new Error(`Failed to fetch balance: ${response.status} - ${snippet}`);
     }
     try {
-        return JSON.parse(raw);
+        return normalizeBalancePayload(JSON.parse(raw));
     } catch {
         throw new Error('Failed to fetch balance: response was not JSON');
     }
