@@ -121,7 +121,7 @@ export default function Home() {
       {/* capabilities */}
       <section id="capabilities" className="relative z-10 border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Six studios, one key</h2>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Five studios, one key</h2>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
             Built for real production work — concept art, pre-visualisation, motion tests and finished shots.
           </p>
