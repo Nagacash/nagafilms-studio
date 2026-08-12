@@ -20,6 +20,8 @@
 
 A self-hostable generative video production platform combining image generation, video synthesis, cinematic AI workflows, and lip-sync capabilities. Designed for creators, studios, and teams who want full control over their AI media pipeline.
 
+![Naga Films Studio Interface](https://pub.hyperagent.com/api/published/pbf01KZTV6Z4F_F2V709TAZ8R1KHGS/2ca37106-404e-4685-8976-d5f2798112bb.png)
+
 ### What ships
 
 - **Image studio** — AI image generation with in-canvas editing
