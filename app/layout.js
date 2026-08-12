@@ -12,6 +12,13 @@ const APP_URL =
 
 const SOCIAL_IMAGE = '/assets/a93d164450bb4867af3a4af58d3c1470.png';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#050505',
+};
+
 export const metadata = {
   metadataBase: new URL(APP_URL),
   title: 'Naga Films Studio — AI Image, Video & Cinema',

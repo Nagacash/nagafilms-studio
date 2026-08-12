@@ -1,23 +1,36 @@
 import Link from 'next/link';
+import LandingFaq from '@/components/LandingFaq';
 
 export const metadata = {
   title: 'Naga Films Studio — Generative Production Stack',
   description:
-    'A self-hostable generative production stack for image, video, cinema and lip sync. 200+ models, unrestricted, bring your own key. Built by Naga Films, Hamburg.',
+    'AI image, video, cinema and lip sync across 200+ models. Buy credit packs, generate in the studio — no subscription, no API key required.',
 };
 
 const STUDIOS = [
   { name: 'Image Studio', desc: 'Text-to-image and image-to-image across 100+ models, up to 14 reference images per request.' },
   { name: 'Video Studio', desc: 'Text-to-video and image-to-video — Kling, Veo, Sora, Runway, Seedance, Hailuo, Wan.' },
   { name: 'Cinema Studio', desc: 'Shot-level control: camera moves, lens language and framing for sequences that cut together.' },
-  { name: 'Lip Sync', desc: 'Nine models for portrait and video lip sync — performance from a still or an existing take.' },
+  { name: 'Lip Sync', desc: 'Portrait and video lip sync — animate a still or re-sync an existing take with audio.' },
+];
+
+const PACKS = [
+  { name: 'Starter', price: 9, credits: 500, blurb: 'Try the studios' },
+  { name: 'Creator', price: 15, credits: 1000, blurb: 'Regular production work' },
+  { name: 'Pro', price: 59, credits: 5000, blurb: 'Volume / shoot days' },
+];
+
+const ONBOARDING = [
+  { step: '01', title: 'Create account', desc: 'Sign up with email — free, no API key, no subscription.' },
+  { step: '02', title: 'Buy credits', desc: 'One-time Stripe checkout. Credits land in your wallet instantly.' },
+  { step: '03', title: 'Open Studio', desc: 'Pick a model, see the credit cost, generate. Failed jobs restore credits.' },
 ];
 
 const STATS = [
-  { figure: '200+', label: 'Models' },
-  { figure: '9', label: 'Lip sync engines' },
-  { figure: '14', label: 'Reference images per call' },
-  { figure: '100%', label: 'Self-hostable' },
+  { figure: '200+', label: 'Live models' },
+  { figure: '4', label: 'Studios' },
+  { figure: '0', label: 'Subscriptions' },
+  { figure: '100%', label: 'Pay per use' },
 ];
 
 export default function Home() {
@@ -32,6 +45,12 @@ export default function Home() {
           </span>
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            href="#faq"
+            className="hidden sm:inline text-[13px] font-semibold text-white/70 hover:text-[#00ff88]"
+          >
+            FAQ
+          </Link>
           <Link
             href="/credits"
             className="hidden sm:inline text-[13px] font-semibold text-white/70 hover:text-[#00ff88]"
@@ -89,18 +108,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* packs teaser — functional CTA; visual polish later */}
-      <section id="packs" className="relative z-10 border-t border-white/[0.06] py-20">
+      {/* how it works */}
+      <section id="how-it-works" className="relative z-10 border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Credit packs</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/70">Onboarding</p>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">Up and running in three steps</h2>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
-            One-time Stripe checkout. Credits unlock after payment — Starter 500 · Creator 1,000 · Pro 5,000.
+            No MuAPI account, no API key, no monthly bill. Create an account, load credits, start generating.
           </p>
+
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {ONBOARDING.map((item) => (
+              <div
+                key={item.step}
+                className="rounded-xl border border-white/[0.07] bg-[#080808] p-8"
+              >
+                <span className="text-[11px] font-black tracking-widest text-[#00ff88]/60">{item.step}</span>
+                <h3 className="mt-3 text-[15px] font-bold">{item.title}</h3>
+                <p className="mt-2 text-[13px] leading-relaxed text-white/40">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap gap-4">
+            <Link
+              href="/signup"
+              className="rounded-md bg-[#00ff88] px-6 py-3 text-sm font-bold text-black hover:bg-[#33ffa3]"
+            >
+              Create account
+            </Link>
+            <Link
+              href="/studio/image"
+              className="rounded-md border border-white/15 px-6 py-3 text-sm font-semibold text-white/70 hover:border-[#00ff88]/40 hover:text-[#00ff88]"
+            >
+              Open Studio →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* packs */}
+      <section id="packs" className="relative z-10 border-t border-white/[0.06] py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/70">Pricing</p>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">Credit packs — no subscription</h2>
+          <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-white/45">
+            One-time Stripe checkout. Credits never expire on your account. Each model shows its approximate
+            cost in the picker before you generate. Video and some models use dynamic pricing (shown as
+            “from ~X credits”).
+          </p>
+
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {PACKS.map((p) => (
+              <div
+                key={p.name}
+                className="rounded-xl border border-white/[0.07] bg-[#080808] p-8 transition-colors hover:border-[#00ff88]/20"
+              >
+                <h3 className="font-bold text-lg">{p.name}</h3>
+                <p className="mt-2 text-3xl font-black text-[#00ff88]">${p.price}</p>
+                <p className="text-xs uppercase tracking-wider text-white/35">{p.credits.toLocaleString()} credits</p>
+                <p className="mt-3 text-[13px] text-white/40">{p.blurb}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 max-w-2xl text-[13px] leading-relaxed text-white/35">
+            Failed generations restore credits to your wallet — you are not charged for jobs that do not
+            complete. Pack purchases are non-refundable once paid; unused credits stay in your account until
+            you use them.
+          </p>
+
           <Link
             href="/credits"
             className="mt-8 inline-flex rounded-md bg-[#00ff88] px-6 py-3 text-sm font-bold text-black hover:bg-[#33ffa3]"
           >
-            View packs →
+            Buy credits →
           </Link>
         </div>
       </section>
@@ -120,7 +202,7 @@ export default function Home() {
       {/* capabilities */}
       <section id="capabilities" className="relative z-10 border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Four studios, one key</h2>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Four studios, one wallet</h2>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
             Built for real production work — concept art, pre-visualisation, motion tests and finished shots.
           </p>
@@ -151,10 +233,10 @@ export default function Home() {
           </div>
           <ul className="space-y-6">
             {[
-              ['Credit packs', 'One-time Stripe packs — no subscription. Fair markup on generation.'],
-              ['Self-hosted option', 'Run it on your own infrastructure when you need full control.'],
-              ['Bring your own key', 'Still supported for operators who want direct MuAPI billing.'],
-              ['Open source', 'MIT licensed and fully hackable — extend it to fit your pipeline.'],
+              ['Credit packs', 'One-time Stripe packs — no subscription. See cost per model before you generate.'],
+              ['Failed job protection', 'Credits restore automatically when a generation fails.'],
+              ['Live model catalog', '200+ models synced from the provider — with credit estimates in the picker.'],
+              ['Open source', 'MIT licensed codebase — self-hostable for teams that need full control.'],
             ].map(([title, body]) => (
               <li key={title} className="flex gap-4 border-b border-white/[0.06] pb-6 last:border-0">
                 <span className="mt-[7px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#00ff88]" />
@@ -165,6 +247,20 @@ export default function Home() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* faq */}
+      <section id="faq" className="relative z-10 border-t border-white/[0.06] py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/70">FAQ</p>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">Common questions</h2>
+          <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
+            Onboarding, pricing, credits, refunds, and what you need to get started.
+          </p>
+          <div className="mt-12">
+            <LandingFaq />
+          </div>
         </div>
       </section>
 
@@ -200,30 +296,47 @@ export default function Home() {
 
       {/* footer */}
       <footer className="relative z-10 border-t border-white/[0.06] py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-[12px] text-white/30 md:flex-row">
-          <span>
-            © {new Date().getFullYear()} Naga Films · Hamburg — engineering by{' '}
-            <a
-              href="https://nagacodex.cloud"
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/50 transition-colors hover:text-[#00ff88]"
-            >
-              Naga Codex
-            </a>
-          </span>
-          <span>
-            Built on{' '}
-            <a
-              href="https://github.com/Anil-matcha/Open-Generative-AI"
-              target="_blank"
-              rel="noreferrer"
-              className="text-white/50 transition-colors hover:text-[#00ff88]"
-            >
-              Open Generative AI
-            </a>{' '}
-            · MIT
-          </span>
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 text-[12px] text-white/30">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <span>
+              © {new Date().getFullYear()} Naga Films · Hamburg — engineering by{' '}
+              <a
+                href="https://nagacodex.cloud"
+                target="_blank"
+                rel="noreferrer"
+                className="text-white/50 transition-colors hover:text-[#00ff88]"
+              >
+                Naga Codex
+              </a>
+            </span>
+            <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              <Link href="/policy" className="text-white/50 transition-colors hover:text-[#00ff88]">
+                Privacy
+              </Link>
+              <Link href="/impressum" className="text-white/50 transition-colors hover:text-[#00ff88]">
+                Impressum
+              </Link>
+              <Link href="/policy#eu-ai-act" className="text-white/50 transition-colors hover:text-[#00ff88]">
+                AI Act notice
+              </Link>
+              <span>
+                Built on{' '}
+                <a
+                  href="https://github.com/Anil-matcha/Open-Generative-AI"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/50 transition-colors hover:text-[#00ff88]"
+                >
+                  Open Generative AI
+                </a>{' '}
+                · MIT
+              </span>
+            </nav>
+          </div>
+          <p className="text-center text-[11px] leading-relaxed text-white/25 md:text-left">
+            Studio outputs are AI-generated or AI-manipulated. Disclose deepfakes when you publish where
+            required by law.
+          </p>
         </div>
       </footer>
     </main>
