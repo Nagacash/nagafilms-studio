@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio } from 'studio';
+import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio, StoryboardStudio } from 'studio';
 import axios from 'axios';
 import StudioLoginGate from './StudioLoginGate';
 import LogoutButton, { logoutEverywhere } from './LogoutButton';
@@ -14,6 +14,7 @@ const TABS = [
   { id: 'video', label: 'Video Studio' },
   { id: 'lipsync', label: 'Lip Sync' },
   { id: 'cinema', label: 'Cinema Studio' },
+  { id: 'storyboard', label: 'Storyboard' },
   { id: 'marketing', label: 'Marketing Studio' },
 ];
 
@@ -287,6 +288,7 @@ export default function StandaloneShell() {
           <LipSyncStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
         {activeTab === 'cinema' && <CinemaStudio apiKey={apiKey} />}
+        {activeTab === 'storyboard' && <StoryboardStudio apiKey={apiKey} />}
         {activeTab === 'marketing' && (
           <MarketingStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
