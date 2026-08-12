@@ -51,6 +51,9 @@ const TABS = [
 const STORAGE_KEY = 'muapi_key';
 const SESSION_KEY = 'session';
 const LOW_CREDITS_THRESHOLD = 100;
+const LOCAL_GALLERY_TABS = new Set(['image', 'video', 'lipsync', 'cinema', 'marketing']);
+const LOCAL_STORAGE_NOTICE =
+  'We do not store your images or clips on our servers. Gallery history lives in this browser only — always download files you want to keep.';
 
 function clearByoKey() {
   localStorage.removeItem(STORAGE_KEY);
@@ -506,6 +509,14 @@ export default function StandaloneShell() {
               {activeTabMeta.howTo}
             </p>
           </div>
+          {LOCAL_GALLERY_TABS.has(activeTab) && (
+            <p className="mt-2 border-t border-white/5 pt-2 text-[11px] leading-relaxed text-amber-100/75">
+              <span className="font-semibold uppercase tracking-[0.06em] text-amber-200/90">
+                Local only —{' '}
+              </span>
+              {LOCAL_STORAGE_NOTICE}
+            </p>
+          )}
           {/* Mobile studio picker */}
           <div className="mt-3 flex gap-1 overflow-x-auto pb-0.5 md:hidden">
             {TABS.map((tab) => {
@@ -567,6 +578,18 @@ export default function StandaloneShell() {
                 >
                   Buy credit packs →
                 </Link>
+              </div>
+
+              <div className="bg-amber-500/5 border border-amber-500/15 rounded-md p-4">
+                <label className="block text-xs font-bold text-amber-200/80 mb-2">
+                  Gallery history
+                </label>
+                <p className="text-[11px] leading-relaxed text-white/45">
+                  Images and clips from Image, Video, Lip Sync, Cinema, and Marketing studios are{' '}
+                  <strong className="text-white/60">not stored on our servers</strong>. They stay in
+                  this browser&apos;s local storage only. Clearing site data, switching devices, or
+                  using another browser removes them. Download anything you want to keep.
+                </p>
               </div>
 
               {isAdmin && (

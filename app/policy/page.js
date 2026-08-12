@@ -134,7 +134,12 @@ export default function PolicyPage() {
         <ul className="mt-3">
           <li>Account and wallet data — while your account exists, then deleted or anonymized on request where legally possible.</li>
           <li>Payment-related records — as long as required for accounting / dispute handling.</li>
-          <li>Generation artifacts — retained as needed to show history and fulfill the Service; removable on account deletion where feasible.</li>
+          <li>
+            Studio gallery (Image, Video, Lip Sync, Cinema, Marketing) —{' '}
+            <strong>not stored on our servers</strong>; history is kept in your browser&apos;s local
+            storage only. Download files you want to keep.
+          </li>
+          <li>Storyboard projects — held with our generation provider while the project exists; deleted when you remove the project.</li>
           <li>Security logs — short retention for operations and abuse investigation.</li>
         </ul>
       </section>

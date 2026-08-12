@@ -72,6 +72,10 @@ const FAQ = [
     a: 'Credits are held when you start a job. If the generation fails or is cancelled, those credits are restored to your wallet automatically. You are not charged for failed tasks.',
   },
   {
+    q: 'Do you store my images and videos?',
+    a: 'Gallery history in Image, Video, Lip Sync, Cinema, and Marketing studios is saved only in your browser\'s local storage — not on Naga servers. Clear site data, switch devices, or use another browser and those files can disappear. Always download anything you want to keep. Storyboard projects are stored with our generation provider while your project exists.',
+  },
+  {
     q: 'Can I get a cash refund on credit packs?',
     a: 'Pack purchases are one-time and non-refundable once payment succeeds — similar to prepaid API credit policies. If something goes wrong with a generation, we restore app credits; we do not refund card payments for unused pack balance.',
   },
