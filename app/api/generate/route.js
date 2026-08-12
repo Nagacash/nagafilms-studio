@@ -36,7 +36,7 @@ export async function POST(req) {
     }
 
     const { model, prompt, params = {} } = parsed.data;
-    const costCredits = estimateImageCredits({ model });
+    const costCredits = await estimateImageCredits({ model });
     const db = getDb();
     const userId = session.user.id;
 

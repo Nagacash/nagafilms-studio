@@ -9,3 +9,4 @@ export { default as StoryboardStudio } from './components/StoryboardStudio';
 export { default as McpCliStudio } from './components/McpCliStudio';
 export * from './muapi';
 export * from './storyboard';
+export * from './storyboard-pricing';

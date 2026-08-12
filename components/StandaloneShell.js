@@ -40,7 +40,7 @@ export default function StandaloneShell() {
 
   const [apiKey, setApiKey] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   const [balance, setBalance] = useState(null);
   const [muapiOperatorBalance, setMuapiOperatorBalance] = useState(null);
   const [showSettings, setShowSettings] = useState(false);

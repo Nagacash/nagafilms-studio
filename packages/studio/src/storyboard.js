@@ -1,117 +1,12 @@
 import { uploadFile } from './muapi.js';
+export {
+  STORYBOARD_USD_ESTIMATES,
+  defaultPricingConfig,
+  usdToCredits,
+  estimateStoryboardCredits,
+} from './storyboard-pricing.js';
 
 const V1_URL = typeof window !== 'undefined' ? '/api/v1' : 'https://api.muapi.ai/api/v1';
-
-/**
- * Approximate Naga credit costs for storyboard steps.
- * MuAPI does not publish fixed storyboard prices in OpenAPI — these are
- * operator estimates so users can budget before kicking off long jobs.
- */
-export const STORYBOARD_CREDIT_ESTIMATES = {
-  generateProjectBase: 120,
-  generateProjectPerEpisode: 55,
-  generateProjectProMult: 1.5,
-  generateLibrary: 90,
-  generateShotsBase: 80,
-  generateShotsPerShot: 10,
-  generateScriptsBase: 40,
-  generateScriptsPerEpisode: 18,
-  generatePdf: 15,
-  addEpisode: 70,
-  addScene: 35,
-  addShot: 25,
-  regenShot: 20,
-  regenCharacter: 30,
-};
-
-/**
- * @param {string} step
- * @param {{ episodes?: number, shots?: number, usePro?: boolean }} [ctx]
- * @returns {{ credits: number, label: string, note: string }}
- */
-export function estimateStoryboardCredits(step, ctx = {}) {
-  const e = STORYBOARD_CREDIT_ESTIMATES;
-  const episodes = Math.max(1, Number(ctx.episodes) || 1);
-  const shots = Math.max(0, Number(ctx.shots) || 0);
-  const pro = Boolean(ctx.usePro);
-
-  const table = {
-    generateProject: () => {
-      let credits = e.generateProjectBase + e.generateProjectPerEpisode * episodes;
-      if (pro) credits = Math.round(credits * e.generateProjectProMult);
-      return {
-        credits,
-        label: `~${credits} cr`,
-        note: `${episodes} episode${episodes === 1 ? '' : 's'}${pro ? ' · Pro' : ''}`,
-      };
-    },
-    blankProject: () => ({
-      credits: 0,
-      label: '0 cr',
-      note: 'Shell only — generation billed later',
-    }),
-    generateLibrary: () => ({
-      credits: e.generateLibrary,
-      label: `~${e.generateLibrary} cr`,
-      note: 'Character library pass',
-    }),
-    generateShots: () => {
-      const credits =
-        e.generateShotsBase + e.generateShotsPerShot * Math.max(shots, episodes * 8);
-      return {
-        credits,
-        label: `~${credits} cr`,
-        note: shots
-          ? `Based on ${shots} existing shots`
-          : `Rough estimate for ~${episodes * 8} shots`,
-      };
-    },
-    generateScripts: () => {
-      const credits = e.generateScriptsBase + e.generateScriptsPerEpisode * episodes;
-      return {
-        credits,
-        label: `~${credits} cr`,
-        note: `${episodes} episode${episodes === 1 ? '' : 's'}`,
-      };
-    },
-    generatePdf: () => ({
-      credits: e.generatePdf,
-      label: `~${e.generatePdf} cr`,
-      note: 'Consolidated PDF',
-    }),
-    addEpisode: () => ({
-      credits: e.addEpisode,
-      label: `~${e.addEpisode} cr`,
-      note: 'AI episode insert',
-    }),
-    addScene: () => ({
-      credits: e.addScene,
-      label: `~${e.addScene} cr`,
-      note: 'AI scene insert',
-    }),
-    addShot: () => ({
-      credits: e.addShot,
-      label: `~${e.addShot} cr`,
-      note: 'AI shot insert',
-    }),
-    regenShot: () => ({
-      credits: e.regenShot,
-      label: `~${e.regenShot} cr`,
-      note: 'Single shot regen',
-    }),
-    regenCharacter: () => ({
-      credits: e.regenCharacter,
-      label: `~${e.regenCharacter} cr`,
-      note: 'Character regen',
-    }),
-  };
-
-  const fn = table[step];
-  if (!fn) {
-    return { credits: 0, label: '—', note: 'Unknown step' };
-  }
-  return fn();
-}
 
 export function isActiveStoryboardStatus(status) {
   const s = String(status || '').toLowerCase();
@@ -120,6 +15,27 @@ export function isActiveStoryboardStatus(status) {
     return false;
   }
   return /(process|generat|queue|pending|runn|progress|start|creat|wait)/.test(s);
+}
+
+/** Best-effort progress 0–100 from MuAPI payloads */
+export function extractProgressPercent(payload) {
+  if (!payload || typeof payload !== 'object') return null;
+  const candidates = [
+    payload.progress,
+    payload.percent,
+    payload.percentage,
+    payload.progress_percent,
+    payload.progressPercent,
+    payload.meta?.progress,
+    payload.data?.progress,
+  ];
+  for (const c of candidates) {
+    const n = Number(c);
+    if (!Number.isFinite(n)) continue;
+    if (n >= 0 && n <= 1) return Math.round(n * 100);
+    if (n >= 0 && n <= 100) return Math.round(n);
+  }
+  return null;
 }
 
 function apiFetch(url, init = {}, apiKey) {
@@ -152,6 +68,21 @@ async function storyboardFetch(path, apiKey, { method = 'GET', body } = {}) {
     data = { raw: text };
   }
   if (!response.ok) {
+    if (response.status === 402) {
+      const cost = data?.costCredits;
+      throw new Error(
+        data?.error ||
+          `Insufficient credits${cost ? ` (~${cost} cr needed)` : ''}. Buy a pack to continue.`,
+      );
+    }
+    if (response.status === 429) {
+      throw new Error(
+        data?.error || 'Too many in-flight storyboard jobs. Wait for one to finish.',
+      );
+    }
+    if (response.status === 410) {
+      throw new Error(data?.error || 'This storyboard feature is not offered.');
+    }
     const detail =
       data?.detail ||
       data?.error ||
@@ -247,17 +178,6 @@ export async function generateStoryboardShots(
   });
 }
 
-export async function generateStoryboardScripts(
-  apiKey,
-  id,
-  { sync = false, webhook_url } = {},
-) {
-  return storyboardFetch(`/storyboard-projects/${id}/generate-scripts`, apiKey, {
-    method: 'POST',
-    body: withWebhook({ sync }, webhook_url),
-  });
-}
-
 export async function generateStoryboardPdf(
   apiKey,
   id,
@@ -271,10 +191,6 @@ export async function generateStoryboardPdf(
 
 export async function getStoryboardPdfStatus(apiKey, id) {
   return storyboardFetch(`/storyboard-projects/${id}/pdf`, apiKey);
-}
-
-export async function getStoryboardScripts(apiKey, id) {
-  return storyboardFetch(`/storyboard-projects/${id}/scripts`, apiKey);
 }
 
 export async function getStoryboardShots(apiKey, id) {
@@ -369,7 +285,7 @@ export async function regenerateStoryboardCharacter(
   );
 }
 
-/** Pull a downloadable URL out of PDF / scripts poll payloads */
+/** Pull a downloadable URL out of PDF poll payloads */
 export function extractExportUrl(payload) {
   if (!payload || typeof payload !== 'object') return null;
   const candidates = [
@@ -457,6 +373,7 @@ function normalizeShot(shot) {
     shot_index: shot.shot_index ?? shot.index,
     episode_title: shot.episode_title,
     scene_title: shot.scene_title,
+    progress: extractProgressPercent(shot),
     raw: shot,
   };
 }
