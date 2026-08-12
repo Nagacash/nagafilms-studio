@@ -73,7 +73,13 @@ async function submitAndPoll(endpoint, payload, key, onRequestId, maxAttempts = 
     if (onRequestId) onRequestId(requestId);
     const result = await pollForResult(requestId, key, maxAttempts);
     const outputUrl = result.outputs?.[0] || result.url || result.output?.url;
-    return { ...result, url: outputUrl };
+    const characterId =
+      result.character_id ||
+      result.char_id ||
+      result.output?.character_id ||
+      result.outputs?.find?.((o) => typeof o === 'string' && o.startsWith('char_')) ||
+      null;
+    return { ...result, url: outputUrl, id: requestId, request_id: requestId, character_id: characterId };
 }
 
 export async function generateImage(apiKey, params) {
@@ -132,10 +138,18 @@ export async function generateI2V(apiKey, params) {
     const payload = {};
     if (params.prompt) payload.prompt = params.prompt;
     const imageField = modelInfo?.imageField || 'image_url';
-    if (params.image_url) {
-        if (imageField === 'images_list') payload.images_list = [params.image_url];
-        else payload[imageField] = params.image_url;
+
+    const imageList = Array.isArray(params.images_list)
+      ? params.images_list.filter(Boolean)
+      : params.image_url
+        ? [params.image_url]
+        : [];
+
+    if (imageList.length) {
+      if (imageField === 'images_list') payload.images_list = imageList;
+      else payload[imageField] = imageList[0];
     }
+
     const lastImageField = modelInfo?.lastImageField;
     if (lastImageField && params.last_image) {
         payload[lastImageField] = params.last_image;
@@ -145,7 +159,35 @@ export async function generateI2V(apiKey, params) {
     if (params.resolution) payload.resolution = params.resolution;
     if (params.quality) payload.quality = params.quality;
     if (params.mode) payload.mode = params.mode;
+    if (params.character_name) payload.character_name = params.character_name;
+    if (params.description) payload.description = params.description;
+    if (Array.isArray(params.video_files) && params.video_files.length) {
+      payload.video_files = params.video_files;
+    }
+    if (Array.isArray(params.audio_files) && params.audio_files.length) {
+      payload.audio_files = params.audio_files;
+    }
     return submitAndPoll(endpoint, payload, apiKey, params.onRequestId, 900);
+}
+
+/** Build a reusable Seedance 2 character sheet → use @character:<request_id> later */
+export async function createCharacterSheet(apiKey, params) {
+    const payload = {
+        prompt: params.prompt || 'character sheet, neutral pose, consistent identity',
+        images_list: params.images_list || [],
+    };
+    if (params.character_name) payload.character_name = params.character_name;
+    return submitAndPoll('seedance-2-character', payload, apiKey, params.onRequestId, 900);
+}
+
+/** Train Omni / Kinovi identity → use @omni-character:<char_id> later */
+export async function trainOmniCharacter(apiKey, params) {
+    const payload = {
+        image_url: params.image_url,
+        character_name: params.character_name || 'Character',
+    };
+    if (params.description) payload.description = params.description;
+    return submitAndPoll('seedance-2-omni-reference-train', payload, apiKey, params.onRequestId, 900);
 }
 
 export async function generateMarketingStudioAd(apiKey, params) {

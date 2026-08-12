@@ -3293,7 +3293,10 @@ export const i2iModels = [
     "endpoint": "ideogram-character",
     "family": "ideogram",
     "imageField": "image_url",
+    "maxImages": 1,
+    "characterConsistency": true,
     "hasPrompt": true,
+    "description": "Lock identity from a reference photo — best for consistent characters across new scenes.",
     "inputs": {
       "prompt": {
         "type": "string",
@@ -3360,7 +3363,10 @@ export const i2iModels = [
     "endpoint": "flux-pulid",
     "family": "flux",
     "imageField": "image_url",
+    "maxImages": 1,
+    "characterConsistency": true,
     "hasPrompt": true,
+    "description": "PuLID face/identity lock for consistent characters.",
     "inputs": {
       "prompt": {
         "type": "string",
@@ -5905,6 +5911,7 @@ export const i2vModels = [
     "endpoint": "vidu-q1-reference",
     "family": "vidu-q1",
     "imageField": "images_list",
+    "maxImages": 7,
     "hasPrompt": true,
     "inputs": {
       "prompt": {
@@ -6910,6 +6917,7 @@ export const i2vModels = [
     "endpoint": "veo3.1-reference-to-video",
     "family": "veo3.1",
     "imageField": "images_list",
+    "maxImages": 3,
     "hasPrompt": true,
     "inputs": {
       "prompt": {
@@ -7086,6 +7094,7 @@ export const i2vModels = [
     "endpoint": "vidu-q2-reference",
     "family": "vidu-q2",
     "imageField": "images_list",
+    "maxImages": 7,
     "hasPrompt": true,
     "inputs": {
       "prompt": {
@@ -7486,6 +7495,7 @@ export const i2vModels = [
     "endpoint": "kling-o1-reference-to-video",
     "family": "kling-o1",
     "imageField": "images_list",
+    "maxImages": 4,
     "hasPrompt": true,
     "inputs": {
       "prompt": {
@@ -7795,6 +7805,7 @@ export const i2vModels = [
     "endpoint": "kling-o1-standard-reference-to-video",
     "family": "kling-o1",
     "imageField": "images_list",
+    "maxImages": 4,
     "hasPrompt": true,
     "inputs": {
       "prompt": {
@@ -8126,6 +8137,150 @@ export const i2vModels = [
         "default": "basic"
       }
     }
+  },
+  {
+    "id": "seedance-2-vip-omni-reference",
+    "name": "Seedance 2 VIP Omni Reference",
+    "endpoint": "seedance-2-vip-omni-reference",
+    "family": "seedance-omni",
+    "imageField": "images_list",
+    "maxImages": 9,
+    "supportsCharacterTags": true,
+    "hasPrompt": true,
+    "description": "Multi-reference character consistency. Use @image1–@image9, @character:<sheet_id>, or @omni-character:<char_id>.",
+    "inputs": {
+      "prompt": {
+        "type": "string",
+        "title": "Prompt",
+        "name": "prompt",
+        "description": "Use @image1…@image9 for refs, @character:<request_id> for a character sheet, @omni-character:<char_id> for a trained identity.",
+        "examples": [
+          "@image1 is the main character. They walk through a neon-lit alley at night, cinematic lighting, shallow depth of field."
+        ]
+      },
+      "aspect_ratio": {
+        "type": "string",
+        "title": "Aspect Ratio",
+        "name": "aspect_ratio",
+        "enum": ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+        "default": "16:9"
+      },
+      "duration": {
+        "type": "int",
+        "title": "Duration",
+        "name": "duration",
+        "default": 5,
+        "minValue": 4,
+        "maxValue": 15,
+        "step": 1
+      }
+    }
+  },
+  {
+    "id": "sd-2-vip-omni-reference-1080p",
+    "name": "Seedance 2 VIP Omni Reference 1080p",
+    "endpoint": "sd-2-vip-omni-reference-1080p",
+    "family": "seedance-omni",
+    "imageField": "images_list",
+    "maxImages": 9,
+    "supportsCharacterTags": true,
+    "hasPrompt": true,
+    "description": "1080p multi-reference identity lock with @imageN / @character / @omni-character tags.",
+    "inputs": {
+      "prompt": {
+        "type": "string",
+        "title": "Prompt",
+        "name": "prompt",
+        "description": "Use @image1…@image9, @character:<request_id>, or @omni-character:<char_id>.",
+        "examples": [
+          "@character:REQUEST_ID walks along a rainy Tokyo street, neon reflections, handheld camera."
+        ]
+      },
+      "aspect_ratio": {
+        "type": "string",
+        "title": "Aspect Ratio",
+        "name": "aspect_ratio",
+        "enum": ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+        "default": "16:9"
+      },
+      "duration": {
+        "type": "int",
+        "title": "Duration",
+        "name": "duration",
+        "default": 5,
+        "minValue": 4,
+        "maxValue": 15,
+        "step": 1
+      }
+    }
+  },
+  {
+    "id": "seedance-2-omni-reference",
+    "name": "Seedance 2 Omni Reference",
+    "endpoint": "seedance-2-omni-reference",
+    "family": "seedance-omni",
+    "imageField": "images_list",
+    "maxImages": 9,
+    "supportsCharacterTags": true,
+    "hasPrompt": true,
+    "description": "Global-tier omni reference for consistent character identity across shots.",
+    "inputs": {
+      "prompt": {
+        "type": "string",
+        "title": "Prompt",
+        "name": "prompt",
+        "description": "Reference images with @image1…@image9 or inject @character / @omni-character tags.",
+        "examples": [
+          "@image1 is the main character reference. A person walking on the beach at sunset, cinematic lighting"
+        ]
+      },
+      "aspect_ratio": {
+        "type": "string",
+        "title": "Aspect Ratio",
+        "name": "aspect_ratio",
+        "enum": ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+        "default": "16:9"
+      },
+      "duration": {
+        "type": "int",
+        "title": "Duration",
+        "name": "duration",
+        "default": 5,
+        "minValue": 4,
+        "maxValue": 15,
+        "step": 1
+      }
+    }
+  },
+  {
+    "id": "seedance-2-character",
+    "name": "Seedance 2 Character Sheet",
+    "endpoint": "seedance-2-character",
+    "family": "seedance-character",
+    "imageField": "images_list",
+    "maxImages": 3,
+    "isCharacterSheet": true,
+    "hasPrompt": true,
+    "description": "Build a reusable character sheet (1–3 photos). Use returned request_id as @character:<id> in Omni Reference.",
+    "inputs": {
+      "prompt": {
+        "type": "string",
+        "title": "Outfit / costume",
+        "name": "prompt",
+        "description": "Describe the outfit or costume the character should wear on the sheet."
+      }
+    }
+  },
+  {
+    "id": "seedance-2-omni-reference-train",
+    "name": "Seedance 2 Omni Character Train",
+    "endpoint": "seedance-2-omni-reference-train",
+    "family": "seedance-character",
+    "imageField": "image_url",
+    "maxImages": 1,
+    "isCharacterTrain": true,
+    "hasPrompt": false,
+    "description": "Train a Kinovi identity from one portrait. Use returned ID as @omni-character:<char_id> in Omni Reference."
   }
 ];
 
@@ -8217,6 +8372,27 @@ export const getMaxImagesForI2IModel = (modelId) => {
     const model = getI2IModelById(modelId);
     return model?.maxImages || 1;
 };
+
+// Returns the maximum number of reference images an i2v / omni model accepts
+export const getMaxImagesForI2VModel = (modelId) => {
+    const model = getI2VModelById(modelId);
+    if (!model) return 1;
+    if (model.maxImages) return model.maxImages;
+    if (model.imageField === 'images_list') return 9;
+    return 1;
+};
+
+/** Image models tuned for identity lock / character consistency */
+export const CHARACTER_I2I_MODEL_IDS = [
+  'ideogram-character',
+  'flux-pulid',
+  'midjourney-v7-omni-reference',
+  'minimax-image-01-subject-reference',
+  'vidu-q2-reference-to-image',
+];
+
+export const isCharacterConsistencyI2I = (modelId) =>
+  CHARACTER_I2I_MODEL_IDS.includes(modelId);
 
 // ─── Video-to-Video models ────────────────────────────────────────────────────
 export const v2vModels = [

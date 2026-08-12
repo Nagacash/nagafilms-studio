@@ -12,6 +12,7 @@ import {
   getResolutionsForI2IModel,
   getQualityFieldForI2IModel,
   getMaxImagesForI2IModel,
+  isCharacterConsistencyI2I,
 } from "../models.js";
 import LiveModelDropdown from "./LiveModelDropdown.jsx";
 
@@ -1153,6 +1154,11 @@ export default function ImageStudio({
                   <span className="text-xs font-semibold text-white/70 group-hover:text-[#00ff88] transition-colors">
                     {selectedModelName}
                   </span>
+                  {imageMode && isCharacterConsistencyI2I(selectedModelId) && (
+                    <span className="rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">
+                      ID lock
+                    </span>
+                  )}
                   <svg
                     width="10"
                     height="10"

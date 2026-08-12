@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { generateVideo, generateI2V, processV2V, uploadFile } from "../muapi.js";
+import { generateVideo, generateI2V, processV2V, uploadFile, createCharacterSheet, trainOmniCharacter } from "../muapi.js";
 import {
   t2vModels,
   i2vModels,
@@ -13,8 +13,11 @@ import {
   getDurationsForI2VModel,
   getResolutionsForI2VModel,
   getModesForModel,
+  getMaxImagesForI2VModel,
+  getI2VModelById,
 } from "../models.js";
 import LiveModelDropdown from "./LiveModelDropdown.jsx";
+import CharacterLibrary from "./CharacterLibrary.jsx";
 
 // ── tiny helpers ──────────────────────────────────────────────────────────────
 
@@ -180,6 +183,7 @@ export default function VideoStudio({
 
   // ── uploads ──
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState([]);
   const [imageUploading, setImageUploading] = useState(false);
   const [uploadedEndImageUrl, setUploadedEndImageUrl] = useState(null);
   const [endImageUploading, setEndImageUploading] = useState(false);
@@ -344,7 +348,14 @@ export default function VideoStudio({
         if (data.selectedResolution) setSelectedResolution(data.selectedResolution);
         if (data.selectedQuality) setSelectedQuality(data.selectedQuality);
         if (data.selectedMode) setSelectedMode(data.selectedMode);
-        if (data.uploadedImageUrl) setUploadedImageUrl(data.uploadedImageUrl);
+        if (data.uploadedImageUrl) {
+          setUploadedImageUrl(data.uploadedImageUrl);
+          setUploadedImageUrls(
+            Array.isArray(data.uploadedImageUrls) && data.uploadedImageUrls.length
+              ? data.uploadedImageUrls
+              : [data.uploadedImageUrl],
+          );
+        }
         if (data.uploadedVideoUrl) setUploadedVideoUrl(data.uploadedVideoUrl);
         if (data.uploadedVideoName) setUploadedVideoName(data.uploadedVideoName);
         if (data.prompt) setPrompt(data.prompt);
@@ -392,6 +403,7 @@ export default function VideoStudio({
           selectedQuality,
           selectedMode,
           uploadedImageUrl,
+          uploadedImageUrls,
           uploadedVideoUrl,
           uploadedVideoName,
           prompt,
@@ -433,7 +445,12 @@ export default function VideoStudio({
       const url = await uploadFile(apiKey, file, (pct) => {
         setImageProgress(pct);
       });
-      setUploadedImageUrl(url);
+      const limit = imageMode ? getMaxImagesForI2VModel(selectedModel) : 1;
+      setUploadedImageUrls((prev) => {
+        const next = limit === 1 ? [url] : [...prev, url].slice(0, Math.max(1, limit));
+        setUploadedImageUrl(next[0] || null);
+        return next;
+      });
       setUploadedVideoUrl(null);
       setUploadedVideoName(null);
       setV2vMode(false);
@@ -442,7 +459,10 @@ export default function VideoStudio({
         const sibling = currentT2V?.family
           ? i2vModels.find((m) => m.family === currentT2V.family)
           : null;
-        const target = sibling || i2vModels[0];
+        const omni =
+          i2vModels.find((m) => m.id === "seedance-2-vip-omni-reference") ||
+          i2vModels.find((m) => m.supportsCharacterTags);
+        const target = sibling || omni || i2vModels[0];
         setImageMode(true);
         setSelectedModel(target.id);
         setSelectedModelName(target.name);
@@ -450,6 +470,7 @@ export default function VideoStudio({
       }
       setPromptDisabled(false);
     } catch (err) {
+      console.error("[VideoStudio] Dropped image upload failed:", err);
       alert(`Image upload failed: ${err.message}`);
     } finally {
       setImageUploading(false);
@@ -533,10 +554,36 @@ export default function VideoStudio({
   };
 
   // ── image upload ─────────────────────────────────────────────────────────
+  const maxRefImages = imageMode
+    ? getMaxImagesForI2VModel(selectedModel)
+    : 1;
+  const currentI2V = imageMode ? getI2VModelById(selectedModel) : null;
+  const isOmniOrMultiRef =
+    !!currentI2V &&
+    (currentI2V.supportsCharacterTags ||
+      currentI2V.imageField === "images_list" ||
+      maxRefImages > 1);
+  const isCharacterSheetModel = !!currentI2V?.isCharacterSheet;
+  const isCharacterTrainModel = !!currentI2V?.isCharacterTrain;
+
+  const insertPromptTag = useCallback((tag) => {
+    setPrompt((prev) => {
+      const t = prev.trim();
+      if (!t) return `${tag} `;
+      if (t.includes(tag)) return prev;
+      return `${tag} ${t}`;
+    });
+  }, []);
+
+  const syncPrimaryImage = useCallback((urls) => {
+    setUploadedImageUrls(urls);
+    setUploadedImageUrl(urls[0] || null);
+  }, []);
+
   const handleImageFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
+    const files = [...(e.target.files || [])];
+    if (!files.length) return;
+    if (files.some((f) => f.size > 10 * 1024 * 1024)) {
       alert("Image exceeds 10MB limit.");
       return;
     }
@@ -544,16 +591,32 @@ export default function VideoStudio({
     setImageProgress(0);
 
     try {
-      const url = await uploadFile(apiKey, file, (pct) => {
-        setImageProgress(pct);
-      });
-      setUploadedImageUrl(url);
+      const limit = Math.max(1, maxRefImages);
+      const room = Math.max(0, limit - uploadedImageUrls.length);
+      const toUpload = files.slice(0, room || (limit === 1 ? 1 : 0));
+      if (!toUpload.length) {
+        alert(`Max ${limit} reference image${limit === 1 ? "" : "s"} for this model.`);
+        return;
+      }
+      const uploaded = [];
+      for (let i = 0; i < toUpload.length; i++) {
+        const url = await uploadFile(apiKey, toUpload[i], (pct) => {
+          setImageProgress(
+            Math.round(((i + pct / 100) / toUpload.length) * 100),
+          );
+        });
+        uploaded.push(url);
+      }
 
-      // Motion-control v2v: image is a second input, not a mode switch
+      const next =
+        limit === 1
+          ? uploaded.slice(0, 1)
+          : [...uploadedImageUrls, ...uploaded].slice(0, limit);
+      syncPrimaryImage(next);
+
       if (isMotionControlSelection(selectedModel, v2vMode)) {
         setPromptDisabled(false);
       } else {
-        // Clear v2v if active
         setUploadedVideoUrl(null);
         setUploadedVideoName(null);
         setV2vMode(false);
@@ -563,7 +626,10 @@ export default function VideoStudio({
           const sibling = currentT2V?.family
             ? i2vModels.find((m) => m.family === currentT2V.family)
             : null;
-          const target = sibling || i2vModels[0];
+          const omni =
+            i2vModels.find((m) => m.id === "seedance-2-vip-omni-reference") ||
+            i2vModels.find((m) => m.supportsCharacterTags);
+          const target = sibling || omni || i2vModels[0];
           setImageMode(true);
           setSelectedModel(target.id);
           setSelectedModelName(target.name);
@@ -582,9 +648,8 @@ export default function VideoStudio({
   };
 
   const clearImageUpload = () => {
-    setUploadedImageUrl(null);
+    syncPrimaryImage([]);
     setUploadedEndImageUrl(null);
-    // Motion-control v2v: keep model and video; just drop the image
     if (isMotionControlSelection(selectedModel, v2vMode)) return;
     setImageMode(false);
     const first = t2vModels[0];
@@ -752,8 +817,14 @@ export default function VideoStudio({
         return;
       }
     } else if (imageMode) {
-      if (!uploadedImageUrl) {
-        alert("Please upload a start frame image first.");
+      if (!uploadedImageUrls.length && !uploadedImageUrl) {
+        alert(
+          isCharacterTrainModel
+            ? "Upload a portrait to train a character."
+            : isCharacterSheetModel
+              ? "Upload 1–3 reference photos for the character sheet."
+              : "Please upload a start frame / reference image first.",
+        );
         return;
       }
     } else {
@@ -807,8 +878,64 @@ export default function VideoStudio({
             type: "video",
           });
       } else if (imageMode) {
-        const i2vParams = { model: selectedModel, image_url: uploadedImageUrl };
-        if (trimmedPrompt) i2vParams.prompt = trimmedPrompt;
+        const refs =
+          uploadedImageUrls.length > 0
+            ? uploadedImageUrls
+            : uploadedImageUrl
+              ? [uploadedImageUrl]
+              : [];
+
+        // Character sheet / train are MuAPI face-training endpoints, not clip generation
+        if (isCharacterSheetModel) {
+          const resSheet = await createCharacterSheet(apiKey, {
+            prompt: trimmedPrompt || "character sheet, neutral pose",
+            images_list: refs.slice(0, 3),
+          });
+          const sheetId = resSheet.request_id || resSheet.id;
+          if (!sheetId) throw new Error("No character sheet id returned");
+          const tag = `@character:${sheetId}`;
+          insertPromptTag(tag);
+          alert(
+            `Character sheet ready. Inserted ${tag} into your prompt — pick an Omni Reference model to generate video.`,
+          );
+          setGenerating(false);
+          return;
+        }
+        if (isCharacterTrainModel) {
+          const resTrain = await trainOmniCharacter(apiKey, {
+            image_url: refs[0],
+            character_name: trimmedPrompt || "Character",
+          });
+          const charId =
+            resTrain.character_id || resTrain.request_id || resTrain.id;
+          if (!charId) throw new Error("No trained character id returned");
+          const tag = `@omni-character:${charId}`;
+          insertPromptTag(tag);
+          alert(
+            `Character trained. Inserted ${tag} into your prompt — pick an Omni Reference model to generate video.`,
+          );
+          setGenerating(false);
+          return;
+        }
+
+        let finalPrompt = trimmedPrompt;
+        if (
+          currentI2V?.supportsCharacterTags &&
+          refs.length > 0 &&
+          !/@image\d/.test(finalPrompt) &&
+          !/@character:/.test(finalPrompt) &&
+          !/@omni-character:/.test(finalPrompt)
+        ) {
+          const tags = refs.map((_, i) => `@image${i + 1}`).join(" ");
+          finalPrompt = `${tags} ${finalPrompt}`.trim();
+        }
+
+        const i2vParams = {
+          model: selectedModel,
+          image_url: refs[0],
+          images_list: refs,
+        };
+        if (finalPrompt) i2vParams.prompt = finalPrompt;
         i2vParams.aspect_ratio = selectedAr;
         const i2vModel = i2vModels.find((m) => m.id === selectedModel);
         if (uploadedEndImageUrl && i2vModel?.lastImageField) {
@@ -835,7 +962,7 @@ export default function VideoStudio({
         const entry = {
           id: genId,
           url: res.url,
-          prompt: trimmedPrompt,
+          prompt: finalPrompt,
           model: selectedModel,
           aspect_ratio: selectedAr,
           duration: selectedDuration,
@@ -847,7 +974,7 @@ export default function VideoStudio({
           onGenerationComplete({
             url: res.url,
             model: selectedModel,
-            prompt: trimmedPrompt,
+            prompt: finalPrompt,
             type: "video",
           });
       } else {
@@ -921,12 +1048,18 @@ export default function VideoStudio({
     selectedQuality,
     selectedMode,
     uploadedImageUrl,
+    uploadedImageUrls,
+    uploadedEndImageUrl,
     uploadedVideoUrl,
     lastGenerationId,
     getCurrentModel,
     addToLocalHistory,
     showVideoInCanvas,
     onGenerationComplete,
+    isCharacterSheetModel,
+    isCharacterTrainModel,
+    currentI2V,
+    insertPromptTag,
   ]);
 
   // ── reset to prompt bar ───────────────────────────────────────────────────
@@ -937,8 +1070,7 @@ export default function VideoStudio({
   const handleNewPrompt = useCallback(() => {
     resetToPromptBar();
     setPrompt("");
-    setUploadedImageUrl(null);
-    setUploadedImagePreview(null);
+    syncPrimaryImage([]);
     setImageMode(false);
     setUploadedVideoUrl(null);
     setUploadedVideoName(null);
@@ -1122,27 +1254,32 @@ export default function VideoStudio({
         <div className="w-full bg-[#0a0a0a]/80 backdrop-blur-3xl rounded-md border border-white/10 p-4 flex flex-col gap-2 shadow-2xl">
           <div className="flex items-center gap-2 px-1">
             {/* Image upload button */}
-            <div className="relative">
+            <div className="relative flex items-center gap-1.5">
               <input
                 ref={imageFileInputRef}
                 type="file"
                 accept="image/*"
+                multiple={maxRefImages > 1}
                 className="hidden"
                 onChange={handleImageFileChange}
               />
               <button
                 type="button"
                 title={
-                  uploadedImageUrl
-                    ? "Clear image"
-                    : "Upload image for Image-to-Video"
+                  uploadedImageUrls.length
+                    ? maxRefImages > 1
+                      ? `${uploadedImageUrls.length}/${maxRefImages} refs — click to clear`
+                      : "Clear image"
+                    : maxRefImages > 1
+                      ? `Upload up to ${maxRefImages} reference images`
+                      : "Upload image for Image-to-Video"
                 }
                 onClick={() =>
-                  uploadedImageUrl
+                  uploadedImageUrls.length
                     ? clearImageUpload()
                     : imageFileInputRef.current?.click()
                 }
-                className={`w-10 h-10 shrink-0 rounded-full border transition-all flex items-center justify-center relative overflow-hidden ${uploadedImageUrl ? "border-primary/60 bg-primary/5" : "bg-white/5 border-white/[0.03] hover:bg-white/10 hover:border-primary/40"} group`}
+                className={`w-10 h-10 shrink-0 rounded-full border transition-all flex items-center justify-center relative overflow-hidden ${uploadedImageUrls.length ? "border-primary/60 bg-primary/5" : "bg-white/5 border-white/[0.03] hover:bg-white/10 hover:border-primary/40"} group`}
               >
                 {imageUploading ? (
                   <div className="flex flex-col items-center justify-center w-full h-full absolute inset-0 bg-black/80 z-20 backdrop-blur-[2px]">
@@ -1204,7 +1341,25 @@ export default function VideoStudio({
                     </svg>
                   )
                 )}
+                {uploadedImageUrls.length > 1 && (
+                  <span className="absolute -bottom-1 -right-1 z-30 rounded-full bg-primary px-1.5 text-[9px] font-black text-black">
+                    {uploadedImageUrls.length}
+                  </span>
+                )}
               </button>
+              {isOmniOrMultiRef &&
+                uploadedImageUrls.length > 0 &&
+                uploadedImageUrls.length < maxRefImages && (
+                  <button
+                    type="button"
+                    title="Add another reference"
+                    onClick={() => imageFileInputRef.current?.click()}
+                    className="h-8 w-8 shrink-0 rounded-full border border-dashed border-white/20 text-white/40 text-sm hover:border-primary/50 hover:text-primary"
+                  >
+                    +
+                  </button>
+                )}
+              <CharacterLibrary apiKey={apiKey} onInsertTag={insertPromptTag} />
             </div>
 
             {/* End-frame upload button (FLF i2v models only) */}
