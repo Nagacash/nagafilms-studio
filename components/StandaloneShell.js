@@ -143,13 +143,13 @@ export default function StandaloneShell() {
     };
   }, [apiKey]);
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     clearByoKey();
     setApiKey(null);
     setBalance(null);
     setIsAdmin(false);
     setShowSettings(false);
-    logoutEverywhere({ redirectTo: '/' });
+    await logoutEverywhere({ redirectTo: '/' });
   }, []);
 
   const handleDragOver = useCallback((e) => {

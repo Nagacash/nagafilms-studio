@@ -23,7 +23,9 @@ export default function LogoutButton({
   return (
     <button
       type="button"
-      onClick={() => logoutEverywhere({ redirectTo })}
+      onClick={() => {
+        void logoutEverywhere({ redirectTo });
+      }}
       className={
         className ||
         'inline-flex items-center gap-2 rounded-md border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[13px] font-bold text-red-300 transition-colors hover:bg-red-500/20 hover:text-red-200'

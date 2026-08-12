@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   listStoryboardProjects,
-  generateStoryboardProject,
   createStoryboardProject,
   getStoryboardProject,
   deleteStoryboardProject,
@@ -86,8 +85,6 @@ export default function StoryboardStudio({ apiKey }) {
   const [prompt, setPrompt] = useState("");
   const [episodes, setEpisodes] = useState(1);
   const [style, setStyle] = useState("cinematic realistic");
-  const [usePro, setUsePro] = useState(false);
-  const [mode, setMode] = useState("generate");
   const [webhookUrl, setWebhookUrl] = useState("");
   const [autoPoll, setAutoPoll] = useState(true);
   const [pdfStatus, setPdfStatus] = useState(null);
@@ -117,9 +114,8 @@ export default function StoryboardStudio({ apiKey }) {
     () => ({
       episodes: projectEpisodes,
       shots: shots.length,
-      usePro,
     }),
-    [projectEpisodes, shots.length, usePro],
+    [projectEpisodes, shots.length],
   );
 
   const boardBusy = useMemo(() => {
@@ -163,7 +159,6 @@ export default function StoryboardStudio({ apiKey }) {
             prompt,
             episodes,
             style,
-            usePro,
             webhookUrl,
             autoPoll,
           }),
@@ -183,7 +178,6 @@ export default function StoryboardStudio({ apiKey }) {
     prompt,
     episodes,
     style,
-    usePro,
     webhookUrl,
     autoPoll,
   ]);
@@ -235,7 +229,6 @@ export default function StoryboardStudio({ apiKey }) {
       if (data.prompt) setPrompt(data.prompt);
       if (data.episodes) setEpisodes(data.episodes);
       if (data.style) setStyle(data.style);
-      if (typeof data.usePro === "boolean") setUsePro(data.usePro);
       if (typeof data.webhookUrl === "string") setWebhookUrl(data.webhookUrl);
       if (typeof data.autoPoll === "boolean") setAutoPoll(data.autoPoll);
       if (data.selectedId != null) setSelectedId(data.selectedId);
@@ -310,24 +303,12 @@ export default function StoryboardStudio({ apiKey }) {
   const handleCreate = () =>
     run("Creating project…", async () => {
       if (!prompt.trim()) throw new Error("Write a story prompt first");
-      let created;
-      if (mode === "generate") {
-        created = await generateStoryboardProject(apiKey, {
-          prompt: prompt.trim(),
-          num_episodes: Number(episodes) || 1,
-          style,
-          use_pro: usePro,
-          sync: false,
-          ...webhookOpts(),
-        });
-      } else {
-        created = await createStoryboardProject(apiKey, {
-          title: title.trim() || "Untitled series",
-          prompt: prompt.trim(),
-          num_episodes: Number(episodes) || 1,
-          description: style,
-        });
-      }
+      const created = await createStoryboardProject(apiKey, {
+        title: title.trim() || "Untitled series",
+        prompt: prompt.trim(),
+        num_episodes: Number(episodes) || 1,
+        description: style,
+      });
       const id = created?.id ?? created?.project_id ?? created?.project?.id;
       await refreshList();
       if (id != null) {
@@ -455,15 +436,6 @@ export default function StoryboardStudio({ apiKey }) {
     );
   }
 
-  const createEstimate =
-    mode === "generate"
-      ? estimateStoryboardCredits(
-          "generateProject",
-          { episodes: Number(episodes) || 1, usePro },
-          pricing,
-        )
-      : estimateStoryboardCredits("blankProject", {}, pricing);
-
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#050505] text-white lg:flex-row">
       <aside className="flex max-h-[40vh] w-full shrink-0 flex-col border-b border-white/10 bg-[#080808] lg:max-h-none lg:w-[min(100%,20rem)] lg:border-b-0 lg:border-r">
@@ -473,7 +445,7 @@ export default function StoryboardStudio({ apiKey }) {
           </p>
           <h2 className="mt-1 text-lg font-black tracking-tight">Projects</h2>
           <p className="mt-1 text-[11px] leading-relaxed text-white/40">
-            Episodic boards with persistent characters. Credits held per step.
+            Episodic boards with persistent characters.
           </p>
         </div>
 
@@ -570,39 +542,17 @@ export default function StoryboardStudio({ apiKey }) {
                 New storyboard
               </h1>
               <p className="mt-2 text-sm text-white/45">
-                Generate a multi-episode board with character persistence, or create a
-                blank shell. SaaS jobs hold credits until the step completes or fails.
+                Create a project shell, then generate library, shots, and PDF step by
+                step. Credits are held per step and restored if a step fails.
               </p>
 
-              <div className="mt-6 flex gap-2 rounded-lg bg-white/[0.03] p-1">
-                {[
-                  ["generate", "AI generate"],
-                  ["blank", "Blank project"],
-                ].map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setMode(id)}
-                    className={`min-h-11 flex-1 rounded-md py-2 text-xs font-bold ${
-                      mode === id
-                        ? "bg-[#00ff88]/20 text-[#00ff88]"
-                        : "text-white/45 hover:text-white/70"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-5 space-y-3">
-                {mode === "blank" && (
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Series title"
-                    className="min-h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[#00ff88]/40"
-                  />
-                )}
+              <div className="mt-6 space-y-3">
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Series title"
+                  className="min-h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[#00ff88]/40"
+                />
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
@@ -631,41 +581,11 @@ export default function StoryboardStudio({ apiKey }) {
                     />
                   </label>
                 </div>
-                {mode === "generate" && (
-                  <label className="flex min-h-11 items-center gap-2 text-xs text-white/50">
-                    <input
-                      type="checkbox"
-                      checked={usePro}
-                      onChange={(e) => setUsePro(e.target.checked)}
-                      className="accent-[#00ff88]"
-                    />
-                    Use Pro generation tier
-                  </label>
-                )}
 
-                <label className="block text-xs text-white/40">
-                  Your webhook (optional fan-out)
-                  <input
-                    value={webhookUrl}
-                    onChange={(e) => setWebhookUrl(e.target.value)}
-                    placeholder="https://your.app/hooks/storyboard"
-                    className="mt-1 min-h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-[#00ff88]/40"
-                  />
-                  <span className="mt-1 block text-[10px] text-white/30">
-                    Naga injects a signed webhook for billing settle, then fans out to
-                    yours. Studio also live-polls.
-                  </span>
-                </label>
-
-                <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/[0.02] px-3 py-2">
-                  <div>
-                    <p className="text-xs font-semibold text-white/70">Estimated hold</p>
-                    <p className="text-[10px] text-white/35">
-                      {createEstimate.note} · markup {pricing.markupMult}×
-                    </p>
-                  </div>
-                  <p className="text-sm font-bold text-[#00ff88]">{createEstimate.label}</p>
-                </div>
+                <p className="text-[11px] text-white/35">
+                  Creating a project is free. Library, shots, and PDF each show their
+                  credit cost before you run them.
+                </p>
 
                 <button
                   type="button"
@@ -673,9 +593,7 @@ export default function StoryboardStudio({ apiKey }) {
                   onClick={handleCreate}
                   className="min-h-12 w-full rounded-md bg-[#00ff88] py-3 text-sm font-bold text-black disabled:opacity-40"
                 >
-                  {mode === "generate"
-                    ? `Generate storyboard · ${createEstimate.label}`
-                    : "Create blank project"}
+                  Create project
                 </button>
               </div>
             </div>
@@ -771,15 +689,15 @@ export default function StoryboardStudio({ apiKey }) {
                   </label>
                   <p className="mt-2 text-[11px] text-white/35">
                     {boardBusy
-                      ? "Board or PDF still in progress. Cancel is not supported by MuAPI — wait or delete the project."
-                      : "Idle — polling pauses when status settles. Holds capture or restore automatically."}
+                      ? "Still running — refresh or wait. MuAPI does not support cancel."
+                      : "Idle — polling pauses when nothing is running."}
                   </p>
                   <ProgressBar value={boardProgress} />
                 </div>
 
                 <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-4 lg:col-span-2">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">
-                    Webhook fan-out
+                    Optional webhook
                   </p>
                   <input
                     value={webhookUrl}
@@ -788,8 +706,8 @@ export default function StoryboardStudio({ apiKey }) {
                     className="mt-3 min-h-11 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-[#00ff88]/40"
                   />
                   <p className="mt-2 text-[11px] text-white/35">
-                    Optional. Naga always receives a signed callback to settle credits;
-                    your URL gets a copy after settle.
+                    If set, MuAPI progress events are also sent to this URL. Studio keeps
+                    polling either way.
                   </p>
                 </div>
               </section>
@@ -798,8 +716,8 @@ export default function StoryboardStudio({ apiKey }) {
                 <div className="mb-3">
                   <h2 className="text-sm font-bold">Credit estimates</h2>
                   <p className="text-[11px] text-white/35">
-                    USD operator table × {pricing.creditsPerUsd} cr/$ × {pricing.markupMult}
-                    × markup — same formula as server holds. Scripts not offered.
+                    Approximate cost held when you run each step. Restored if the step
+                    fails.
                   </p>
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -821,9 +739,7 @@ export default function StoryboardStudio({ apiKey }) {
                       >
                         <p className="text-[11px] text-white/45">{label}</p>
                         <p className="text-sm font-bold text-[#00ff88]">{est.label}</p>
-                        <p className="text-[10px] text-white/30">
-                          ~${est.usd?.toFixed?.(2) ?? est.usd} · {est.note}
-                        </p>
+                        <p className="text-[10px] text-white/30">{est.note}</p>
                       </div>
                     );
                   })}
@@ -983,7 +899,7 @@ export default function StoryboardStudio({ apiKey }) {
                   </p>
                 ) : (
                   <p className="mt-2 text-[10px] text-white/30">
-                    No episode tree yet — indices still work after AI generate.
+                    No episode tree yet — add an episode or generate shots first.
                   </p>
                 )}
 
