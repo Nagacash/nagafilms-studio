@@ -8,10 +8,42 @@ export const metadata = {
 };
 
 const STUDIOS = [
-  { name: 'Image Studio', desc: 'Text-to-image and image-to-image across 100+ models, up to 14 reference images per request.' },
-  { name: 'Video Studio', desc: 'Text-to-video and image-to-video — Kling, Veo, Sora, Runway, Seedance, Hailuo, Wan.' },
-  { name: 'Cinema Studio', desc: 'Shot-level control: camera moves, lens language and framing for sequences that cut together.' },
-  { name: 'Lip Sync', desc: 'Portrait and video lip sync — animate a still or re-sync an existing take with audio.' },
+  {
+    name: 'Image Studio',
+    href: '/studio/image',
+    desc: 'Still images from text, or edit a photo you already have.',
+    howTo: 'Open → pick a model → write a prompt → Generate',
+  },
+  {
+    name: 'Video Studio',
+    href: '/studio/video',
+    desc: 'Short clips from text, or turn a still into motion.',
+    howTo: 'Open → pick a model → prompt (optional start frame) → Generate',
+  },
+  {
+    name: 'Cinema Studio',
+    href: '/studio/cinema',
+    desc: 'Shot-level camera and lens control for stills that cut together.',
+    howTo: 'Open → set camera/lens → write the shot → Generate',
+  },
+  {
+    name: 'Lip Sync',
+    href: '/studio/lipsync',
+    desc: 'Make a portrait or video talk to your audio track.',
+    howTo: 'Open → upload face + audio → pick a model → Generate',
+  },
+  {
+    name: 'Storyboard',
+    href: '/studio/storyboard',
+    desc: 'Multi-episode boards: create a project, then library → shots → PDF.',
+    howTo: 'Open → create project → Generate library → Generate shots',
+  },
+  {
+    name: 'Marketing Studio',
+    href: '/studio/marketing',
+    desc: 'Product and brand ads with reference images for consistency.',
+    howTo: 'Open → add refs → describe the ad → Generate',
+  },
 ];
 
 const PACKS = [
@@ -28,7 +60,7 @@ const ONBOARDING = [
 
 const STATS = [
   { figure: '200+', label: 'Live models' },
-  { figure: '4', label: 'Studios' },
+  { figure: '6', label: 'Studios' },
   { figure: '0', label: 'Subscriptions' },
   { figure: '100%', label: 'Pay per use' },
 ];
@@ -47,18 +79,21 @@ export default function Home() {
         <div className="flex items-center gap-3">
           <Link
             href="#faq"
-            className="hidden sm:inline text-[13px] font-semibold text-white/70 hover:text-[#00ff88]"
+            title="Common questions: credits, refunds, how generation works"
+            className="hidden text-[13px] font-semibold text-white/70 hover:text-[#00ff88] sm:inline"
           >
             FAQ
           </Link>
           <Link
             href="/credits"
-            className="hidden sm:inline text-[13px] font-semibold text-white/70 hover:text-[#00ff88]"
+            title="Buy a one-time credit pack — no subscription"
+            className="hidden text-[13px] font-semibold text-white/70 hover:text-[#00ff88] sm:inline"
           >
             Buy credits
           </Link>
           <Link
             href="/login"
+            title="Sign in to use your Naga credit wallet in the studio"
             className="rounded-md border border-white/20 bg-black/40 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur-md transition-colors hover:border-[#00ff88]/50 hover:bg-black/60 hover:text-[#00ff88]"
           >
             Log in
@@ -90,20 +125,32 @@ export default function Home() {
             Image, video, cinema and lip sync — 200+ models behind one studio. Buy credit packs, generate, pay only for what you use. No subscription.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4 animate-fade-in-up [animation-delay:240ms]">
-            <Link
-              href="/signup"
-              className="group inline-flex items-center gap-2 rounded-md bg-[#00ff88] px-7 py-3.5 text-sm font-bold text-black shadow-lg shadow-[#00ff88]/15 transition-all hover:bg-[#33ffa3] hover:shadow-[#00ff88]/30"
-            >
-              Get started
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
-            </Link>
-            <Link
-              href="/credits"
-              className="rounded-md border border-white/20 bg-black/30 px-7 py-3.5 text-sm font-semibold text-white/80 backdrop-blur-sm transition-colors hover:border-[#00ff88]/40 hover:text-[#00ff88]"
-            >
-              Buy credit packs
-            </Link>
+          <div className="mt-10 flex flex-wrap items-start gap-4 animate-fade-in-up [animation-delay:240ms]">
+            <div>
+              <Link
+                href="/signup"
+                title="Create a free account — then buy credits and open the studio"
+                className="group inline-flex items-center gap-2 rounded-md bg-[#00ff88] px-7 py-3.5 text-sm font-bold text-black shadow-lg shadow-[#00ff88]/15 transition-all hover:bg-[#33ffa3] hover:shadow-[#00ff88]/30"
+              >
+                Get started
+                <span className="transition-transform group-hover:translate-x-0.5">→</span>
+              </Link>
+              <p className="mt-2 max-w-[14rem] text-[11px] leading-snug text-white/40">
+                New here? Make an account first — takes about a minute.
+              </p>
+            </div>
+            <div>
+              <Link
+                href="/credits"
+                title="Buy Starter, Creator, or Pro credit packs with Stripe"
+                className="inline-flex rounded-md border border-white/20 bg-black/30 px-7 py-3.5 text-sm font-semibold text-white/80 backdrop-blur-sm transition-colors hover:border-[#00ff88]/40 hover:text-[#00ff88]"
+              >
+                Buy credit packs
+              </Link>
+              <p className="mt-2 max-w-[14rem] text-[11px] leading-snug text-white/40">
+                Already signed up? Load credits, then open Studio.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -131,18 +178,26 @@ export default function Home() {
           </div>
 
           <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="/signup"
-              className="rounded-md bg-[#00ff88] px-6 py-3 text-sm font-bold text-black hover:bg-[#33ffa3]"
-            >
-              Create account
-            </Link>
-            <Link
-              href="/studio/image"
-              className="rounded-md border border-white/15 px-6 py-3 text-sm font-semibold text-white/70 hover:border-[#00ff88]/40 hover:text-[#00ff88]"
-            >
-              Open Studio →
-            </Link>
+            <div>
+              <Link
+                href="/signup"
+                title="Create your free Naga Films account"
+                className="inline-flex rounded-md bg-[#00ff88] px-6 py-3 text-sm font-bold text-black hover:bg-[#33ffa3]"
+              >
+                Create account
+              </Link>
+              <p className="mt-2 text-[11px] text-white/40">Step 1 — email signup, free</p>
+            </div>
+            <div>
+              <Link
+                href="/studio/image"
+                title="Open Image Studio (sign in required)"
+                className="inline-flex rounded-md border border-white/15 px-6 py-3 text-sm font-semibold text-white/70 hover:border-[#00ff88]/40 hover:text-[#00ff88]"
+              >
+                Open Studio →
+              </Link>
+              <p className="mt-2 text-[11px] text-white/40">Step 3 — after you have credits</p>
+            </div>
           </div>
         </div>
       </section>
@@ -160,15 +215,22 @@ export default function Home() {
 
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {PACKS.map((p) => (
-              <div
+              <Link
                 key={p.name}
-                className="rounded-xl border border-white/[0.07] bg-[#080808] p-8 transition-colors hover:border-[#00ff88]/20"
+                href="/credits"
+                title={`Buy the ${p.name} pack — $${p.price} for ${p.credits.toLocaleString()} credits`}
+                className="block rounded-xl border border-white/[0.07] bg-[#080808] p-8 transition-colors hover:border-[#00ff88]/20"
               >
-                <h3 className="font-bold text-lg">{p.name}</h3>
+                <h3 className="text-lg font-bold">{p.name}</h3>
                 <p className="mt-2 text-3xl font-black text-[#00ff88]">${p.price}</p>
-                <p className="text-xs uppercase tracking-wider text-white/35">{p.credits.toLocaleString()} credits</p>
+                <p className="text-xs uppercase tracking-wider text-white/35">
+                  {p.credits.toLocaleString()} credits
+                </p>
                 <p className="mt-3 text-[13px] text-white/40">{p.blurb}</p>
-              </div>
+                <p className="mt-4 text-[12px] font-semibold text-[#00ff88]/80">
+                  Choose this pack →
+                </p>
+              </Link>
             ))}
           </div>
 
@@ -202,18 +264,29 @@ export default function Home() {
       {/* capabilities */}
       <section id="capabilities" className="relative z-10 border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-6">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Four studios, one wallet</h2>
+          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">Six studios, one wallet</h2>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
-            Built for real production work — concept art, pre-visualisation, motion tests and finished shots.
+            Pick a studio below — each card tells you what it does and the exact steps to run.
           </p>
 
           <div className="mt-14 grid gap-px overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.05] md:grid-cols-2 lg:grid-cols-3">
             {STUDIOS.map((s) => (
-              <div key={s.name} className="group bg-[#080808] p-8 transition-colors hover:bg-[#0c0c0c]">
+              <Link
+                key={s.name}
+                href={s.href}
+                title={`${s.name}: ${s.howTo}`}
+                className="group block bg-[#080808] p-8 transition-colors hover:bg-[#0c0c0c]"
+              >
                 <div className="mb-4 h-[2px] w-8 rounded-full bg-[#00ff88]/50 transition-all group-hover:w-14 group-hover:bg-[#00ff88]" />
                 <h3 className="text-[15px] font-bold tracking-tight">{s.name}</h3>
                 <p className="mt-2.5 text-[13px] leading-relaxed text-white/40">{s.desc}</p>
-              </div>
+                <p className="mt-3 text-[11px] font-medium leading-relaxed text-white/30">
+                  {s.howTo}
+                </p>
+                <p className="mt-4 text-[12px] font-semibold text-[#00ff88]/80 group-hover:text-[#00ff88]">
+                  Open {s.name.replace(' Studio', '')} →
+                </p>
+              </Link>
             ))}
           </div>
         </div>
@@ -297,18 +370,50 @@ export default function Home() {
       {/* footer */}
       <footer className="relative z-10 border-t border-white/[0.06] py-10">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 text-[12px] text-white/30">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <span>
-              © {new Date().getFullYear()} Naga Films · Hamburg — engineering by{' '}
-              <a
-                href="https://nagacodex.cloud"
-                target="_blank"
-                rel="noreferrer"
-                className="text-white/50 transition-colors hover:text-[#00ff88]"
-              >
-                Naga Codex
-              </a>
-            </span>
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row md:items-start">
+            <div className="space-y-1 text-center md:text-left">
+              <p>© {new Date().getFullYear()} Naga Films · Hamburg</p>
+              <p>
+                Official brand:{' '}
+                <a
+                  href="https://nagaclub.de"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/50 transition-colors hover:text-[#00ff88]"
+                >
+                  Naga Apparel
+                </a>{' '}
+                —{' '}
+                <a
+                  href="https://nagaclub.de"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/50 transition-colors hover:text-[#00ff88]"
+                >
+                  https://nagaclub.de
+                </a>
+              </p>
+              <p>
+                Designed by{' '}
+                <a
+                  href="https://nagacodex.cloud"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/50 transition-colors hover:text-[#00ff88]"
+                >
+                  Naga Codex
+                </a>
+                :{' '}
+                <a
+                  href="https://nagacodex.cloud"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-white/50 transition-colors hover:text-[#00ff88]"
+                >
+                  https://nagacodex.cloud
+                </a>
+              </p>
+            </div>
             <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
               <Link href="/policy" className="text-white/50 transition-colors hover:text-[#00ff88]">
                 Privacy

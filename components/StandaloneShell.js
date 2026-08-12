@@ -10,12 +10,42 @@ import StudioLoginGate from './StudioLoginGate';
 import LogoutButton, { logoutEverywhere } from './LogoutButton';
 
 const TABS = [
-  { id: 'image', label: 'Image Studio' },
-  { id: 'video', label: 'Video Studio' },
-  { id: 'lipsync', label: 'Lip Sync' },
-  { id: 'cinema', label: 'Cinema Studio' },
-  { id: 'storyboard', label: 'Storyboard' },
-  { id: 'marketing', label: 'Marketing Studio' },
+  {
+    id: 'image',
+    label: 'Image',
+    blurb: 'Still images from a text prompt, or edit an existing picture.',
+    howTo: '1) Pick a model  2) Write a prompt  3) Optional: add a reference image  4) Generate',
+  },
+  {
+    id: 'video',
+    label: 'Video',
+    blurb: 'Clips from text, or animate a starting frame into motion.',
+    howTo: '1) Pick a model  2) Write a prompt  3) Optional: upload a start frame  4) Generate',
+  },
+  {
+    id: 'lipsync',
+    label: 'Lip Sync',
+    blurb: 'Make a face talk — match mouth movement to your audio.',
+    howTo: '1) Upload a portrait or video  2) Upload audio  3) Pick a model  4) Generate',
+  },
+  {
+    id: 'cinema',
+    label: 'Cinema',
+    blurb: 'Cinematic stills with camera, lens, and framing controls.',
+    howTo: '1) Set camera / lens / aperture  2) Write the shot  3) Generate',
+  },
+  {
+    id: 'storyboard',
+    label: 'Storyboard',
+    blurb: 'Build a multi-episode board step by step (library → shots → PDF).',
+    howTo: '1) Create a project  2) Generate library  3) Generate shots  4) Export PDF',
+  },
+  {
+    id: 'marketing',
+    label: 'Marketing',
+    blurb: 'Product and brand ads with reference-driven consistency.',
+    howTo: '1) Add product / brand refs  2) Describe the ad  3) Generate',
+  },
 ];
 
 const STORAGE_KEY = 'muapi_key';
@@ -186,6 +216,7 @@ export default function StandaloneShell() {
 
   const balanceLabel =
     balance !== null ? `${Number(balance).toLocaleString()} cr` : '…';
+  const activeTabMeta = TABS.find((t) => t.id === activeTab) || TABS[0];
 
   if (status === 'loading') {
     return (
@@ -231,28 +262,34 @@ export default function StandaloneShell() {
           </span>
         </div>
 
-        <nav className="absolute left-1/2 -translate-x-1/2 flex items-center gap-6">
+        <nav
+          className="absolute left-1/2 hidden max-w-[min(100vw-14rem,52rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto md:flex lg:gap-2"
+          aria-label="Studios"
+        >
           {TABS.map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => handleTabChange(tab.id)}
-              className={`relative py-4 text-[13px] font-medium transition-all whitespace-nowrap px-1 ${
+              title={`${tab.label}: ${tab.blurb}`}
+              aria-current={activeTab === tab.id ? 'page' : undefined}
+              className={`relative whitespace-nowrap px-2 py-4 text-[12px] font-medium transition-all lg:px-2.5 lg:text-[13px] ${
                 activeTab === tab.id ? 'text-[#00ff88]' : 'text-white/50 hover:text-white'
               }`}
             >
               {tab.label}
               {activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00ff88] rounded-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[#00ff88]" />
               )}
             </button>
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/5 transition-colors">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="flex items-center gap-3 rounded-full border border-white/5 bg-white/5 px-3 py-1.5 transition-colors">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
             <div className="flex flex-col">
-              <span className="text-[10px] text-white/35 uppercase tracking-wider leading-none">
+              <span className="text-[10px] uppercase leading-none tracking-wider text-white/35">
                 Naga credits
               </span>
               <span className="text-xs font-bold text-white/90">{balanceLabel}</span>
@@ -261,15 +298,17 @@ export default function StandaloneShell() {
 
           <Link
             href="/credits"
-            className="text-[12px] font-semibold text-[#00ff88]/80 hover:text-[#00ff88] transition-colors hidden sm:block"
+            title="Buy a one-time credit pack. Credits land in your wallet after checkout."
+            className="hidden text-[12px] font-semibold text-[#00ff88]/80 transition-colors hover:text-[#00ff88] sm:block"
           >
             Buy credits
           </Link>
 
           <button
+            type="button"
             onClick={() => setShowSettings(true)}
-            title="Settings"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-[13px] font-bold text-white/80 hover:text-white hover:bg-white/10 hover:border-white/20 transition-colors"
+            title="Wallet balance, admin tools, and account settings"
+            className="flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-[13px] font-bold text-white/80 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-white"
           >
             <span>Settings</span>
           </button>
@@ -277,7 +316,39 @@ export default function StandaloneShell() {
         </div>
       </header>
 
-      <div className="flex-1 min-h-0 relative overflow-hidden">
+      {activeTabMeta && (
+        <div className="flex-shrink-0 border-b border-white/[0.04] bg-black/30 px-4 py-2.5 sm:px-6">
+          <div className="mx-auto flex max-w-6xl flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+            <p className="text-[13px] text-white/70">
+              <span className="font-semibold text-white/90">{activeTabMeta.label}</span>
+              <span className="text-white/35"> — </span>
+              {activeTabMeta.blurb}
+            </p>
+            <p className="text-[11px] font-medium tracking-wide text-white/40 sm:text-right">
+              {activeTabMeta.howTo}
+            </p>
+          </div>
+          {/* Mobile studio picker */}
+          <div className="mt-2 flex gap-1 overflow-x-auto pb-1 md:hidden">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => handleTabChange(tab.id)}
+                className={`shrink-0 rounded-md px-3 py-2 text-[11px] font-semibold ${
+                  activeTab === tab.id
+                    ? 'bg-[#00ff88]/15 text-[#00ff88]'
+                    : 'bg-white/5 text-white/50'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         {activeTab === 'image' && (
           <ImageStudio apiKey={apiKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
