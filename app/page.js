@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import LandingFaq from '@/components/LandingFaq';
+import LandingShowreel from '@/components/LandingShowreel';
 
 export const metadata = {
   title: 'Naga Films Studio — Generative Production Stack',
@@ -261,6 +262,33 @@ export default function Home() {
         </dl>
       </section>
 
+      {/* showreel — same hero portrait, animated for lower sections */}
+      <section className="relative z-10 border-t border-white/[0.06] py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 md:grid-cols-2 md:gap-14">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/70">
+              In motion
+            </p>
+            <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">
+              Same character. Studio lighting. One click to video.
+            </h2>
+            <p className="mt-4 text-[15px] leading-relaxed text-white/45">
+              Turn a still into motion inside Video Studio — or start from text. This loop was generated
+              from the hero portrait you see at the top of the page.
+            </p>
+            <Link
+              href="/studio/video"
+              className="mt-8 inline-flex rounded-none border border-[#00ff88]/30 bg-[#00ff88]/10 px-5 py-3 text-[12px] font-bold uppercase tracking-[0.08em] text-[#00ff88] transition-colors hover:bg-[#00ff88]/20"
+            >
+              Open Video Studio →
+            </Link>
+          </div>
+          <div className="overflow-hidden border border-white/10 bg-[#080808]">
+            <LandingShowreel className="aspect-square w-full object-cover object-top" />
+          </div>
+        </div>
+      </section>
+
       {/* capabilities */}
       <section id="capabilities" className="relative z-10 border-t border-white/[0.06] py-24">
         <div className="mx-auto max-w-6xl px-6">
@@ -337,11 +365,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* cta */}
-      <section className="relative z-10 overflow-hidden border-t border-white/[0.06] py-28">
-        <div className="pointer-events-none absolute inset-0 opacity-30">
-          <img src="/hero.jpg" alt="" className="h-full w-full object-cover object-top scale-110 blur-2xl" />
-          <div className="absolute inset-0 bg-[#050505]/85" />
+      {/* cta — animated loop from hero portrait; hero section above stays the still image */}
+      <section className="relative z-10 min-h-[28rem] overflow-hidden border-t border-white/[0.06] py-28">
+        <div className="pointer-events-none absolute inset-0">
+          <LandingShowreel className="h-full w-full scale-110 object-cover object-top blur-md" />
+          <div className="absolute inset-0 bg-[#050505]/70" />
         </div>
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <img src="/naga-mark.svg" alt="" width={56} height={56} className="mx-auto mb-8 h-14 w-14 opacity-90" />
