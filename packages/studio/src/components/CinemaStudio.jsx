@@ -844,7 +844,7 @@ export default function CinemaStudio({
 
       {/* ── BOTTOM PROMPT BAR ── */}
       <div className="absolute bottom-4 left-4 right-4 md:left-0 md:right-0 md:mx-auto md:max-w-[95%] lg:max-w-4xl z-30 transition-all duration-700 animate-fade-in-up">
-        <div className="bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 rounded-md p-4 flex justify-between shadow-2xl items-end relative gap-2">
+        <div className="bg-panel-bg/85 backdrop-blur-3xl border border-[#ff6ec7]/15 rounded-md p-4 flex justify-between shadow-2xl shadow-[#ff6ec7]/5 items-end relative gap-2">
           {/* Left Column */}
           <div className="flex-1 flex flex-col gap-3 min-h-[80px] justify-between py-1">
             {/* Input Row */}

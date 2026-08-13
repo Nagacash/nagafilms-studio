@@ -41,7 +41,7 @@ const btnGhost = `inline-flex min-h-11 items-center justify-center gap-2 rounded
 const btnPrimary = `inline-flex min-h-11 items-center justify-center gap-2 rounded-none bg-[var(--color-primary,#00ff88)] px-3 py-2 text-xs font-bold uppercase tracking-[0.06em] text-black transition-colors hover:bg-[var(--color-primary-hover,#33ffa3)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
 
 const panelClass =
-  "rounded-none border border-[var(--border-color,rgba(255,255,255,0.1))] bg-[var(--bg-panel,#0a0a0a)]";
+  "rounded-none border border-[var(--border-color,rgba(255,110,199,0.12))] bg-[var(--bg-panel,#12101a)]";
 
 const STYLE_PRESETS = [
   "cinematic realistic",
@@ -592,7 +592,7 @@ export default function StoryboardStudio({ apiKey }) {
   const showShotSkeleton = loadingDetail && selectedId && shots.length === 0;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[var(--bg-app,#050505)] text-white lg:flex-row">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--bg-app,#0a0812)] text-white lg:flex-row">
       <aside className="flex max-h-[40vh] w-full shrink-0 flex-col border-b border-[var(--border-color,rgba(255,255,255,0.1))] bg-[var(--bg-card,#080808)] lg:max-h-none lg:w-[min(100%,20rem)] lg:border-b-0 lg:border-r">
         <div className="border-b border-[var(--border-color)] p-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-primary,#00ff88)]/70">
@@ -720,38 +720,36 @@ export default function StoryboardStudio({ apiKey }) {
 
         {!selectedId ? (
           <div className="custom-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
-            {/* ── Hero filmstrip ── */}
-            <div className="relative overflow-hidden border-b border-[var(--border-color)]">
-              {/* Panel strip */}
-              <div className="flex h-36 sm:h-44 lg:h-52">
+            {/* ── Hero filmstrip — landing-style media treatment ── */}
+            <div className="relative overflow-hidden border-b border-[#ff6ec7]/20">
+              <div className="relative flex h-36 sm:h-44 lg:h-52">
                 <div className="relative w-[55%] shrink-0 overflow-hidden">
                   <img
                     src="/assets/storyboard/panel-street.jpg"
                     alt="Anime storyboard panel — rain-soaked street"
-                    className="h-full w-full object-cover object-center brightness-100 contrast-[1.05] saturate-[1.15]"
+                    className="h-full w-full scale-[1.04] object-cover object-center"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0a0812]/55" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0812]/40 to-transparent" />
                 </div>
                 <div className="relative w-[25%] shrink-0 overflow-hidden border-l border-[#ff6ec7]/20">
                   <img
                     src="/assets/storyboard/panel-overhead.jpg"
                     alt="Anime storyboard panel — overhead city"
-                    className="h-full w-full object-cover object-top brightness-100 contrast-[1.05] saturate-[1.12]"
+                    className="h-full w-full scale-[1.04] object-cover object-top"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0812]/50" />
                 </div>
                 <div className="relative w-[20%] shrink-0 overflow-hidden border-l border-[#00d4ff]/20">
                   <img
                     src="/assets/storyboard/panel-subway.jpg"
                     alt="Anime storyboard panel — determined face close-up"
-                    className="h-full w-full object-cover object-top brightness-100 contrast-[1.08] saturate-[1.18]"
+                    className="h-full w-full scale-[1.04] object-cover object-top"
                   />
                 </div>
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/95 via-[#0a0812]/45 to-[#ff6ec7]/10" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0812]/75 via-[#0a0812]/20 to-transparent" />
               </div>
-              {/* Text overlay — lighter, neon-tinted */}
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#0a0812]/88 via-[#0a0812]/25 to-[#ff6ec7]/5 px-4 pb-4 sm:px-6 sm:pb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#ffb8e8]/90">
+              {/* Text overlay */}
+              <div className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-end px-4 pb-4 sm:px-6 sm:pb-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/80">
                   New project
                 </p>
                 <h1 className="mt-0.5 text-balance text-2xl font-black tracking-tight sm:text-3xl">
@@ -855,35 +853,38 @@ export default function StoryboardStudio({ apiKey }) {
                     Sample output
                   </p>
                   <div className="flex gap-1.5">
-                    <div className="relative w-[38%] shrink-0 overflow-hidden rounded-none border border-[#ff6ec7]/25">
+                    <div className="relative w-[38%] shrink-0 overflow-hidden border border-[#ff6ec7]/20">
                       <img
                         src="/assets/storyboard/panel-face.jpg"
                         alt="Sample character panel"
-                        className="aspect-[4/5] h-full w-full object-cover object-top brightness-100 saturate-[1.15]"
+                        className="aspect-[4/5] h-full w-full scale-[1.04] object-cover object-top"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
-                        <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#ffb8e8]/90">Character</span>
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-transparent to-[#ff6ec7]/10" />
+                      <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
+                        <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00ff88]/80">Character</span>
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col gap-1.5">
-                      <div className="relative overflow-hidden rounded-none border border-[#00d4ff]/20">
+                      <div className="relative overflow-hidden border border-[#00d4ff]/20">
                         <img
                           src="/assets/storyboard/panel-street.jpg"
                           alt="Sample wide shot panel"
-                          className="aspect-video w-full object-cover brightness-100 saturate-[1.12]"
+                          className="aspect-video w-full scale-[1.04] object-cover"
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
-                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00d4ff]/90">Wide shot</span>
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-transparent to-[#ff6ec7]/10" />
+                        <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00ff88]/80">Wide shot</span>
                         </div>
                       </div>
-                      <div className="relative overflow-hidden rounded-none border border-[#ff6ec7]/20">
+                      <div className="relative overflow-hidden border border-[#ff6ec7]/20">
                         <img
                           src="/assets/storyboard/panel-subway.jpg"
                           alt="Sample close-up panel"
-                          className="aspect-video w-full object-cover object-top brightness-100 saturate-[1.15]"
+                          className="aspect-video w-full scale-[1.04] object-cover object-top"
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
-                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#ffb8e8]/90">Close-up</span>
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-transparent to-[#ff6ec7]/10" />
+                        <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00ff88]/80">Close-up</span>
                         </div>
                       </div>
                     </div>

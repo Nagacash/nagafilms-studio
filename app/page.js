@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import LandingFaq from '@/components/LandingFaq';
 import LandingShowreel from '@/components/LandingShowreel';
+import LandingHeroVideo from '@/components/LandingHeroVideo';
+import { NeonMediaOverlays } from '@/components/NeonMediaFrame';
 import LandingShowcaseClip from '@/components/LandingShowcaseClip';
 import { SHOWCASE_CLIPS } from '@/lib/showcase-clips';
 
@@ -104,16 +106,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* hero — full-bleed image plane */}
+      {/* hero — full-bleed animated portrait */}
       <section className="relative z-10 flex min-h-[100svh] flex-col justify-end overflow-hidden">
-        <img
-          src="/hero.jpg"
-          alt="Naga Films Studio character portrait"
-          className="absolute inset-0 h-full w-full object-cover object-[center_20%] animate-hero-ken"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/55 to-black/35" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-[#050505]/25 to-transparent" />
-        <div className="pointer-events-none absolute -top-20 left-1/3 h-[420px] w-[520px] rounded-full bg-[#00ff88]/[0.08] blur-[120px]" />
+        <LandingHeroVideo className="absolute inset-0 h-full w-full scale-[1.04] object-cover object-[center_20%]" />
+        <NeonMediaOverlays />
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-16 pt-32 md:pb-20 md:pt-40">
           <p className="mb-5 animate-fade-in-up text-[11px] font-semibold uppercase tracking-[0.25em] text-[#00ff88]/80">
@@ -275,8 +271,8 @@ export default function Home() {
               Same character. Studio lighting. One click to video.
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-white/45">
-              Turn a still into motion inside Video Studio — or start from text. This loop was generated
-              from the hero portrait you see at the top of the page.
+              The hero above is already in motion — this is the same portrait loop. Generate your own clips
+              inside Video Studio from a still or straight from text.
             </p>
             <Link
               href="/studio/video"
@@ -285,8 +281,12 @@ export default function Home() {
               Open Video Studio →
             </Link>
           </div>
-          <div className="overflow-hidden border border-white/10 bg-[#080808]">
-            <LandingShowreel className="aspect-square w-full object-cover object-top" />
+          <div className="border border-white/10 bg-[#080808]">
+            <LandingShowreel
+              poster="/hero.jpg"
+              className="aspect-square w-full object-cover object-top"
+              compact
+            />
           </div>
         </div>
       </section>
@@ -313,6 +313,7 @@ export default function Home() {
                 >
                   <LandingShowcaseClip
                     src={clip.src}
+                    poster={clip.poster}
                     className="aspect-video w-full object-cover"
                   />
                   <div className="border-t border-white/[0.06] p-4">
@@ -410,11 +411,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* cta — animated loop from hero portrait; hero section above stays the still image */}
+      {/* cta — soft loop backdrop */}
       <section className="relative z-10 min-h-[28rem] overflow-hidden border-t border-white/[0.06] py-28">
         <div className="pointer-events-none absolute inset-0">
-          <LandingShowreel className="h-full w-full scale-110 object-cover object-top blur-md" />
-          <div className="absolute inset-0 bg-[#050505]/70" />
+          <LandingShowreel blur className="h-full w-full object-cover object-top" />
+          <div className="absolute inset-0 bg-[#0a0812]/65" />
         </div>
         <div className="relative mx-auto max-w-6xl px-6 text-center">
           <img src="/assets/NAGA_round.png" alt="" width={56} height={56} className="mx-auto mb-8 h-14 w-14 object-contain opacity-90" />

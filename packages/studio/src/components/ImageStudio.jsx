@@ -1133,7 +1133,7 @@ export default function ImageStudio({
         className="absolute bottom-4 w-full max-w-[95%] lg:max-w-4xl z-40 animate-fade-in-up" 
         style={{ animationDelay: "0.2s" }}
       >
-        <div className="w-full bg-[#0a0a0a]/80 backdrop-blur-3xl rounded-md border border-white/10 p-4 flex flex-col gap-2 shadow-2xl">
+        <div className="w-full bg-panel-bg/85 backdrop-blur-3xl rounded-md border border-[#ff6ec7]/15 p-4 flex flex-col gap-2 shadow-2xl shadow-[#ff6ec7]/5">
           {/* Top row: upload picker + textarea */}
           <div className="flex items-center gap-2">
             <UploadButton

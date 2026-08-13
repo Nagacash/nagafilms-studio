@@ -12,11 +12,13 @@ module.exports = {
             colors: {
                 primary: {
                     DEFAULT: '#00ff88',
-                    hover: '#c4e600',
+                    hover: '#33ffa3',
                 },
-                'app-bg': '#050505',
-                'panel-bg': '#0a0a0a',
-                'card-bg': '#141414',
+                'neon-pink': '#ff6ec7',
+                'neon-cyan': '#00d4ff',
+                'app-bg': '#0a0812',
+                'panel-bg': '#12101a',
+                'card-bg': '#1a1524',
                 secondary: '#a1a1aa',
                 muted: '#52525b',
             },

@@ -108,8 +108,8 @@ function animateBalance(from, to, onTick) {
 
 function StudioLoadingShell() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#050505]">
-      <div className="animate-spin text-3xl text-[#00ff88]">◌</div>
+    <div className="studio-ambient flex min-h-screen items-center justify-center bg-[var(--bg-app)]">
+      <div className="relative z-10 animate-spin text-3xl text-[#ff6ec7]">◌</div>
     </div>
   );
 }
@@ -388,16 +388,16 @@ export default function StandaloneShell() {
 
   return (
     <div
-      className="h-screen bg-[#030303] flex flex-col overflow-hidden text-white relative"
+      className="studio-ambient relative flex h-screen flex-col overflow-hidden bg-[var(--bg-app)] text-white"
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {isDragging && (
-        <div className="fixed inset-0 z-[100] bg-[#00ff88]/10 backdrop-blur-md border-4 border-dashed border-[#00ff88]/50 flex items-center justify-center pointer-events-none transition-all duration-300">
-          <div className="bg-[#0a0a0a] p-8 rounded-3xl border border-white/10 shadow-2xl flex flex-col items-center gap-4 scale-110 animate-pulse">
-            <div className="w-20 h-20 bg-[#00ff88] rounded-2xl flex items-center justify-center">
+        <div className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center border-4 border-dashed border-[#ff6ec7]/50 bg-[#ff6ec7]/10 backdrop-blur-md transition-all duration-300">
+          <div className="flex scale-110 animate-pulse flex-col items-center gap-4 rounded-3xl border border-[#ff6ec7]/25 bg-[var(--bg-panel)]/95 p-8 shadow-2xl shadow-[#ff6ec7]/10">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#ff6ec7] to-[#00ff88]">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2.5">
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
               </svg>
@@ -410,11 +410,11 @@ export default function StandaloneShell() {
         </div>
       )}
 
-      <header className="z-40 grid h-16 flex-shrink-0 grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-white/10 bg-[var(--bg-panel,#0a0a0a)] px-6 lg:gap-6 lg:px-8">
+      <header className="relative z-40 grid h-16 flex-shrink-0 grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-[#ff6ec7]/15 bg-[var(--bg-panel)]/90 px-6 backdrop-blur-md lg:gap-6 lg:px-8">
         <div className="flex items-center gap-3">
-          <img src="/assets/NAGA_round.png" alt="Naga Films" className="h-8 w-8 object-contain" />
+          <img src="/assets/NAGA_round.png" alt="Naga Films" className="h-8 w-8 object-contain drop-shadow-[0_0_12px_rgba(255,110,199,0.35)]" />
           <span className="hidden text-[11px] font-bold uppercase tracking-[0.12em] lg:block">
-            Naga Films <span className="font-medium text-white/40">Studio</span>
+            Naga Films <span className="font-medium text-[#ffb8e8]/70">Studio</span>
           </span>
         </div>
 
@@ -433,8 +433,8 @@ export default function StandaloneShell() {
                 aria-current={isActive ? 'page' : undefined}
                 className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors ${
                   isActive
-                    ? 'bg-[#00ff88] text-black'
-                    : 'text-white/45 hover:bg-white/5 hover:text-white'
+                    ? 'bg-[#00ff88] text-black shadow-[0_0_20px_rgba(0,255,136,0.25)]'
+                    : 'text-white/55 hover:bg-[#ff6ec7]/10 hover:text-[#ffb8e8]'
                 }`}
               >
                 {tab.label}
@@ -461,7 +461,7 @@ export default function StandaloneShell() {
                 ? 'border-red-500/40 bg-red-500/10 hover:border-red-400/60'
                 : isLowCredits
                   ? 'border-amber-500/35 bg-amber-500/5 hover:border-amber-400/50'
-                  : 'border-white/15 bg-transparent hover:border-white/30 hover:bg-white/[0.03]'
+                  : 'border-[#ff6ec7]/20 bg-[#ff6ec7]/5 hover:border-[#ff6ec7]/35 hover:bg-[#ff6ec7]/8'
             }`}
           >
             <span
@@ -516,12 +516,12 @@ export default function StandaloneShell() {
             type="button"
             onClick={() => setShowSettings(true)}
             title="Wallet balance, admin tools, and account settings"
-            className="inline-flex items-center border border-white/15 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/70 transition-colors hover:border-white/30 hover:text-white"
+            className="inline-flex items-center border border-[#ff6ec7]/20 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/75 transition-colors hover:border-[#ff6ec7]/40 hover:text-[#ffb8e8]"
           >
             Settings
           </button>
           <LogoutButton
-            className="inline-flex items-center gap-2 border border-white/15 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55 transition-colors hover:border-white/30 hover:text-white"
+            className="inline-flex items-center gap-2 border border-[#ff6ec7]/15 bg-transparent px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55 transition-colors hover:border-[#ff6ec7]/35 hover:text-[#ffb8e8]"
           />
         </div>
       </header>
@@ -554,20 +554,20 @@ export default function StandaloneShell() {
       )}
 
       {activeTabMeta && (
-        <div className="flex-shrink-0 border-b border-white/10 bg-[#050505]">
+        <div className="relative z-10 flex-shrink-0 border-b border-[#ff6ec7]/12 bg-[var(--bg-panel)]/85 backdrop-blur-sm">
           {/* Main info row */}
           <div className="flex items-center justify-between gap-4 px-6 py-2.5 lg:px-8">
             {/* Left: label chip + blurb */}
             <div className="flex min-w-0 items-center gap-3">
-              <span className="shrink-0 border border-[#00ff88]/30 bg-[#00ff88]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#00ff88]">
+              <span className="shrink-0 border border-[#ff6ec7]/35 bg-[#ff6ec7]/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#ffb8e8]">
                 {activeTabMeta.label}
               </span>
-              <span className="truncate text-[12px] text-white/50">
+              <span className="truncate text-[12px] text-white/65">
                 {activeTabMeta.blurb}
               </span>
             </div>
             {/* Right: numbered steps */}
-            <p className="hidden shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-white/25 sm:block">
+            <p className="hidden shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-white/35 sm:block">
               {activeTabMeta.howTo}
             </p>
           </div>
@@ -590,10 +590,10 @@ export default function StandaloneShell() {
                   key={tab.id}
                   type="button"
                   onClick={() => handleTabChange(tab.id)}
-                  className={`inline-flex items-center gap-1.5 shrink-0 rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] ${
                     isActive
-                      ? 'bg-[#00ff88] text-black'
-                      : 'border border-white/10 text-white/45 hover:text-white'
+                      ? 'bg-[#00ff88] text-black shadow-[0_0_16px_rgba(0,255,136,0.2)]'
+                      : 'border border-[#ff6ec7]/15 text-white/55 hover:border-[#ff6ec7]/30 hover:text-[#ffb8e8]'
                   }`}
                 >
                   {tab.label}
@@ -615,7 +615,7 @@ export default function StandaloneShell() {
 
       <StudioTabMoodStrip aesthetic={STUDIO_AESTHETICS[activeTab]} />
 
-      <div className="relative min-h-0 flex-1 overflow-hidden">
+      <div className="relative z-10 min-h-0 flex-1 overflow-hidden">
         {activeTab === 'image' && (
           <ImageStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
@@ -633,16 +633,16 @@ export default function StandaloneShell() {
       </div>
 
       {showSettings && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
-          <div className="bg-[#0a0a0a] border border-white/10 rounded-xl p-8 w-full max-w-sm shadow-2xl">
-            <h2 className="text-white font-bold text-lg mb-2">Settings</h2>
-            <p className="text-white/40 text-[13px] mb-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0812]/70 backdrop-blur-md animate-fade-in-up">
+          <div className="w-full max-w-sm rounded-xl border border-[#ff6ec7]/20 bg-[var(--bg-panel)] p-8 shadow-2xl shadow-[#ff6ec7]/10">
+            <h2 className="mb-2 text-lg font-bold text-white">Settings</h2>
+            <p className="mb-8 text-[13px] text-white/55">
               Your studio wallet and account preferences.
             </p>
 
-            <div className="space-y-4 mb-8">
-              <div className="bg-white/5 border border-white/[0.03] rounded-md p-4">
-                <label className="block text-xs font-bold text-white/30 mb-2">Your balance</label>
+            <div className="mb-8 space-y-4">
+              <div className="rounded-md border border-[#ff6ec7]/15 bg-[#ff6ec7]/5 p-4">
+                <label className="mb-2 block text-xs font-bold text-[#ffb8e8]/80">Your balance</label>
                 <div className="text-2xl font-black text-[#00ff88]">{balanceLabel}</div>
                 <p className="text-[11px] text-white/35 mt-2">
                   Model costs are shown in the picker. Failed generations restore credits automatically.
