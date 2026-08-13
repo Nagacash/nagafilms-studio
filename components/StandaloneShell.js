@@ -55,6 +55,30 @@ const LOCAL_GALLERY_TABS = new Set(['image', 'video', 'lipsync', 'cinema', 'mark
 const LOCAL_STORAGE_NOTICE =
   'We do not store your images or clips on our servers. Gallery history lives in this browser only — always download files you want to keep.';
 
+// localStorage key + history field for each tab's gallery count
+const GALLERY_PERSIST = {
+  image:     { key: 'hg_image_studio_persistent',     field: 'localHistory' },
+  video:     { key: 'hg_video_studio_persistent',     field: 'localHistory' },
+  lipsync:   { key: 'hg_lipsync_studio_persistent',   field: 'internalHistory' },
+  cinema:    { key: 'hg_cinema_studio_persistent',    field: 'internalHistory' },
+  marketing: { key: 'hg_marketing_studio_persistent', field: 'history' },
+};
+
+function readGalleryCounts() {
+  const counts = {};
+  for (const [tabId, { key, field }] of Object.entries(GALLERY_PERSIST)) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) { counts[tabId] = 0; continue; }
+      const data = JSON.parse(raw);
+      counts[tabId] = Array.isArray(data[field]) ? data[field].length : 0;
+    } catch {
+      counts[tabId] = 0;
+    }
+  }
+  return counts;
+}
+
 function clearByoKey() {
   localStorage.removeItem(STORAGE_KEY);
   document.cookie = 'muapi_key=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
@@ -108,6 +132,7 @@ export default function StandaloneShell() {
   const [recentDelta, setRecentDelta] = useState(null);
   const [muapiOperatorBalance, setMuapiOperatorBalance] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [galleryCounts, setGalleryCounts] = useState({});
   const [isDragging, setIsDragging] = useState(false);
   const [droppedFiles, setDroppedFiles] = useState(null);
   const deltaTimerRef = useRef(null);
@@ -317,6 +342,28 @@ export default function StandaloneShell() {
     setDroppedFiles(null);
   }, []);
 
+  // ── Gallery counts from localStorage ─────────────────────────────────────
+  useEffect(() => {
+    setGalleryCounts(readGalleryCounts());
+
+    // cross-tab updates
+    const onStorage = (e) => {
+      const watched = Object.values(GALLERY_PERSIST).map((p) => p.key);
+      if (!e.key || watched.includes(e.key)) {
+        setGalleryCounts(readGalleryCounts());
+      }
+    };
+    window.addEventListener('storage', onStorage);
+
+    // same-tab polling: studios write after a 500 ms debounce, so 2 s is plenty
+    const pollId = setInterval(() => setGalleryCounts(readGalleryCounts()), 2000);
+
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      clearInterval(pollId);
+    };
+  }, []);
+
   const balanceLabel =
     displayBalance !== null
       ? `${Number(displayBalance).toLocaleString()} cr`
@@ -382,13 +429,22 @@ export default function StandaloneShell() {
                 onClick={() => handleTabChange(tab.id)}
                 title={`${tab.label}: ${tab.blurb}`}
                 aria-current={isActive ? 'page' : undefined}
-                className={`whitespace-nowrap rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors ${
                   isActive
                     ? 'bg-[#00ff88] text-black'
                     : 'text-white/45 hover:bg-white/5 hover:text-white'
                 }`}
               >
                 {tab.label}
+                {galleryCounts[tab.id] > 0 && (
+                  <span
+                    className={`rounded-full px-1.5 py-0 text-[9px] font-bold tabular-nums leading-[1.6] ${
+                      isActive ? 'bg-black/20 text-black/70' : 'bg-white/10 text-white/50'
+                    }`}
+                  >
+                    {galleryCounts[tab.id]}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -532,13 +588,22 @@ export default function StandaloneShell() {
                   key={tab.id}
                   type="button"
                   onClick={() => handleTabChange(tab.id)}
-                  className={`shrink-0 rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] ${
+                  className={`inline-flex items-center gap-1.5 shrink-0 rounded-none px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] ${
                     isActive
                       ? 'bg-[#00ff88] text-black'
                       : 'border border-white/10 text-white/45 hover:text-white'
                   }`}
                 >
                   {tab.label}
+                  {galleryCounts[tab.id] > 0 && (
+                    <span
+                      className={`rounded-full px-1.5 py-0 text-[9px] font-bold tabular-nums leading-[1.6] ${
+                        isActive ? 'bg-black/20 text-black/70' : 'bg-white/10 text-white/50'
+                      }`}
+                    >
+                      {galleryCounts[tab.id]}
+                    </span>
+                  )}
                 </button>
               );
             })}
