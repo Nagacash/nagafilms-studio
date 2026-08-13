@@ -728,35 +728,36 @@ export default function StoryboardStudio({ apiKey }) {
                   <img
                     src="/assets/storyboard/panel-street.jpg"
                     alt="Anime storyboard panel — rain-soaked street"
-                    className="h-full w-full object-cover object-center brightness-75"
+                    className="h-full w-full object-cover object-center brightness-100 contrast-[1.05] saturate-[1.15]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--bg-app,#050505)]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0a0812]/55" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0812]/40 to-transparent" />
                 </div>
-                <div className="relative w-[25%] shrink-0 overflow-hidden border-l border-white/10">
+                <div className="relative w-[25%] shrink-0 overflow-hidden border-l border-[#ff6ec7]/20">
                   <img
                     src="/assets/storyboard/panel-overhead.jpg"
                     alt="Anime storyboard panel — overhead city"
-                    className="h-full w-full object-cover object-top brightness-70"
+                    className="h-full w-full object-cover object-top brightness-100 contrast-[1.05] saturate-[1.12]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--bg-app,#050505)]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0812]/50" />
                 </div>
-                <div className="relative w-[20%] shrink-0 overflow-hidden border-l border-white/10">
+                <div className="relative w-[20%] shrink-0 overflow-hidden border-l border-[#00d4ff]/20">
                   <img
                     src="/assets/storyboard/panel-subway.jpg"
-                    alt="Anime storyboard panel — subway"
-                    className="h-full w-full object-cover object-center brightness-70"
+                    alt="Anime storyboard panel — determined face close-up"
+                    className="h-full w-full object-cover object-top brightness-100 contrast-[1.08] saturate-[1.18]"
                   />
                 </div>
               </div>
-              {/* Text overlay */}
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[var(--bg-app,#050505)] via-[var(--bg-app,#050505)]/60 to-transparent px-4 pb-4 sm:px-6 sm:pb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-primary,#00ff88)]/70">
+              {/* Text overlay — lighter, neon-tinted */}
+              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[#0a0812]/88 via-[#0a0812]/25 to-[#ff6ec7]/5 px-4 pb-4 sm:px-6 sm:pb-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#ffb8e8]/90">
                   New project
                 </p>
                 <h1 className="mt-0.5 text-balance text-2xl font-black tracking-tight sm:text-3xl">
                   Storyboard
                 </h1>
-                <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-white/50 sm:text-sm">
+                <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-white/65 sm:text-sm">
                   Set up a series shell, then run library → shots → PDF when you are ready.
                   Credits are held per step and restored if a step fails.
                 </p>
@@ -854,35 +855,35 @@ export default function StoryboardStudio({ apiKey }) {
                     Sample output
                   </p>
                   <div className="flex gap-1.5">
-                    <div className="relative w-[38%] shrink-0 overflow-hidden rounded-none border border-white/10">
+                    <div className="relative w-[38%] shrink-0 overflow-hidden rounded-none border border-[#ff6ec7]/25">
                       <img
                         src="/assets/storyboard/panel-face.jpg"
                         alt="Sample character panel"
-                        className="h-full w-full object-cover object-top aspect-[4/5]"
+                        className="aspect-[4/5] h-full w-full object-cover object-top brightness-100 saturate-[1.15]"
                       />
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-1.5 py-1">
-                        <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary,#00ff88)]/80">Character</span>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
+                        <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#ffb8e8]/90">Character</span>
                       </div>
                     </div>
                     <div className="flex flex-1 flex-col gap-1.5">
-                      <div className="relative overflow-hidden rounded-none border border-white/10">
+                      <div className="relative overflow-hidden rounded-none border border-[#00d4ff]/20">
                         <img
                           src="/assets/storyboard/panel-street.jpg"
                           alt="Sample wide shot panel"
-                          className="aspect-video w-full object-cover brightness-90"
+                          className="aspect-video w-full object-cover brightness-100 saturate-[1.12]"
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-1.5 py-1">
-                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary,#00ff88)]/80">Wide shot</span>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00d4ff]/90">Wide shot</span>
                         </div>
                       </div>
-                      <div className="relative overflow-hidden rounded-none border border-white/10">
+                      <div className="relative overflow-hidden rounded-none border border-[#ff6ec7]/20">
                         <img
                           src="/assets/storyboard/panel-subway.jpg"
-                          alt="Sample interior panel"
-                          className="aspect-video w-full object-cover brightness-90"
+                          alt="Sample close-up panel"
+                          className="aspect-video w-full object-cover object-top brightness-100 saturate-[1.15]"
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-1.5 py-1">
-                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary,#00ff88)]/80">Interior</span>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#ffb8e8]/90">Close-up</span>
                         </div>
                       </div>
                     </div>

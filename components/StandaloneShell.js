@@ -8,6 +8,8 @@ import { ImageStudio, VideoStudio, LipSyncStudio, CinemaStudio, MarketingStudio,
 import axios from 'axios';
 import StudioLoginGate from './StudioLoginGate';
 import LogoutButton, { logoutEverywhere } from './LogoutButton';
+import StudioTabMoodStrip from './StudioTabMoodStrip';
+import { STUDIO_AESTHETICS } from '@/lib/studio-aesthetics';
 
 const TABS = [
   {
@@ -610,6 +612,8 @@ export default function StandaloneShell() {
           </div>
         </div>
       )}
+
+      <StudioTabMoodStrip aesthetic={STUDIO_AESTHETICS[activeTab]} />
 
       <div className="relative min-h-0 flex-1 overflow-hidden">
         {activeTab === 'image' && (
