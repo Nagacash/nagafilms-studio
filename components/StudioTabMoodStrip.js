@@ -101,7 +101,7 @@ export default function StudioTabMoodStrip({ aesthetic }) {
         )}
       </div>
 
-      <NeonMediaOverlays />
+      <NeonMediaOverlays light={aesthetic.overlayLight} compact={aesthetic.overlayLight} />
       <NeonMediaCaption>{aesthetic.caption}</NeonMediaCaption>
     </div>
   );

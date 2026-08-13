@@ -36,12 +36,15 @@ const focusRing =
 
 const fieldClass = `w-full rounded-none border border-[var(--border-color,rgba(255,255,255,0.1))] bg-white/5 outline-none focus:border-[var(--border-primary,rgba(0,255,136,0.25))] ${focusRing}`;
 
-const btnGhost = `inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-[var(--border-color,rgba(255,255,255,0.1))] px-3 py-2 text-xs font-semibold uppercase tracking-[0.06em] text-white/60 transition-colors hover:border-[var(--border-primary)] hover:text-[var(--color-primary,#00ff88)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
+const btnGhost = `inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-none border border-[var(--border-color,rgba(255,255,255,0.1))] px-3 py-2 text-xs font-semibold uppercase tracking-[0.06em] text-white/60 transition-colors duration-200 hover:border-[var(--border-primary)] hover:text-[var(--color-primary,#00ff88)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
 
-const btnPrimary = `inline-flex min-h-11 items-center justify-center gap-2 rounded-none bg-[var(--color-primary,#00ff88)] px-3 py-2 text-xs font-bold uppercase tracking-[0.06em] text-black transition-colors hover:bg-[var(--color-primary-hover,#33ffa3)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
+const btnPrimary = `inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-none bg-[var(--color-primary,#00ff88)] px-3 py-2 text-xs font-bold uppercase tracking-[0.06em] text-black transition-colors duration-200 hover:bg-[var(--color-primary-hover,#33ffa3)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`;
 
 const panelClass =
-  "rounded-none border border-[var(--border-color,rgba(255,110,199,0.12))] bg-[var(--bg-panel,#12101a)]";
+  "rounded-none border border-[var(--border-color,rgba(255,110,199,0.15))] bg-[var(--bg-panel,#12101a)] shadow-[inset_0_1px_0_rgba(255,110,199,0.06)]";
+
+const cardHover =
+  "transition-colors duration-200 motion-reduce:transition-none hover:border-[#ff6ec7]/35";
 
 const STYLE_PRESETS = [
   "cinematic realistic",
@@ -75,13 +78,167 @@ const WORKFLOW_STEPS = [
   },
 ];
 
-function FieldLabel({ children, hint }) {
+const STORYBOARD_MEDIA = "h-full w-full scale-[1.04] object-cover";
+
+function StoryboardMediaOverlays({ light = false }) {
+  if (light) {
+    return (
+      <>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/55 via-transparent to-[#ff6ec7]/8" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0812]/35 via-transparent to-transparent" />
+      </>
+    );
+  }
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-[#0a0812]/30 to-[#ff6ec7]/10" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0812]/70 via-[#0a0812]/15 to-transparent" />
+      <div className="pointer-events-none absolute -top-8 left-1/4 h-24 w-32 rounded-full bg-[#ff6ec7]/[0.1] blur-[60px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-20 w-28 rounded-full bg-[#00d4ff]/[0.08] blur-[50px]" />
+    </>
+  );
+}
+
+function StoryboardPanelFrame({
+  src,
+  alt,
+  label,
+  type = "image",
+  poster,
+  className = "",
+  objectPosition = "center",
+  border = "pink",
+  videoRef,
+}) {
+  const borderCls =
+    border === "cyan" ? "border-[#00d4ff]/25" : "border-[#ff6ec7]/25";
+
+  return (
+    <div className={`relative overflow-hidden ${borderCls} border ${className}`}>
+      {type === "video" ? (
+        <video
+          ref={videoRef}
+          src={src}
+          poster={poster}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className={STORYBOARD_MEDIA}
+          style={{ objectPosition }}
+        />
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          className={STORYBOARD_MEDIA}
+          style={{ objectPosition }}
+        />
+      )}
+      <StoryboardMediaOverlays light />
+      {label ? (
+        <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/75 to-transparent px-2 py-1.5">
+          <span className="text-[8px] font-bold uppercase tracking-[0.12em] text-[#00ff88]/90">
+            {label}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SectionHeading({ title, description, meta }) {
+  return (
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-2 border-b border-[#ff6ec7]/15 pb-3">
+      <div className="min-w-0">
+        <h2 className="flex items-center gap-2 text-sm font-bold tracking-tight text-white">
+          <span className="inline-block h-4 w-0.5 shrink-0 bg-[#00ff88]" aria-hidden />
+          {title}
+        </h2>
+        {description ? (
+          <p className="mt-1 text-xs leading-relaxed text-white/55">{description}</p>
+        ) : null}
+      </div>
+      {meta ? (
+        <span className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] tabular-nums text-[#00ff88]/75">
+          {meta}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function WorkflowRail({ activeStep = 0, compact = false }) {
+  return (
+    <ol
+      className={`flex gap-1.5 ${compact ? "overflow-x-auto pb-0.5" : "mt-4"}`}
+      aria-label="Storyboard workflow"
+    >
+      {WORKFLOW_STEPS.map((step, i) => {
+        const done = i < activeStep;
+        const current = i === activeStep;
+        return (
+          <li
+            key={step.n}
+            className={`min-w-0 flex-1 border px-2 py-2 transition-colors duration-200 motion-reduce:transition-none ${
+              done
+                ? "border-[#00ff88]/35 bg-[#00ff88]/8"
+                : current
+                  ? "border-[#ff6ec7]/40 bg-[#ff6ec7]/5"
+                  : "border-white/10 bg-white/[0.02]"
+            } ${compact ? "min-w-[5.5rem]" : ""}`}
+          >
+            <p
+              className={`text-[9px] font-bold tabular-nums ${
+                done || current ? "text-[#00ff88]" : "text-white/35"
+              }`}
+            >
+              {step.n}
+            </p>
+            <p
+              className={`mt-0.5 truncate text-[10px] font-semibold uppercase tracking-[0.06em] ${
+                done || current ? "text-white/85" : "text-white/45"
+              }`}
+            >
+              {step.title}
+            </p>
+            {!compact && (
+              <p className="mt-1 line-clamp-2 text-[10px] leading-snug text-white/45">
+                {step.body}
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function deriveWorkflowStep({ selectedId, characters, shots, pdfStatus }) {
+  if (!selectedId) return 0;
+  if (extractExportUrl(pdfStatus)) return 4;
+  if (shots.length > 0) return 3;
+  if (characters.length > 0) return 2;
+  return 1;
+}
+
+function FieldLabel({ children, hint, htmlFor }) {
   return (
     <div className="mb-2 flex items-baseline justify-between gap-2">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">
-        {children}
-      </span>
-      {hint ? <span className="text-[10px] text-white/35">{hint}</span> : null}
+      {htmlFor ? (
+        <label
+          htmlFor={htmlFor}
+          className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/55"
+        >
+          {children}
+        </label>
+      ) : (
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/55">
+          {children}
+        </span>
+      )}
+      {hint ? <span className="text-[10px] text-white/40">{hint}</span> : null}
     </div>
   );
 }
@@ -248,6 +405,7 @@ export default function StoryboardStudio({ apiKey }) {
   const [addShotIndex, setAddShotIndex] = useState(1);
   const [addDescription, setAddDescription] = useState("");
   const pollBusyRef = useRef(false);
+  const heroFilmstripRef = useRef(null);
 
   const selected = useMemo(
     () => projects.find((p) => String(p.id) === String(selectedId)) || project,
@@ -291,6 +449,16 @@ export default function StoryboardStudio({ apiKey }) {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (selectedId) return undefined;
+    const root = heroFilmstripRef.current;
+    if (!root) return undefined;
+    root.querySelectorAll("video").forEach((el) => {
+      void el.play().catch(() => {});
+    });
+    return undefined;
+  }, [selectedId]);
 
   const refreshList = useCallback(async () => {
     if (!apiKey) return;
@@ -590,18 +758,29 @@ export default function StoryboardStudio({ apiKey }) {
 
   const showCharacterSkeleton = loadingDetail && selectedId && characters.length === 0;
   const showShotSkeleton = loadingDetail && selectedId && shots.length === 0;
+  const workflowStep = deriveWorkflowStep({
+    selectedId,
+    characters,
+    shots,
+    pdfStatus,
+  });
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-[var(--bg-app,#0a0812)] text-white lg:flex-row">
       <aside className="flex max-h-[40vh] w-full shrink-0 flex-col border-b border-[var(--border-color,rgba(255,255,255,0.1))] bg-[var(--bg-card,#080808)] lg:max-h-none lg:w-[min(100%,20rem)] lg:border-b-0 lg:border-r">
         <div className="border-b border-[var(--border-color)] p-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-primary,#00ff88)]/70">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/75">
             Storyboard
           </p>
           <h2 className="mt-1 text-balance text-lg font-black tracking-tight">Projects</h2>
-          <p className="mt-1 text-xs leading-relaxed text-white/50">
+          <p className="mt-1 text-xs leading-relaxed text-white/55">
             Episodic boards with persistent characters.
           </p>
+          {projects.length > 0 && (
+            <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.12em] tabular-nums text-[#ff6ec7]/70">
+              {projects.length} project{projects.length === 1 ? "" : "s"}
+            </p>
+          )}
         </div>
 
         <div className="custom-scrollbar flex-1 space-y-2 overflow-y-auto p-3">
@@ -619,10 +798,10 @@ export default function StoryboardStudio({ apiKey }) {
                   <button
                     type="button"
                     onClick={() => setSelectedId(p.id)}
-                    className={`min-h-11 w-full rounded-none border px-3 py-2.5 pr-10 text-left transition-colors ${focusRing} ${
+                    className={`min-h-11 w-full cursor-pointer rounded-none border px-3 py-2.5 pr-10 text-left transition-colors duration-200 motion-reduce:transition-none ${focusRing} ${
                       active
-                        ? "border-[var(--border-primary)] bg-[var(--color-primary,#00ff88)]/10"
-                        : "border-white/5 bg-white/[0.02] hover:border-white/15"
+                        ? "border-[var(--border-primary)] bg-[var(--color-primary,#00ff88)]/10 shadow-[inset_2px_0_0_#00ff88]"
+                        : "border-white/8 bg-white/[0.02] hover:border-[#ff6ec7]/30 hover:bg-white/[0.04]"
                     }`}
                   >
                     <p className="truncate text-sm font-semibold">
@@ -720,42 +899,50 @@ export default function StoryboardStudio({ apiKey }) {
 
         {!selectedId ? (
           <div className="custom-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
-            {/* ── Hero filmstrip — landing-style media treatment ── */}
+            {/* Hero filmstrip — landing-style media treatment */}
             <div className="relative overflow-hidden border-b border-[#ff6ec7]/20">
-              <div className="relative flex h-36 sm:h-44 lg:h-52">
-                <div className="relative w-[55%] shrink-0 overflow-hidden">
+              <div ref={heroFilmstripRef} className="relative flex h-36 sm:h-44 lg:h-52">
+                <div className="relative w-[42%] shrink-0 overflow-hidden">
                   <img
                     src="/assets/storyboard/panel-street.jpg"
-                    alt="Anime storyboard panel — rain-soaked street"
-                    className="h-full w-full scale-[1.04] object-cover object-center"
+                    alt="Storyboard wide — rain-soaked neon street"
+                    className={`${STORYBOARD_MEDIA} object-center`}
                   />
                 </div>
-                <div className="relative w-[25%] shrink-0 overflow-hidden border-l border-[#ff6ec7]/20">
-                  <img
-                    src="/assets/storyboard/panel-overhead.jpg"
-                    alt="Anime storyboard panel — overhead city"
-                    className="h-full w-full scale-[1.04] object-cover object-top"
+                <div className="relative w-[33%] shrink-0 overflow-hidden border-l border-[#ff6ec7]/20">
+                  <video
+                    src="/video/lipsync-mood.mp4"
+                    poster="/hero.jpg"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className={`${STORYBOARD_MEDIA} object-[center_22%]`}
                   />
                 </div>
-                <div className="relative w-[20%] shrink-0 overflow-hidden border-l border-[#00d4ff]/20">
-                  <img
-                    src="/assets/storyboard/panel-subway.jpg"
-                    alt="Anime storyboard panel — determined face close-up"
-                    className="h-full w-full scale-[1.04] object-cover object-top"
+                <div className="relative w-[25%] shrink-0 overflow-hidden border-l border-[#00d4ff]/20">
+                  <video
+                    src="/video/cinema-mood.mp4"
+                    poster="/assets/storyboard/panel-overhead.jpg"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className={`${STORYBOARD_MEDIA} object-center`}
                   />
                 </div>
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/95 via-[#0a0812]/45 to-[#ff6ec7]/10" />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0812]/75 via-[#0a0812]/20 to-transparent" />
+                <StoryboardMediaOverlays />
               </div>
-              {/* Text overlay */}
               <div className="pointer-events-none absolute inset-0 z-[1] flex flex-col justify-end px-4 pb-4 sm:px-6 sm:pb-5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/80">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/85">
                   New project
                 </p>
                 <h1 className="mt-0.5 text-balance text-2xl font-black tracking-tight sm:text-3xl">
                   Storyboard
                 </h1>
-                <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-white/65 sm:text-sm">
+                <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-white/70 sm:text-sm">
                   Set up a series shell, then run library → shots → PDF when you are ready.
                   Credits are held per step and restored if a step fails.
                 </p>
@@ -766,23 +953,27 @@ export default function StoryboardStudio({ apiKey }) {
               <div className="p-4 sm:p-6">
                 <div className={`divide-y divide-[var(--border-color)] ${panelClass}`}>
                   <section className="p-4 sm:p-5">
-                    <FieldLabel>Series title</FieldLabel>
+                    <FieldLabel htmlFor="storyboard-title">Series title</FieldLabel>
                     <input
+                      id="storyboard-title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Untitled series"
-                      className={`${fieldClass} min-h-12 px-4 py-3 text-base font-semibold tracking-tight placeholder:font-normal placeholder:text-white/25`}
+                      className={`${fieldClass} min-h-12 px-4 py-3 text-base font-semibold tracking-tight placeholder:font-normal placeholder:text-white/30`}
                     />
                   </section>
 
                   <section className="p-4 sm:p-5">
-                    <FieldLabel hint="Required">Story prompt</FieldLabel>
+                    <FieldLabel htmlFor="storyboard-prompt" hint="Required">
+                      Story prompt
+                    </FieldLabel>
                     <textarea
+                      id="storyboard-prompt"
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
                       rows={7}
                       placeholder="Premise, characters, tone, setting — enough for the model to build a coherent multi-episode board…"
-                      className={`${fieldClass} min-h-[10rem] resize-y border-l-2 border-l-[var(--color-primary,#00ff88)]/30 bg-black/30 px-4 py-3 text-sm leading-relaxed placeholder:text-white/25 focus:border-l-[var(--color-primary,#00ff88)]`}
+                      className={`${fieldClass} min-h-[10rem] resize-y border-l-2 border-l-[var(--color-primary,#00ff88)]/35 bg-black/25 px-4 py-3 text-sm leading-relaxed placeholder:text-white/30 focus:border-l-[var(--color-primary,#00ff88)]`}
                     />
                   </section>
 
@@ -808,10 +999,10 @@ export default function StoryboardStudio({ apiKey }) {
                               type="button"
                               disabled={!!busy}
                               onClick={() => setStyle(preset)}
-                              className={`px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${focusRing} ${
+                              className={`cursor-pointer px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-40 ${focusRing} ${
                                 active
                                   ? "bg-[var(--color-primary,#00ff88)] text-black"
-                                  : "border border-[var(--border-color)] bg-white/[0.02] text-white/50 hover:border-[var(--border-primary)] hover:text-white/80"
+                                  : "border border-[var(--border-color)] bg-white/[0.02] text-white/55 hover:border-[#ff6ec7]/35 hover:text-white/85"
                               }`}
                             >
                               {preset}
@@ -846,83 +1037,47 @@ export default function StoryboardStudio({ apiKey }) {
                 </div>
               </div>
 
-              <aside className="border-t border-[var(--border-color)] bg-[var(--bg-card,#080808)] p-4 sm:p-5 lg:border-l lg:border-t-0">
-                {/* Sample output panels */}
+              <aside className="border-t border-[var(--border-color)] bg-[var(--bg-card,#0a0812)] p-4 sm:p-5 lg:border-l lg:border-t-0">
                 <div className="mb-5">
-                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/30">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">
                     Sample output
                   </p>
                   <div className="flex gap-1.5">
-                    <div className="relative w-[38%] shrink-0 overflow-hidden border border-[#ff6ec7]/20">
-                      <img
-                        src="/assets/storyboard/panel-face.jpg"
-                        alt="Sample character panel"
-                        className="aspect-[4/5] h-full w-full scale-[1.04] object-cover object-top"
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-transparent to-[#ff6ec7]/10" />
-                      <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
-                        <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00ff88]/80">Character</span>
-                      </div>
-                    </div>
+                    <StoryboardPanelFrame
+                      src="/assets/storyboard/panel-face.jpg"
+                      alt="Sample character panel"
+                      label="Character"
+                      className="aspect-[4/5] w-[38%] shrink-0"
+                      objectPosition="center top"
+                    />
                     <div className="flex flex-1 flex-col gap-1.5">
-                      <div className="relative overflow-hidden border border-[#00d4ff]/20">
-                        <img
-                          src="/assets/storyboard/panel-street.jpg"
-                          alt="Sample wide shot panel"
-                          className="aspect-video w-full scale-[1.04] object-cover"
-                        />
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-transparent to-[#ff6ec7]/10" />
-                        <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
-                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00ff88]/80">Wide shot</span>
-                        </div>
-                      </div>
-                      <div className="relative overflow-hidden border border-[#ff6ec7]/20">
-                        <img
-                          src="/assets/storyboard/panel-subway.jpg"
-                          alt="Sample close-up panel"
-                          className="aspect-video w-full scale-[1.04] object-cover object-top"
-                        />
-                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/90 via-transparent to-[#ff6ec7]/10" />
-                        <div className="absolute bottom-0 left-0 right-0 z-[1] bg-gradient-to-t from-[#0a0812]/80 to-transparent px-1.5 py-1">
-                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[#00ff88]/80">Close-up</span>
-                        </div>
-                      </div>
+                      <StoryboardPanelFrame
+                        src="/assets/storyboard/panel-street.jpg"
+                        alt="Sample wide shot panel"
+                        label="Wide shot"
+                        border="cyan"
+                        className="aspect-video w-full"
+                      />
+                      <StoryboardPanelFrame
+                        src="/assets/storyboard/panel-subway.jpg"
+                        alt="Sample close-up panel"
+                        label="Close-up"
+                        className="aspect-video w-full"
+                        objectPosition="center top"
+                      />
                     </div>
                   </div>
                 </div>
 
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/55">
                   Workflow
                 </p>
-                <ol className="mt-4 space-y-0">
-                  {WORKFLOW_STEPS.map((step, i) => (
-                    <li
-                      key={step.n}
-                      className={`relative flex gap-3 pb-5 ${
-                        i < WORKFLOW_STEPS.length - 1
-                          ? "before:absolute before:left-[0.65rem] before:top-7 before:h-[calc(100%-1.25rem)] before:w-px before:bg-[var(--border-color)]"
-                          : ""
-                      }`}
-                    >
-                      <span className="relative z-10 flex h-5 w-5 shrink-0 items-center justify-center bg-[var(--bg-card,#080808)] text-[10px] font-bold tabular-nums text-[var(--color-primary,#00ff88)]">
-                        {step.n}
-                      </span>
-                      <div className="min-w-0 pt-0.5">
-                        <p className="text-xs font-bold uppercase tracking-[0.06em] text-white/80">
-                          {step.title}
-                        </p>
-                        <p className="mt-1 text-[11px] leading-relaxed text-white/45">
-                          {step.body}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-                <div className="mt-2 border border-[var(--border-color)] bg-black/20 p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/40">
+                <WorkflowRail activeStep={0} />
+                <div className="mt-4 border border-[#ff6ec7]/15 bg-[#ff6ec7]/5 p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#ff6ec7]/80">
                     Tip
                   </p>
-                  <p className="mt-1.5 text-[11px] leading-relaxed text-white/50">
+                  <p className="mt-1.5 text-[11px] leading-relaxed text-white/55">
                     Write the prompt like a show bible — who, where, and what changes each
                     episode.
                   </p>
@@ -932,12 +1087,13 @@ export default function StoryboardStudio({ apiKey }) {
           </div>
         ) : (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            <header className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--border-color)] px-4 py-4 sm:px-5">
+            <header className="border-b border-[var(--border-color)] px-4 py-4 sm:px-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <button
                   type="button"
                   onClick={() => setSelectedId(null)}
-                  className={`mb-2 text-xs text-white/50 hover:text-[var(--color-primary,#00ff88)] ${focusRing}`}
+                  className={`mb-2 cursor-pointer text-xs text-white/55 transition-colors duration-200 hover:text-[var(--color-primary,#00ff88)] ${focusRing}`}
                 >
                   ← New project
                 </button>
@@ -956,7 +1112,7 @@ export default function StoryboardStudio({ apiKey }) {
                 </p>
                 <ProgressBar value={boardProgress} />
                 {(project?.prompt || selected?.prompt) && (
-                  <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/50 line-clamp-3">
+                  <p className="mt-2 max-w-3xl text-sm leading-relaxed text-white/55 line-clamp-3">
                     {project?.prompt || selected?.prompt}
                   </p>
                 )}
@@ -1006,6 +1162,8 @@ export default function StoryboardStudio({ apiKey }) {
                   {busy === "Deleting…" ? busy : "Delete project"}
                 </button>
               </div>
+              </div>
+              <WorkflowRail activeStep={workflowStep} compact />
             </header>
 
             <div className="custom-scrollbar min-h-0 flex-1 space-y-8 overflow-y-auto p-4 sm:p-5">
@@ -1049,13 +1207,10 @@ export default function StoryboardStudio({ apiKey }) {
               </section>
 
               <section className={`p-4 ${panelClass}`}>
-                <div className="mb-3">
-                  <h2 className="text-sm font-bold">Credit estimates</h2>
-                  <p className="text-xs text-white/50">
-                    Approximate cost held when you run each step. Restored if the step
-                    fails.
-                  </p>
-                </div>
+                <SectionHeading
+                  title="Credit estimates"
+                  description="Approximate cost held when you run each step. Restored if the step fails."
+                />
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                   {[
                     ["generateLibrary", "Library"],
@@ -1085,12 +1240,10 @@ export default function StoryboardStudio({ apiKey }) {
               </section>
 
               <section className={`p-4 ${panelClass}`}>
-                <div className="mb-3">
-                  <h2 className="text-sm font-bold">PDF export</h2>
-                  <p className="text-xs text-white/50">
-                    Generate a consolidated board PDF, then open when ready.
-                  </p>
-                </div>
+                <SectionHeading
+                  title="PDF export"
+                  description="Generate a consolidated board PDF, then open when ready."
+                />
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -1126,12 +1279,10 @@ export default function StoryboardStudio({ apiKey }) {
               </section>
 
               <section className={`p-4 ${panelClass}`}>
-                <div className="mb-3">
-                  <h2 className="text-sm font-bold">Manual add</h2>
-                  <p className="text-xs text-white/50">
-                    Insert an episode, scene, or shot by index (1-based).
-                  </p>
-                </div>
+                <SectionHeading
+                  title="Manual add"
+                  description="Insert an episode, scene, or shot by index (1-based)."
+                />
                 <div className="mb-3 flex gap-1 bg-white/[0.03] p-1">
                   {[
                     ["episode", "Episode"],
@@ -1277,32 +1428,34 @@ export default function StoryboardStudio({ apiKey }) {
               </section>
 
               <section>
-                <div className="mb-3">
-                  <h2 className="text-sm font-bold">Character library</h2>
-                  <p className="text-xs text-white/50">
-                    Persistent identities for this series.
-                  </p>
-                </div>
+                <SectionHeading
+                  title="Character library"
+                  description="Persistent identities for this series."
+                  meta={characters.length ? `${characters.length} chars` : null}
+                />
                 {showCharacterSkeleton ? (
                   <CharacterCardSkeleton />
                 ) : characters.length === 0 ? (
-                  <p className={`border border-dashed border-white/10 px-4 py-8 text-center text-xs text-white/50 ${panelClass}`}>
+                  <p className={`border border-dashed border-[#ff6ec7]/20 px-4 py-8 text-center text-xs text-white/55 ${panelClass}`}>
                     No characters yet — run{" "}
-                    <strong className="text-white/70">Generate library</strong>.
+                    <strong className="text-[#00ff88]/90">Generate library</strong>.
                   </p>
                 ) : (
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {characters.map((c) => (
-                      <div key={c.id} className={`overflow-hidden ${panelClass}`}>
-                        <div className="aspect-[4/5] bg-white/[0.03]">
+                      <div key={c.id} className={`overflow-hidden ${panelClass} ${cardHover}`}>
+                        <div className="relative aspect-[4/5] overflow-hidden bg-white/[0.03]">
                           {c.image_url ? (
-                            <img
-                              src={c.image_url}
-                              alt={c.name}
-                              className="h-full w-full object-cover"
-                            />
+                            <>
+                              <img
+                                src={c.image_url}
+                                alt={c.name || "Character"}
+                                className="h-full w-full scale-[1.02] object-cover transition-transform duration-300 motion-reduce:transition-none motion-reduce:scale-100"
+                              />
+                              <StoryboardMediaOverlays light />
+                            </>
                           ) : (
-                            <div className="flex h-full items-center justify-center text-xs text-white/40">
+                            <div className="flex h-full items-center justify-center text-xs text-white/45">
                               No image
                             </div>
                           )}
@@ -1318,7 +1471,7 @@ export default function StoryboardStudio({ apiKey }) {
                             type="button"
                             disabled={!!busy}
                             onClick={() => handleRegenCharacter(c)}
-                            className={`mt-2 inline-flex min-h-10 items-center gap-1.5 text-[11px] font-semibold text-[var(--color-primary,#00ff88)]/80 hover:text-[var(--color-primary,#00ff88)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
+                            className={`mt-2 inline-flex min-h-10 cursor-pointer items-center gap-1.5 text-[11px] font-semibold text-[var(--color-primary,#00ff88)]/80 transition-colors duration-200 hover:text-[var(--color-primary,#00ff88)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
                           >
                             {busy === `Regenerating ${c.name}…` ? busy : "Regenerate →"}
                             {busy !== `Regenerating ${c.name}…` && (
@@ -1337,21 +1490,24 @@ export default function StoryboardStudio({ apiKey }) {
               </section>
 
               <section>
-                <div className="mb-3">
-                  <h2 className="text-sm font-bold">Shots</h2>
-                  <p className="text-xs tabular-nums text-white/50">
-                    {shots.length} shot{shots.length === 1 ? "" : "s"}
-                    {shots.filter((s) => s.image_url).length
-                      ? ` · ${shots.filter((s) => s.image_url).length} with frames`
-                      : ""}
-                  </p>
-                </div>
+                <SectionHeading
+                  title="Shots"
+                  description={
+                    shots.length
+                      ? `${shots.length} shot${shots.length === 1 ? "" : "s"}${
+                          shots.filter((s) => s.image_url).length
+                            ? ` · ${shots.filter((s) => s.image_url).length} with frames`
+                            : ""
+                        }`
+                      : "Frame grid for this project"
+                  }
+                />
                 {showShotSkeleton ? (
                   <ShotCardSkeleton />
                 ) : shots.length === 0 ? (
-                  <p className={`border border-dashed border-white/10 px-4 py-10 text-center text-xs text-white/50 ${panelClass}`}>
+                  <p className={`border border-dashed border-[#ff6ec7]/20 px-4 py-10 text-center text-xs text-white/55 ${panelClass}`}>
                     No shots yet — run{" "}
-                    <strong className="text-white/70">Generate shots</strong> after the
+                    <strong className="text-[#00ff88]/90">Generate shots</strong> after the
                     library is ready.
                   </p>
                 ) : (
@@ -1362,15 +1518,22 @@ export default function StoryboardStudio({ apiKey }) {
                           shot.id ||
                           `${shot.episode_index}-${shot.scene_index}-${shot.shot_index}`
                         }
-                        className={`overflow-hidden ${panelClass}`}
+                        className={`overflow-hidden ${panelClass} ${cardHover}`}
                       >
-                        <div className="aspect-video bg-white/[0.03]">
+                        <div className="relative aspect-video overflow-hidden bg-white/[0.03]">
                           {shot.image_url ? (
-                            <img
-                              src={shot.image_url}
-                              alt=""
-                              className="h-full w-full object-cover"
-                            />
+                            <>
+                              <img
+                                src={shot.image_url}
+                                alt={
+                                  shot.description
+                                    ? `Shot: ${shot.description.slice(0, 80)}`
+                                    : `Episode ${shot.episode_index} scene ${shot.scene_index} shot ${shot.shot_index}`
+                                }
+                                className="h-full w-full scale-[1.02] object-cover transition-transform duration-300 motion-reduce:transition-none motion-reduce:scale-100"
+                              />
+                              <StoryboardMediaOverlays light />
+                            </>
                           ) : (
                             <div className="flex h-full flex-col items-center justify-center gap-1 px-3 text-center text-xs text-white/40">
                               <span>
@@ -1407,7 +1570,7 @@ export default function StoryboardStudio({ apiKey }) {
                                 type="button"
                                 disabled={!!busy}
                                 onClick={() => handleRegenShot(shot)}
-                                className={`inline-flex min-h-10 items-center gap-1.5 text-[11px] font-semibold text-[var(--color-primary,#00ff88)]/80 hover:text-[var(--color-primary,#00ff88)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
+                                className={`inline-flex min-h-10 cursor-pointer items-center gap-1.5 text-[11px] font-semibold text-[var(--color-primary,#00ff88)]/80 transition-colors duration-200 hover:text-[var(--color-primary,#00ff88)] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
                               >
                                 {busy === `Regenerating shot ${shot.id}…`
                                   ? "Regenerating…"

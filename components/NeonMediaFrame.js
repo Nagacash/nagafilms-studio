@@ -6,7 +6,16 @@
 
 export const NEON_MEDIA_CLASS = 'h-full w-full scale-[1.04] object-cover';
 
-export function NeonMediaOverlays({ compact = false }) {
+export function NeonMediaOverlays({ compact = false, light = false }) {
+  if (light) {
+    return (
+      <>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/55 via-transparent to-[#ff6ec7]/5" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0a0812]/35 via-transparent to-transparent" />
+      </>
+    );
+  }
+
   return (
     <>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0a0812]/95 via-[#0a0812]/45 to-[#ff6ec7]/10" />
