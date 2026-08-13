@@ -720,17 +720,47 @@ export default function StoryboardStudio({ apiKey }) {
 
         {!selectedId ? (
           <div className="custom-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
-            <div className="border-b border-[var(--border-color)] px-4 py-5 sm:px-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-primary,#00ff88)]/70">
-                New project
-              </p>
-              <h1 className="mt-1 text-balance text-2xl font-black tracking-tight sm:text-3xl">
-                Storyboard
-              </h1>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/50">
-                Set up a series shell, then run library → shots → PDF when you are ready.
-                Credits are held per step and restored if a step fails.
-              </p>
+            {/* ── Hero filmstrip ── */}
+            <div className="relative overflow-hidden border-b border-[var(--border-color)]">
+              {/* Panel strip */}
+              <div className="flex h-36 sm:h-44 lg:h-52">
+                <div className="relative w-[55%] shrink-0 overflow-hidden">
+                  <img
+                    src="/assets/storyboard/panel-street.jpg"
+                    alt="Anime storyboard panel — rain-soaked street"
+                    className="h-full w-full object-cover object-center brightness-75"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--bg-app,#050505)]" />
+                </div>
+                <div className="relative w-[25%] shrink-0 overflow-hidden border-l border-white/10">
+                  <img
+                    src="/assets/storyboard/panel-overhead.jpg"
+                    alt="Anime storyboard panel — overhead city"
+                    className="h-full w-full object-cover object-top brightness-70"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--bg-app,#050505)]" />
+                </div>
+                <div className="relative w-[20%] shrink-0 overflow-hidden border-l border-white/10">
+                  <img
+                    src="/assets/storyboard/panel-subway.jpg"
+                    alt="Anime storyboard panel — subway"
+                    className="h-full w-full object-cover object-center brightness-70"
+                  />
+                </div>
+              </div>
+              {/* Text overlay */}
+              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-[var(--bg-app,#050505)] via-[var(--bg-app,#050505)]/60 to-transparent px-4 pb-4 sm:px-6 sm:pb-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-primary,#00ff88)]/70">
+                  New project
+                </p>
+                <h1 className="mt-0.5 text-balance text-2xl font-black tracking-tight sm:text-3xl">
+                  Storyboard
+                </h1>
+                <p className="mt-1.5 max-w-xl text-xs leading-relaxed text-white/50 sm:text-sm">
+                  Set up a series shell, then run library → shots → PDF when you are ready.
+                  Credits are held per step and restored if a step fails.
+                </p>
+              </div>
             </div>
 
             <div className="grid flex-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
@@ -818,6 +848,47 @@ export default function StoryboardStudio({ apiKey }) {
               </div>
 
               <aside className="border-t border-[var(--border-color)] bg-[var(--bg-card,#080808)] p-4 sm:p-5 lg:border-l lg:border-t-0">
+                {/* Sample output panels */}
+                <div className="mb-5">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/30">
+                    Sample output
+                  </p>
+                  <div className="flex gap-1.5">
+                    <div className="relative w-[38%] shrink-0 overflow-hidden rounded-none border border-white/10">
+                      <img
+                        src="/assets/storyboard/panel-face.jpg"
+                        alt="Sample character panel"
+                        className="h-full w-full object-cover object-top aspect-[4/5]"
+                      />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-1.5 py-1">
+                        <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary,#00ff88)]/80">Character</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <div className="relative overflow-hidden rounded-none border border-white/10">
+                        <img
+                          src="/assets/storyboard/panel-street.jpg"
+                          alt="Sample wide shot panel"
+                          className="aspect-video w-full object-cover brightness-90"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-1.5 py-1">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary,#00ff88)]/80">Wide shot</span>
+                        </div>
+                      </div>
+                      <div className="relative overflow-hidden rounded-none border border-white/10">
+                        <img
+                          src="/assets/storyboard/panel-subway.jpg"
+                          alt="Sample interior panel"
+                          className="aspect-video w-full object-cover brightness-90"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-1.5 py-1">
+                          <span className="text-[8px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary,#00ff88)]/80">Interior</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">
                   Workflow
                 </p>
