@@ -496,29 +496,35 @@ export default function StandaloneShell() {
       )}
 
       {activeTabMeta && (
-        <div className="flex-shrink-0 border-b border-white/10 bg-[#050505] px-6 py-3 lg:px-8">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-            <p className="text-[13px] text-white/70">
-              <span className="font-semibold uppercase tracking-[0.1em] text-white/90">
-                [ {activeTabMeta.label} ]
+        <div className="flex-shrink-0 border-b border-white/10 bg-[#050505]">
+          {/* Main info row */}
+          <div className="flex items-center justify-between gap-4 px-6 py-2.5 lg:px-8">
+            {/* Left: label chip + blurb */}
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="shrink-0 border border-[#00ff88]/30 bg-[#00ff88]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#00ff88]">
+                {activeTabMeta.label}
               </span>
-              <span className="text-white/35"> — </span>
-              {activeTabMeta.blurb}
-            </p>
-            <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-white/40 sm:text-right">
+              <span className="truncate text-[12px] text-white/50">
+                {activeTabMeta.blurb}
+              </span>
+            </div>
+            {/* Right: numbered steps */}
+            <p className="hidden shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-white/25 sm:block">
               {activeTabMeta.howTo}
             </p>
           </div>
+          {/* Local-only notice — slim strip */}
           {LOCAL_GALLERY_TABS.has(activeTab) && (
-            <p className="mt-2 border-t border-white/5 pt-2 text-[11px] leading-relaxed text-amber-100/75">
-              <span className="font-semibold uppercase tracking-[0.06em] text-amber-200/90">
-                Local only —{' '}
-              </span>
-              {LOCAL_STORAGE_NOTICE}
-            </p>
+            <div className="flex items-center gap-2 border-t border-white/[0.06] bg-amber-500/[0.04] px-6 py-1.5 lg:px-8">
+              <span className="h-1 w-1 shrink-0 rounded-full bg-amber-400/70" />
+              <p className="text-[10px] leading-snug text-amber-100/50">
+                <span className="font-semibold text-amber-200/70">Local only — </span>
+                {LOCAL_STORAGE_NOTICE}
+              </p>
+            </div>
           )}
           {/* Mobile studio picker */}
-          <div className="mt-3 flex gap-1 overflow-x-auto pb-0.5 md:hidden">
+          <div className="flex gap-1 overflow-x-auto px-6 pb-2 pt-1.5 md:hidden lg:px-8">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
