@@ -1,6 +1,7 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import Providers from '@/components/Providers';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -59,6 +60,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.variable}>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
