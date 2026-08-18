@@ -230,6 +230,25 @@
   background: rgba(0, 0, 0, 0.6);
   color: var(--nf-neon);
 }
+.nf-btn-login-slot {
+  visibility: hidden;
+  pointer-events: none;
+}
+.nf-header-account {
+  display: none;
+  max-width: 8.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  white-space: nowrap;
+  transition: color var(--nf-duration-fast) ease;
+}
+.nf-header-account:hover { color: var(--nf-neon); }
+@media (min-width: 900px) {
+  .nf-header-account { display: inline-flex; }
+}
 @media (max-width: 719px) {
   .nf-btn-hide-sm { display: none; }
 }
@@ -749,12 +768,95 @@
 /* ---------- StillsLab-style scene feed (Filter / detail frames) ---------- */
 .nf-filter-section .nf-section-head { margin-bottom: 0.5rem; }
 .nf-filter-hint {
-  max-width: var(--nf-maxw);
+  max-width: 920px;
   margin: 0 auto 1.5rem;
   padding: 0 var(--nf-pad);
   font-size: 0.84rem;
   color: var(--nf-muted);
   line-height: 1.55;
+}
+.nf-filter-empty {
+  max-width: 920px;
+  margin: 0 auto 4rem;
+  padding: 0 var(--nf-pad);
+  font-size: 0.9rem;
+  color: var(--nf-muted);
+  line-height: 1.55;
+}
+
+.nf-facet-bar {
+  max-width: 920px;
+  margin: 0 auto 1.25rem;
+  padding: 0.85rem var(--nf-pad) 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.nf-facet-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem 1rem;
+}
+.nf-facet-label {
+  flex: 0 0 6.5rem;
+  padding-top: 0.45rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--nf-track-wide);
+  color: var(--nf-muted-2);
+}
+.nf-facet-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.nf-chip {
+  font-size: 0.8rem;
+  color: var(--nf-muted);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--nf-border);
+  transition: color var(--nf-duration-fast) ease,
+    background-color var(--nf-duration-fast) ease,
+    border-color var(--nf-duration-fast) ease;
+}
+.nf-chip:hover {
+  color: var(--nf-text);
+  border-color: var(--nf-border-hover);
+}
+.nf-chip.is-active {
+  background: var(--nf-gold);
+  color: #000;
+  border-color: var(--nf-gold);
+  font-weight: 600;
+}
+.nf-chip:focus-visible {
+  outline: 2px solid var(--nf-gold);
+  outline-offset: 2px;
+}
+.nf-facet-clear {
+  padding-left: calc(6.5rem + 1rem);
+}
+.nf-facet-clear a {
+  font-size: 0.78rem;
+  color: var(--nf-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.nf-facet-clear a:hover { color: var(--nf-gold); }
+
+@media (max-width: 639px) {
+  .nf-facet-row {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .nf-facet-label {
+    flex-basis: auto;
+    padding-top: 0;
+  }
+  .nf-facet-clear { padding-left: 0; }
 }
 .nf-scene-feed {
   max-width: 920px;
@@ -879,6 +981,23 @@
   color: var(--nf-text);
   margin: 0;
   line-height: 1.45;
+}
+.nf-scene-meta-link {
+  color: inherit;
+  text-underline-offset: 3px;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: color var(--nf-duration-fast) ease,
+    text-decoration-color var(--nf-duration-fast) ease;
+}
+.nf-scene-meta-link:hover {
+  color: var(--nf-gold);
+  text-decoration-color: var(--nf-gold);
+}
+.nf-scene-meta-link:focus-visible {
+  outline: 2px solid var(--nf-gold);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 /* ---------- Contact form ---------- */

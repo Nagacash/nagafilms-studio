@@ -85,7 +85,7 @@ export default function CreditsClient() {
           </p>
         ) : (
           <p className="mb-8 text-sm text-white/50">
-            <Link href="/login" className="text-[#00ff88]">
+            <Link href="/login?callbackUrl=/credits" className="text-[#00ff88]">
               Log in
             </Link>{' '}
             or{' '}

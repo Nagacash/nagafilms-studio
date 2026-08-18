@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import ColorPalette from '@/components/gallery/ColorPalette';
+import { sceneFacetHref } from '@/lib/gallery/facets';
 
 export default function SceneCard({ scene, onExpand }) {
   const {
@@ -92,14 +93,24 @@ export default function SceneCard({ scene, onExpand }) {
         )}
 
         <dl className="nf-scene-meta">
-          {metaRows.map(({ label, value }) => (
-            value ? (
+          {metaRows.map(({ label, value }) => {
+            if (!value) return null;
+            const href = sceneFacetHref(scene, label);
+            return (
               <div key={label} className="nf-scene-meta-item">
                 <dt>{label}</dt>
-                <dd>{value}</dd>
+                <dd>
+                  {href ? (
+                    <Link href={href} className="nf-scene-meta-link">
+                      {value}
+                    </Link>
+                  ) : (
+                    value
+                  )}
+                </dd>
               </div>
-            ) : null
-          ))}
+            );
+          })}
         </dl>
       </div>
     </article>

@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import BrandMark from '@/components/gallery/BrandMark';
+import LogoutButton from '@/components/LogoutButton';
 
 const NAV = [
   { label: 'Filter', href: '/film/filter' },
@@ -23,6 +25,9 @@ const MOBILE_NAV = [
 
 export default function GalleryHeader() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const loginHref = `/login?callbackUrl=${encodeURIComponent(pathname || '/film')}`;
+  const accountLabel = session?.user?.email?.split('@')[0] || 'Account';
 
   return (
     <header className="nf-header">
@@ -58,9 +63,30 @@ export default function GalleryHeader() {
             />
           </form>
           <Link href="/film/contact" className="nf-btn nf-btn-outline nf-btn-hide-sm">+ Request</Link>
-          <Link href="/login" className="nf-btn nf-btn-login" title="Sign in to Naga Films Studio">
-            Log in
-          </Link>
+          {status === 'authenticated' ? (
+            <>
+              <Link
+                href="/studio"
+                className="nf-header-account"
+                title={session.user?.email || 'Naga Films Studio'}
+              >
+                {accountLabel}
+              </Link>
+              <LogoutButton
+                className="nf-btn nf-btn-login"
+                label="Log out"
+                redirectTo={pathname || '/film'}
+              />
+            </>
+          ) : status === 'loading' ? (
+            <span className="nf-btn nf-btn-login nf-btn-login-slot" aria-hidden="true">
+              Log in
+            </span>
+          ) : (
+            <Link href={loginHref} className="nf-btn nf-btn-login" title="Sign in to Naga Films Studio">
+              Log in
+            </Link>
+          )}
         </div>
       </div>
 
