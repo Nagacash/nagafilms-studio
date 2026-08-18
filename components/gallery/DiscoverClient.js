@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { getCollectionsByTab } from '../../../lib/gallery/data';
+import { getCollectionsByTab } from '@/lib/gallery/data';
 
 const TABS = ['Trending', 'Featured', 'New', 'Most Liked'];
 
