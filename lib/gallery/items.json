@@ -17,7 +17,7 @@
       "runtime": "—",
       "country": "Germany",
       "genres": ["Neo-noir", "Crime"],
-      "synopsis": "An original AI-generated neo-noir study: a lone figure in a rain-soaked neon alley. Generated inside Naga Films Studio as a cinematography reference set.",
+      "synopsis": "Neo-noir reference set: lone figure in a rain-soaked neon alley. Made in Cinema Studio.",
       "palette": ["#0a0812", "#1a1524", "#ff6ec7", "#00d4ff", "#4a4a5a"],
       "stills": [
         "/assets/gallery/naga-noir/01.jpg",
@@ -45,7 +45,7 @@
       "runtime": "—",
       "country": "Germany",
       "genres": ["Suspense", "Drama"],
-      "synopsis": "An original AI-generated series frame study: a silhouetted figure on an empty underground platform at night. A suspense reference set generated in Naga Films Studio.",
+      "synopsis": "Subway platform at night — empty, fluorescent, one silhouette. Suspense reference set.",
       "palette": ["#050508", "#1c1c24", "#6b7280", "#9ca3af", "#00d4ff"],
       "stills": [
         "/assets/gallery/naga-transit/01.jpg",
@@ -72,7 +72,7 @@
       "runtime": "—",
       "country": "Germany",
       "genres": ["Music Video"],
-      "synopsis": "An original AI-generated music-video frame study: a silhouetted singer under a single warm spotlight on a smoky stage. Concert-film reference set from Naga Films Studio.",
+      "synopsis": "Concert-film reference set: singer under one warm spotlight on a smoky stage.",
       "palette": ["#0a0a0a", "#2a1810", "#e8bd2c", "#ff6ec7", "#ffffff"],
       "stills": [
         "/assets/gallery/naga-frequency/01.jpg",
@@ -98,7 +98,7 @@
       "runtime": "—",
       "country": "Germany",
       "genres": ["Commercial", "Luxury"],
-      "synopsis": "An original AI-generated commercial frame study: an unlabeled perfume bottle on wet black stone with dramatic rim lighting. Product-advertising reference set from Naga Films Studio.",
+      "synopsis": "Product reference set: perfume bottle on wet black stone, rim light. Built for commercial stills.",
       "palette": ["#0a0a0a", "#1a1a1a", "#c9a227", "#ffffff", "#4a4a4a"],
       "stills": [
         "/assets/gallery/naga-aura/01.jpg",
@@ -158,7 +158,7 @@
     {
       "id": "s1",
       "title": "Your next shoot references itself.",
-      "subtitle": "Movie stills, series frames & music-video references — browse, study, plan. Original AI cinema from Naga Films Studio.",
+      "subtitle": "Movie stills and series frames to browse and plan from. All original — made in Naga Films Studio.",
       "imageUrl": "/assets/gallery/naga-noir/01.jpg",
       "buttonText": "Get Started",
       "buttonUrl": "/film/movie",
@@ -167,7 +167,7 @@
     {
       "id": "s2",
       "title": "From the studio, not from someone else's film.",
-      "subtitle": "Every frame here is original AI-generated cinema from Naga Films Studio. No copyrighted film frames, ever.",
+      "subtitle": "Every frame is original cinema from our studio. No copyrighted film frames.",
       "imageUrl": "/assets/gallery/naga-frequency/01.jpg",
       "buttonText": "Browse Music",
       "buttonUrl": "/film/music-video",
@@ -195,7 +195,7 @@
       "tab": "Featured",
       "thumb": "/assets/gallery/naga-noir/01.jpg",
       "itemSlugs": ["naga-noir", "naga-transit", "naga-frequency", "naga-aura"],
-      "description": "A cross-section of every original Naga Films reference set — noir, transit, stage, and product."
+      "description": "All four Naga reference sets in one place — noir, transit, stage, product."
     },
     {
       "id": "c2",

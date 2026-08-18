@@ -7,7 +7,7 @@ import { getAll, projects, heroSlides } from '@/lib/gallery/data';
 export const metadata = {
   title: 'Naga Film — Movie Stills, TV Frames & Cinematic References',
   description:
-    'Browse original AI-generated movie stills, series frames, music-video and commercial references. Built for filmmakers — no copyrighted film frames, ever.',
+    'Original movie stills, series frames, and music-video references. No copyrighted film frames.',
 };
 
 export default function GalleryHome() {
@@ -20,8 +20,8 @@ export default function GalleryHome() {
       <section className="nf-section">
         <div className="nf-section-head">
           <div className="nf-section-head-left">
-            <h2 className="nf-section-title">Community Showcase</h2>
-            <span className="nf-section-count">{projects.length} projects</span>
+            <h2 className="nf-section-title">From the studio</h2>
+            <span className="nf-section-count">{projects.length} sets</span>
           </div>
           <Link href="/film/discover" className="nf-section-link">View All →</Link>
         </div>
