@@ -1,21 +1,21 @@
 import Link from 'next/link';
 
 const EXPLORE = [
-  { label: 'Home', href: '/' },
-  { label: 'Filter', href: '/filter' },
-  { label: 'Movies', href: '/movie' },
-  { label: 'Series', href: '/series' },
-  { label: 'Music Videos', href: '/music-video' },
-  { label: 'Commercials', href: '/commercial' },
+  { label: 'Home', href: '/film' },
+  { label: 'Filter', href: '/film/filter' },
+  { label: 'Movies', href: '/film/movie' },
+  { label: 'Series', href: '/film/series' },
+  { label: 'Music Videos', href: '/film/music-video' },
+  { label: 'Commercials', href: '/film/commercial' },
 ];
 
 const COMPANY = [
-  { label: 'About', href: '/news' },
-  { label: 'Guide', href: '/news' },
-  { label: 'FAQ', href: '/pricing' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'For Rights Holders', href: '/contact' },
+  { label: 'About', href: '/film/news' },
+  { label: 'Guide', href: '/film/news' },
+  { label: 'FAQ', href: '/film/pricing' },
+  { label: 'Contact', href: '/film/contact' },
+  { label: 'Pricing', href: '/film/pricing' },
+  { label: 'For Rights Holders', href: '/film/contact' },
 ];
 
 const LEGAL = [

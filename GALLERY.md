@@ -12,18 +12,18 @@ A public-facing **movie-stills / TV-frame gallery** surface inside Naga Films St
 
 | Route | Purpose |
 |---|---|
-| `/` | Home — 3-slide hero carousel, Community Showcase, Browse Content grid |
-| `/movie` | Movies category |
-| `/series` | Series category |
-| `/music-video` | Music Videos category |
-| `/commercial` | Commercials category |
-| `/gallery/[slug]` | Title detail — backdrop header (director/cinematographer/runtime/genres/frame count) + 5-column infinite frame grid + lightbox |
-| `/filter?search=` | Text search |
-| `/discover` | Curated collections (Trending / Featured / New / Most Liked) |
-| `/visual-search` | Placeholder — reverse-image search (labs) |
-| `/news`, `/labs`, `/pricing`, `/contact` | Supporting pages |
+| `/film` | Home — 3-slide hero carousel, Community Showcase, Browse Content grid |
+| `/film/movie` | Movies category |
+| `/film/series` | Series category |
+| `/film/music-video` | Music Videos category |
+| `/film/commercial` | Commercials category |
+| `/film/gallery/[slug]` | Title detail — backdrop header (director/cinematographer/runtime/genres/frame count) + 5-column infinite frame grid + lightbox |
+| `/film/filter?search=` | Text search |
+| `/film/discover` | Curated collections (Trending / Featured / New / Most Liked) |
+| `/film/visual-search` | Placeholder — reverse-image search (labs) |
+| `/film/news`, `/film/labs`, `/film/pricing`, `/film/contact` | Supporting pages |
 
-Sign-in links into the existing `/login` flow; Request links into `/contact`.
+Sign-in links into the existing `/login` flow; Request links into `/film/contact`. The gallery lives at `/film`; the studio landing at `/` links to it via the new "Film" nav item.
 
 ## Design system (stillslab editorial — scoped)
 

@@ -1,20 +1,20 @@
 import Link from 'next/link';
 
 const NAV = [
-  { label: 'Filter', href: '/filter' },
-  { label: 'Visual Search', href: '/visual-search' },
-  { label: 'Discover', href: '/discover' },
-  { label: 'News', href: '/news' },
-  { label: 'Labs', href: '/labs' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Filter', href: '/film/filter' },
+  { label: 'Visual Search', href: '/film/visual-search' },
+  { label: 'Discover', href: '/film/discover' },
+  { label: 'News', href: '/film/news' },
+  { label: 'Labs', href: '/film/labs' },
+  { label: 'Pricing', href: '/film/pricing' },
+  { label: 'Contact', href: '/film/contact' },
 ];
 
 export default function GalleryHeader({ activeHref }) {
   return (
     <header className="nf-header">
       <div className="nf-header-inner">
-        <Link href="/" className="nf-logo" aria-label="Naga Film home">
+        <Link href="/film" className="nf-logo" aria-label="Naga Film home">
           Naga<span>Film</span>
         </Link>
 

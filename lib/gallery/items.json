@@ -6,7 +6,7 @@
       "title": "Naga Noir",
       "type": "movie",
       "year": 2026,
-      "link": "/gallery/naga-noir",
+      "link": "/film/gallery/naga-noir",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
       "aspect": 1.78,
       "imageCount": 6,
@@ -33,7 +33,7 @@
       "title": "Naga Transit",
       "type": "series",
       "year": 2026,
-      "link": "/gallery/naga-transit",
+      "link": "/film/gallery/naga-transit",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
       "aspect": 1.78,
       "imageCount": 5,
@@ -59,7 +59,7 @@
       "title": "Naga - Frequency",
       "type": "music",
       "year": 2026,
-      "link": "/gallery/naga-frequency",
+      "link": "/film/gallery/naga-frequency",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
       "aspect": 1.78,
       "imageCount": 4,
@@ -84,7 +84,7 @@
       "title": "Naga Aura",
       "type": "commercial",
       "year": 2026,
-      "link": "/gallery/naga-aura",
+      "link": "/film/gallery/naga-aura",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DFP_HHN19PBG1K65J79D/da7f880f-8a51-4ebe-a12f-a8fb5c2c9b09.png",
       "aspect": 1.78,
       "imageCount": 4,
@@ -111,7 +111,7 @@
       "title": "Naga Noir",
       "year": "2026",
       "typeLabel": "Experimental",
-      "link": "/gallery/naga-noir",
+      "link": "/film/gallery/naga-noir",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
       "frameCount": 6,
       "aspect": 1.78
@@ -122,7 +122,7 @@
       "title": "Naga - Frequency",
       "year": "2026",
       "typeLabel": "Music Video",
-      "link": "/gallery/naga-frequency",
+      "link": "/film/gallery/naga-frequency",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
       "frameCount": 4,
       "aspect": 1.78
@@ -133,7 +133,7 @@
       "title": "Naga Transit",
       "year": "2026",
       "typeLabel": "Music Video",
-      "link": "/gallery/naga-transit",
+      "link": "/film/gallery/naga-transit",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
       "frameCount": 5,
       "aspect": 1.78
@@ -144,7 +144,7 @@
       "title": "Naga Aura",
       "year": "2026",
       "typeLabel": "Experimental",
-      "link": "/gallery/naga-aura",
+      "link": "/film/gallery/naga-aura",
       "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DFP_HHN19PBG1K65J79D/da7f880f-8a51-4ebe-a12f-a8fb5c2c9b09.png",
       "frameCount": 4,
       "aspect": 1.78
@@ -157,7 +157,7 @@
       "subtitle": "Movie stills, series frames & music-video references — browse, study, plan. Original AI cinema from Naga Films Studio.",
       "imageUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
       "buttonText": "Get Started",
-      "buttonUrl": "/movie",
+      "buttonUrl": "/film/movie",
       "showButton": true
     },
     {
@@ -166,7 +166,7 @@
       "subtitle": "Every frame here is original AI-generated cinema from Naga Films Studio — or freely-licensed CC0 stock. No copyrighted film frames, ever.",
       "imageUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
       "buttonText": "Browse Music",
-      "buttonUrl": "/music-video",
+      "buttonUrl": "/film/music-video",
       "showButton": true
     },
     {
@@ -175,7 +175,7 @@
       "subtitle": "Director, cinematographer, runtime, frame count. Open a title and page through its frames like a real film archive.",
       "imageUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
       "buttonText": "Explore Series",
-      "buttonUrl": "/series",
+      "buttonUrl": "/film/series",
       "showButton": true
     }
   ],

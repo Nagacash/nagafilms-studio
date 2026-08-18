@@ -35,7 +35,7 @@ export default function BrowseContent({ items, initialType = null }) {
             role="tab"
             aria-selected={activeType === t.type}
             className={`nf-tab${activeType === t.type ? ' is-active' : ''}`}
-            href={t.segment ? `/${t.segment}` : '/#browse'}
+            href={t.segment ? `/film/${t.segment}` : '/film#browse'}
             onClick={(e) => {
               e.preventDefault();
               setActiveType(t.type);
