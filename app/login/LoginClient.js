@@ -47,7 +47,7 @@ export default function LoginClient() {
     <main className="min-h-screen bg-[#050505] text-white flex items-center justify-center px-4">
       <div className="w-full max-w-sm border border-white/10 bg-[#0a0a0a] rounded-xl p-8">
         <h1 className="text-xl font-bold mb-1">Log in</h1>
-        <p className="text-white/40 text-sm mb-8">Access Naga Films Studio with your account.</p>
+        <p className="text-white/40 text-sm mb-8">Access Naga Films Studio with your account. No API key.</p>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="block text-xs text-white/40 mb-1">Email</label>

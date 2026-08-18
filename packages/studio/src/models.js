@@ -6474,10 +6474,10 @@ export const i2vModels = [
       },
       "remove_watermark": {
         "type": "boolean",
-        "title": "Remove Watermark",
+        "title": "Keep provider watermark",
         "name": "remove_watermark",
-        "description": "When enabled, removes watermarks from the generated video.",
-        "default": true
+        "description": "When enabled, the provider may omit its own watermark. Leave off to keep origin marks.",
+        "default": false
       }
     }
   },
@@ -6553,10 +6553,10 @@ export const i2vModels = [
       },
       "remove_watermark": {
         "type": "boolean",
-        "title": "Remove Watermark",
+        "title": "Keep provider watermark",
         "name": "remove_watermark",
-        "description": "When enabled, removes watermarks from the generated video.",
-        "default": true
+        "description": "When enabled, the provider may omit its own watermark. Leave off to keep origin marks.",
+        "default": false
       }
     }
   },
@@ -8396,15 +8396,6 @@ export const isCharacterConsistencyI2I = (modelId) =>
 
 // ─── Video-to-Video models ────────────────────────────────────────────────────
 export const v2vModels = [
-  {
-    "id": "video-watermark-remover",
-    "name": "AI Video Watermark Remover",
-    "endpoint": "video-watermark-remover",
-    "family": "tools",
-    "videoField": "video_url",
-    "hasPrompt": false,
-    "description": "Remove watermarks, logos, captions, and unwanted text from videos."
-  },
   {
     "id": "kling-v2.6-std-motion-control",
     "name": "Kling 2.6 Std Motion Control",

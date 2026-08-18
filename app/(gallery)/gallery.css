@@ -459,6 +459,26 @@
   padding: 0.3rem 0.6rem;
   border-radius: 999px;
 }
+.nf-origin-badge {
+  position: absolute; top: 0.7rem; right: 0.7rem; z-index: 2;
+  background: var(--nf-gold);
+  color: #0a0a0a;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--nf-track-wide);
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+}
+.nf-origin-badge.nf-origin-photo {
+  background: rgba(255,255,255,0.85);
+}
+.nf-origin-badge.nf-origin-inline {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.35rem;
+}
 .nf-card-overlay {
   position: absolute; inset: 0; z-index: 1;
   background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.15) 45%, transparent 70%);
@@ -903,6 +923,10 @@
   right: 0.75rem;
   display: flex;
   gap: 0.35rem;
+}
+.nf-scene-media .nf-origin-badge {
+  left: 0.75rem;
+  right: auto;
 }
 .nf-scene-tool {
   width: 34px;

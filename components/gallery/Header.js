@@ -58,8 +58,8 @@ export default function GalleryHeader() {
             <input
               type="search"
               name="search"
-              placeholder="Search frames, movies, people..."
-              aria-label="Search frames, movies, people"
+              placeholder="Search titles, lighting, shot type…"
+              aria-label="Search titles, lighting, shot type"
             />
           </form>
           <Link href="/film/contact" className="nf-btn nf-btn-outline nf-btn-hide-sm">+ Request</Link>

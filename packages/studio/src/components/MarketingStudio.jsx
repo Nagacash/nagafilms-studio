@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { uploadFile, generateMarketingStudioAd } from "../muapi.js";
 import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { AiGeneratedMark, AiFullscreenCaption } from "./AiGeneratedMark.jsx";
 import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 const SCROLLBAR_STYLE = `
@@ -389,6 +390,7 @@ export default function MarketingStudio({ apiKey, droppedFiles, onFilesHandled }
                   onClick={() => setFullscreenUrl(entry.url)}
                   muted loop onMouseOver={e => e.target.play()} onMouseOut={e => { e.target.pause(); e.target.currentTime = 0; }}
                 />
+                <AiGeneratedMark className="absolute top-2 left-2 z-10" />
                 
                 {/* Actions Overlay */}
                 <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -609,6 +611,7 @@ export default function MarketingStudio({ apiKey, droppedFiles, onFilesHandled }
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm animate-fade-in" onClick={() => setFullscreenUrl(null)}>
           <button className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white border border-white/10 transition-colors shadow-2xl"><CloseSvg /></button>
           <video src={fullscreenUrl} controls autoPlay className="max-w-[95vw] max-h-[95vh] rounded-lg shadow-4xl animate-scale-up" onClick={e => e.stopPropagation()} />
+          <AiFullscreenCaption />
         </div>
       )}
     </div>

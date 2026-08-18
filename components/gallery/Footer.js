@@ -22,7 +22,7 @@ const COMPANY = [
 ];
 
 const LEGAL = [
-  { label: 'Terms Of Use', href: '/policy' },
+  { label: 'Terms of Use', href: '/terms' },
   { label: 'Privacy Policy', href: '/policy' },
   { label: 'Impressum', href: '/impressum' },
   { label: 'AI Act notice', href: '/policy#eu-ai-act' },
@@ -36,10 +36,8 @@ export default function GalleryFooter() {
           <div className="nf-footer-brand">
             <BrandMark href="/film" className="nf-brand-footer" />
             <p>
-              Movie stills, film frames &amp; TV screenshots for filmmakers — original AI cinema from
-              {' '}
-              <Link href="/">Naga Films Studio</Link>.
-              No copyrighted film frames, ever.
+              AI-generated cinema stills for shot reference — original work from{' '}
+              <Link href="/">Naga Films Studio</Link>. Not frames from other people&apos;s films.
             </p>
             <div className="nf-footer-connect">
               <a href="https://x.com" target="_blank" rel="noopener noreferrer">X</a>
@@ -86,7 +84,10 @@ export default function GalleryFooter() {
             <a href="https://nagacodex.cloud" target="_blank" rel="noreferrer">Naga Codex</a>
           </p>
           <p className="nf-footer-note">
-            A Naga Films Studio surface · Built on{' '}
+            Gallery stills marked AI-generated are synthetic. Disclose deepfakes when you publish.{' '}
+            <Link href="/terms">Terms</Link>
+            {' · '}
+            Built on{' '}
             <a href="https://github.com/Anil-matcha/Open-Generative-AI" target="_blank" rel="noreferrer">
               Open Generative AI
             </a>

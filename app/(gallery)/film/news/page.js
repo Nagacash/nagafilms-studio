@@ -26,8 +26,8 @@ export default function NewsPage() {
           <div className="nf-faq-item">
             <dt>Are these frames from real movies?</dt>
             <dd>
-              No. Every title is an original Naga Films production or freely-licensed reference
-              imagery. We never host copyrighted film frames.
+              No. Every title is original AI-generated cinema from Naga Films Studio, or a
+              labelled photograph if we add one later. We never host copyrighted film frames.
             </dd>
           </div>
           <div className="nf-faq-item">

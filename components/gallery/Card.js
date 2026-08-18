@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import OriginBadge from '@/components/gallery/OriginBadge';
 
 const TYPE_LABEL = {
   movie: 'Movies',
@@ -12,9 +13,10 @@ export default function GalleryCard({ item }) {
     <Link href={item.link || `/film/gallery/${item.slug}`} className="nf-card">
       <div className="nf-card-media">
         <span className="nf-card-badge">{TYPE_LABEL[item.type] || item.typeLabel || 'Film'}</span>
+        <OriginBadge origin={item.origin} />
         <img
           src={item.thumbUrl}
-          alt={item.title}
+          alt={`${item.title}${item.origin === 'photo' ? '' : ' — AI-generated still'}`}
           loading="lazy"
           decoding="async"
         />

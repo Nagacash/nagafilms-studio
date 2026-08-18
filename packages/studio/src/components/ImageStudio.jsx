@@ -16,6 +16,7 @@ import {
 } from "../models.js";
 import LiveModelDropdown from "./LiveModelDropdown.jsx";
 import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { AiGeneratedMark, AiFullscreenCaption } from "./AiGeneratedMark.jsx";
 import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -1030,10 +1031,11 @@ export default function ImageStudio({
               >
                 <img
                   src={entry.url}
-                  alt={entry.prompt?.substring(0, 30) || "Generated image"}
+                  alt={entry.prompt?.substring(0, 30) || "AI-generated image"}
                   className="w-full aspect-square object-cover bg-black/40 cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => setFullscreenUrl(entry.url)}
                 />
+                <AiGeneratedMark className="absolute top-2 left-2 z-10" />
                 
                 {/* Overlay actions */}
                 <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1345,10 +1347,11 @@ export default function ImageStudio({
           </button>
           <img 
             src={fullscreenUrl} 
-            alt="Fullscreen Preview" 
+            alt="AI-generated fullscreen preview" 
             className="max-w-[95vw] max-h-[95vh] rounded-2xl shadow-2xl object-contain animate-scale-up" 
             onClick={(e) => e.stopPropagation()}
           />
+          <AiFullscreenCaption />
         </div>
       )}
     </div>

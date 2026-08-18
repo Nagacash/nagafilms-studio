@@ -7,6 +7,7 @@ export { default as CinemaStudio } from './components/CinemaStudio';
 export { default as MarketingStudio } from './components/MarketingStudio';
 export { default as StoryboardStudio } from './components/StoryboardStudio';
 export { default as McpCliStudio } from './components/McpCliStudio';
+export { AiGeneratedMark, AiFullscreenCaption } from './components/AiGeneratedMark';
 export * from './muapi';
 export * from './storyboard';
 export * from './storyboard-pricing';

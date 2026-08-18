@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCollectionBySlug, getAllCollections } from '@/lib/gallery/data';
 import SceneFeed from '@/components/gallery/SceneFeed';
+import OriginBadge from '@/components/gallery/OriginBadge';
 import { getScenesForCollection } from '@/lib/gallery/data';
 
 export function generateStaticParams() {
@@ -35,6 +36,7 @@ export default function CollectionPage({ params }) {
             </div>
             <h1 className="nf-detail-title">{col.title}</h1>
             <div className="nf-detail-meta">
+              <OriginBadge origin={col.origin || 'ai'} placement="inline" />
               <span>by {col.creator}</span>
               <span className="dot">•</span>
               <span>{col.stills} stills</span>

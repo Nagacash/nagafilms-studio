@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import HeroCarousel from '@/components/gallery/HeroCarousel';
 import BrowseContent from '@/components/gallery/BrowseContent';
+import OriginBadge from '@/components/gallery/OriginBadge';
 import { GalleryGrid } from '@/components/gallery/Card';
 import { getAll, projects, heroSlides } from '@/lib/gallery/data';
 
 export const metadata = {
-  title: 'Naga Film — Movie Stills, TV Frames & Cinematic References',
+  title: 'Naga Film — AI cinema stills and shot references',
   description:
-    'Original movie stills, series frames, and music-video references. No copyrighted film frames.',
+    'Original AI-generated cinema stills for shot reference. Not frames from other people’s films.',
 };
 
 export default function GalleryHome() {
@@ -30,7 +31,8 @@ export default function GalleryHome() {
             <Link key={p.id} href={p.link} className="nf-card nf-showcase-card">
               <div className="nf-card-media">
                 <span className="nf-card-badge">{p.typeLabel}</span>
-                <img src={p.thumbUrl} alt={p.title} loading="lazy" decoding="async" />
+                <OriginBadge origin={p.origin} />
+                <img src={p.thumbUrl} alt={`${p.title} — AI-generated still`} loading="lazy" decoding="async" />
                 <div className="nf-card-overlay" />
                 <div className="nf-card-body">
                   <h3 className="nf-card-title">{p.title} ({p.year})</h3>

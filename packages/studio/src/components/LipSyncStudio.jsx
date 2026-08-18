@@ -11,6 +11,7 @@ import {
 } from "../models.js";
 import { useLiveModels, creditLabel } from "../useLiveModels.js";
 import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { AiGeneratedMark, AiFullscreenCaption } from "./AiGeneratedMark.jsx";
 import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ---------------------------------------------------------------------------
@@ -783,6 +784,7 @@ export default function LipSyncStudio({
                     e.target.currentTime = 0;
                   }}
                 />
+                <AiGeneratedMark className="absolute top-2 left-2 z-10" />
                 
                 {/* Overlay actions */}
                 <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1121,6 +1123,7 @@ export default function LipSyncStudio({
             className="max-w-[95vw] max-h-[95vh] rounded-2xl shadow-2xl object-contain animate-scale-up" 
             onClick={(e) => e.stopPropagation()}
           />
+          <AiFullscreenCaption />
         </div>
       )}
     </div>

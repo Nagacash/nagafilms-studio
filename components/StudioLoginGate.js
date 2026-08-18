@@ -19,7 +19,7 @@ export default function StudioLoginGate() {
           </p>
           <p className="px-4 text-[13px] leading-relaxed text-white/55">
             Sign in to use your <strong className="font-medium text-white/75">Naga credits</strong>.
-            Buy packs, pick models, generate — no MuAPI key needed.
+            Buy packs, pick models, generate — no API key.
           </p>
         </div>
 

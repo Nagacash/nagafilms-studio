@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { generateImage, uploadFile } from "../muapi.js";
 import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { AiGeneratedMark, AiFullscreenCaption } from "./AiGeneratedMark.jsx";
 import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 
 // ─── Constants (inlined from promptUtils) ───────────────────────────────────
@@ -739,9 +740,10 @@ export default function CinemaStudio({
               >
                 <img
                   src={entry.url}
-                  alt={`History item ${idx + 1}`}
+                  alt={`AI-generated cinema still ${idx + 1}`}
                   className="w-full aspect-[4/3] object-cover bg-black/40"
                 />
+                <AiGeneratedMark className="absolute top-2 left-2 z-10" />
                 
                 {/* Overlay actions */}
                 <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1037,10 +1039,11 @@ export default function CinemaStudio({
           </button>
           <img 
             src={fullscreenUrl} 
-            alt="Fullscreen Preview" 
+            alt="AI-generated fullscreen preview" 
             className="max-w-[95vw] max-h-[95vh] rounded-2xl shadow-2xl object-contain animate-scale-up" 
             onClick={(e) => e.stopPropagation()}
           />
+          <AiFullscreenCaption />
         </div>
       )}  
       {/* ── Camera Controls Overlay ── */}

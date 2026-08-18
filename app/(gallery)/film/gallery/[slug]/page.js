@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getBySlug, getAll, typeToSegment } from '@/lib/gallery/data';
 import SceneFeed from '@/components/gallery/SceneFeed';
 import ColorPalette from '@/components/gallery/ColorPalette';
+import OriginBadge from '@/components/gallery/OriginBadge';
 import { getScenesForItem } from '@/lib/gallery/data';
 
 export function generateStaticParams() {
@@ -41,10 +42,10 @@ export default function GalleryDetail({ params }) {
             </div>
             <h1 className="nf-detail-title">{item.title}</h1>
             <div className="nf-detail-meta">
+              <OriginBadge origin={item.origin} placement="inline" />
               <span>{item.year}</span>
               {item.country && <><span className="dot">•</span><span>{item.country}</span></>}
               {item.genres && item.genres.length > 0 && <><span className="dot">•</span><span>{item.genres.join(', ')}</span></>}
-              <span className="nf-imdb">IMDb</span>
               <span className="dot">•</span>
               <span>{item.imageCount} frames</span>
             </div>

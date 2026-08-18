@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import ColorPalette from '@/components/gallery/ColorPalette';
+import OriginBadge from '@/components/gallery/OriginBadge';
 import { sceneFacetHref } from '@/lib/gallery/facets';
 
 export default function SceneCard({ scene, onExpand }) {
@@ -13,6 +14,7 @@ export default function SceneCard({ scene, onExpand }) {
     director,
     cinematographer,
     country,
+    origin,
     palette,
     tags,
     color,
@@ -29,6 +31,7 @@ export default function SceneCard({ scene, onExpand }) {
   } = scene;
 
   const metaRows = [
+    { label: 'Origin', value: origin === 'photo' ? 'Photograph' : 'AI-generated' },
     { label: 'Director', value: director },
     { label: 'Cinematographer', value: cinematographer },
     { label: 'Actors', value: actors?.length ? actors.join(', ') : '—' },
@@ -54,8 +57,9 @@ export default function SceneCard({ scene, onExpand }) {
           onClick={() => onExpand?.()}
           aria-label={`View full frame from ${title}`}
         >
-          <img src={src} alt={`${title} — movie scene still`} loading="lazy" decoding="async" />
+          <img src={src} alt={`${title} — ${origin === 'photo' ? 'photograph' : 'AI-generated'} still`} loading="lazy" decoding="async" />
         </button>
+        <OriginBadge origin={origin} />
         <div className="nf-scene-toolbar" aria-label="Frame actions">
           <a
             href={src}

@@ -13,7 +13,7 @@ const FAQ = [
             <Link href="/signup" className="text-[#00ff88] hover:underline">
               Create a free account
             </Link>{' '}
-            — email and password, no MuAPI key required.
+            — email and password, no API key.
           </li>
           <li>
             <Link href="/credits" className="text-[#00ff88] hover:underline">
@@ -33,8 +33,8 @@ const FAQ = [
     ),
   },
   {
-    q: 'Do I need a MuAPI or API key?',
-    a: 'No. Regular users only need a Naga Films account and credits. We handle the provider layer on our side — you never paste or manage an upstream API key in the studio.',
+    q: 'Do I need an API key?',
+    a: 'No. Regular users only need a Naga Films account and credits. You never paste an API key in the studio.',
   },
   {
     q: 'How does pricing work?',
@@ -85,7 +85,7 @@ const FAQ = [
   },
   {
     q: 'Are outputs AI-generated (EU AI Act)?',
-    a: 'Yes. Image, video, cinema, and lip-sync results from the Studio are artificially generated or manipulated by AI models. If you publish deepfakes or AI text on public-interest topics, you may need to disclose that under the EU AI Act. See the Privacy Policy (AI Act notice) for details.',
+    a: 'Yes. Image, video, cinema, and lip-sync results from the Studio are artificially generated or manipulated by AI models. If you publish a deepfake of a real person, you must disclose that. See Terms of Use and the Privacy Policy (AI Act notice).',
   },
   {
     q: 'Is there a subscription?',

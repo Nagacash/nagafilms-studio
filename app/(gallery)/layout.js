@@ -3,9 +3,9 @@ import GalleryHeader from '@/components/gallery/Header';
 import GalleryFooter from '@/components/gallery/Footer';
 
 export const metadata = {
-  title: 'Naga Film — Movie Stills, TV Frames & Cinematic References',
+  title: 'Naga Film — AI cinema stills and shot references',
   description:
-    'Original movie stills, series frames, and music-video references. No copyrighted film frames.',
+    'Original AI-generated cinema stills for shot reference. Not frames from other people’s films.',
 };
 
 export default function GalleryLayout({ children }) {

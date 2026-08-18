@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { getCollectionsByTab } from '@/lib/gallery/data';
+import OriginBadge from '@/components/gallery/OriginBadge';
 
 const TABS = ['Trending', 'Featured', 'New', 'Most Liked'];
 
@@ -37,6 +38,7 @@ export default function DiscoverClient() {
           >
             <div className="nf-collection-media">
               <img src={c.thumb} alt="" loading="lazy" decoding="async" />
+              <OriginBadge origin={c.origin || 'ai'} />
             </div>
             <div className="nf-collection-body">
               <span className="nf-collection-tag">{c.tab}</span>

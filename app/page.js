@@ -167,7 +167,7 @@ export default function Home() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#00ff88]/70">Onboarding</p>
           <h2 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">Up and running in three steps</h2>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-white/45">
-            No MuAPI account, no API key, no monthly bill. Create an account, load credits, start generating.
+            No API key, no monthly bill. Create an account, load credits, start generating.
           </p>
 
           <div className="mt-14 grid gap-6 md:grid-cols-3">
@@ -496,6 +496,9 @@ export default function Home() {
               </p>
             </div>
             <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              <Link href="/terms" className="text-white/50 transition-colors hover:text-[#00ff88]">
+                Terms
+              </Link>
               <Link href="/policy" className="text-white/50 transition-colors hover:text-[#00ff88]">
                 Privacy
               </Link>

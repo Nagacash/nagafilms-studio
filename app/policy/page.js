@@ -10,7 +10,7 @@ export default function PolicyPage() {
   return (
     <LegalShell title="Privacy Policy">
       <p className="text-white/45">
-        Last updated: 12 August 2026. This notice describes how personal data is handled when you use
+        Last updated: 18 August 2026. This notice describes how personal data is handled when you use
         Naga Films Studio (the “Service”), and how we disclose AI use under the EU Artificial
         Intelligence Act. It follows GDPR transparency rules and security expectations aligned with
         OWASP guidance (minimize data, protect credentials, limit processors, and avoid unnecessary
@@ -176,9 +176,11 @@ export default function PolicyPage() {
         <h2 id="eu-ai-act">9. EU AI Act transparency</h2>
         <p className="mt-3">
           Naga Films Studio is a generative production tool. Image, video, cinema, and lip-sync
-          outputs are produced by AI systems (third-party models accessed via our operator
-          integration). We act as a <strong>deployer</strong> of those generative systems toward end
-          users of the Service, and as the operator of the Studio application offered in the EU.
+          outputs are produced by third-party AI models accessed via our operator integration. We
+          deploy those models to users of the Service. The Studio is offered in the EU under our
+          name, so transparency duties for this application also sit with us. Upstream providers
+          remain responsible for their own models. See also the{' '}
+          <a href="/terms">Terms of Use</a>.
         </p>
         <h3>What this means for you</h3>
         <ul className="mt-3">
@@ -204,15 +206,12 @@ export default function PolicyPage() {
             human review and editorial responsibility.
           </li>
           <li>
-            <strong>Machine-readable marking</strong> — Article 50(2) requires providers of systems
-            that generate synthetic audio, image, video, or text to mark outputs in a
-            machine-readable way where technically feasible. Upstream model providers and our
-            generation pipeline are evolving toward these marks. Where a provider supplies
-            watermarks, C2PA/manifests, or similar signals, we aim to preserve them; full coverage
-            across every model is not guaranteed today. Obligations apply from{' '}
-            <strong>2 August 2026</strong>, with a limited grace period to{' '}
-            <strong>2 December 2026</strong> for certain marking duties on systems already on the
-            market before that date.
+            <strong>Machine-readable marking</strong> — Article 50(2) requires synthetic audio,
+            image, video, or text to be marked in a machine-readable way where technically feasible.
+            We label outputs in the Studio and on AI gallery stills. Where a provider supplies
+            watermarks, C2PA/manifests, or similar signals, we preserve them; we do not offer a
+            watermark-removal tool. Full invisible marking across every model is not guaranteed
+            today. Obligations apply from <strong>2 August 2026</strong>.
           </li>
           <li>
             <strong>Risk posture</strong> — The hosted Studio is intended for creative / production
@@ -265,6 +264,8 @@ export default function PolicyPage() {
       <section>
         <h2>13. Related</h2>
         <p className="mt-3">
+          Terms of Use: <a href="/terms">/terms</a>
+          <br />
           Provider identification (Impressum): <a href="/impressum">/impressum</a>
         </p>
       </section>

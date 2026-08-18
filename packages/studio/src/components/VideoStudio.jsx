@@ -19,6 +19,7 @@ import {
 import LiveModelDropdown from "./LiveModelDropdown.jsx";
 import CharacterLibrary from "./CharacterLibrary.jsx";
 import GalleryDeleteButton from "./GalleryDeleteButton.jsx";
+import { AiGeneratedMark, AiFullscreenCaption } from "./AiGeneratedMark.jsx";
 import { removeHistoryEntry, deleteGenerationRecord } from "../galleryHistory.js";
 import {
   isI2vModelId,
@@ -537,11 +538,12 @@ export default function VideoStudio({
       }
       setV2vMode(true);
       const firstV2V = v2vModels[0];
-      setSelectedModel(firstV2V.id);
-      setSelectedModelName(firstV2V.name);
-      applyControlsForModel(firstV2V.id, false, true);
-      setPrompt("");
-      setPromptDisabled(true);
+      if (firstV2V) {
+        setSelectedModel(firstV2V.id);
+        setSelectedModelName(firstV2V.name);
+        applyControlsForModel(firstV2V.id, false, true);
+        setPromptDisabled(!firstV2V.hasPrompt);
+      }
     } catch (err) {
       alert(`Video upload failed: ${err.message}`);
     } finally {
@@ -733,18 +735,19 @@ export default function VideoStudio({
         // Already in motion-control mode — keep model and image, allow prompt
         setPromptDisabled(false);
       } else {
-        // Default v2v flow (e.g. watermark remover) — auto-pick the first v2v model
+        // Default v2v flow — pick first remaining model, keep prompt if the model uses one
         if (imageMode) {
           setUploadedImageUrl(null);
           setImageMode(false);
         }
         setV2vMode(true);
         const firstV2V = v2vModels[0];
-        setSelectedModel(firstV2V.id);
-        setSelectedModelName(firstV2V.name);
-        applyControlsForModel(firstV2V.id, false, true);
-        setPrompt("");
-        setPromptDisabled(true);
+        if (firstV2V) {
+          setSelectedModel(firstV2V.id);
+          setSelectedModelName(firstV2V.name);
+          applyControlsForModel(firstV2V.id, false, true);
+          setPromptDisabled(!firstV2V.hasPrompt);
+        }
       }
     } catch (err) {
       console.error("[VideoStudio] Video upload failed:", err);
@@ -775,7 +778,6 @@ export default function VideoStudio({
         setImageMode(false);
         const isMC = !!m.imageField;
         if (!isMC) {
-          // Single-input v2v (watermark remover etc.) — drop any image
           setUploadedImageUrl(null);
           setUploadedImagePreview(null);
         }
@@ -912,7 +914,7 @@ export default function VideoStudio({
       let res;
 
       if (v2vMode) {
-        // V2V: dedicated processV2V handles single-input tools (e.g. watermark
+        // V2V: dedicated processV2V handles single-input tools
         // remover) and motion-control models (which take video + image + prompt)
         const v2vParams = {
           model: selectedModel,
@@ -1189,7 +1191,7 @@ export default function VideoStudio({
       ? currentModelObj?.promptRequired
         ? "Describe the motion"
         : "Describe the motion (optional)"
-      : "Video ready — click Generate to remove watermark"
+      : "Describe the edit (optional)"
     : imageMode
       ? "Describe the motion or effect (optional)"
       : isExtendMode
@@ -1232,6 +1234,7 @@ export default function VideoStudio({
                       e.target.currentTime = 0;
                     }}
                   />
+                  <AiGeneratedMark className="absolute top-2 left-2 z-10" />
                   
                   {/* Overlay actions */}
                   <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1529,7 +1532,7 @@ export default function VideoStudio({
                 title={
                   uploadedVideoUrl
                     ? `${uploadedVideoName} — click to clear`
-                    : "Upload video to remove watermark"
+                    : "Upload a reference video"
                 }
                 onClick={() =>
                   uploadedVideoUrl
@@ -1895,6 +1898,7 @@ export default function VideoStudio({
             className="max-w-[95vw] max-h-[95vh] rounded-2xl shadow-2xl object-contain animate-scale-up" 
             onClick={(e) => e.stopPropagation()}
           />
+          <AiFullscreenCaption />
         </div>
       )}
     </div>

@@ -27,7 +27,7 @@ const TABS = [
   {
     id: 'lipsync',
     label: 'Lip Sync',
-    blurb: 'Make a face talk — match mouth movement to your audio.',
+    blurb: 'Make a face talk — match mouth movement to your audio. Disclose deepfakes when you publish.',
     howTo: '1) Upload a portrait or video  2) Upload audio  3) Pick a model  4) Generate',
   },
   {
@@ -56,6 +56,8 @@ const LOW_CREDITS_THRESHOLD = 100;
 const LOCAL_GALLERY_TABS = new Set(['image', 'video', 'lipsync', 'cinema', 'marketing']);
 const LOCAL_STORAGE_NOTICE =
   'We do not store your images or clips on our servers. Gallery history lives in this browser only — always download files you want to keep.';
+const AI_ORIGIN_NOTICE =
+  'Outputs are AI-generated or AI-manipulated. If you publish a deepfake of a real person, disclose that.';
 
 // localStorage key + history field for each tab's gallery count
 const GALLERY_PERSIST = {
@@ -581,6 +583,18 @@ export default function StandaloneShell() {
               </p>
             </div>
           )}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-white/[0.06] px-6 py-1.5 lg:px-8">
+            <p className="text-[10px] leading-snug text-white/40">
+              {AI_ORIGIN_NOTICE}{' '}
+              <Link href="/terms" className="text-white/55 underline underline-offset-2 hover:text-[#00ff88]">
+                Terms
+              </Link>
+              {' · '}
+              <Link href="/policy#eu-ai-act" className="text-white/55 underline underline-offset-2 hover:text-[#00ff88]">
+                AI Act
+              </Link>
+            </p>
+          </div>
           {/* Mobile studio picker */}
           <div className="flex gap-1 overflow-x-auto px-6 pb-2 pt-1.5 md:hidden lg:px-8">
             {TABS.map((tab) => {
