@@ -1,0 +1,190 @@
+{
+  "items": [
+    {
+      "id": "naga-noir",
+      "slug": "naga-noir",
+      "title": "Naga Noir",
+      "type": "movie",
+      "year": 2026,
+      "link": "/film/gallery/naga-noir",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
+      "aspect": 1.78,
+      "imageCount": 6,
+      "published": true,
+      "locked": false,
+      "director": "Naga Films Studio",
+      "cinematographer": "AI · Cinema Studio",
+      "runtime": "—",
+      "country": "Germany",
+      "genres": ["Neo-noir", "Crime"],
+      "synopsis": "An original AI-generated neo-noir study: a lone figure in a rain-soaked neon alley. Generated inside Naga Films Studio as a cinematography reference set.",
+      "stills": [
+        "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
+        "https://images.pexels.com/photos/21336130/pexels-photo-21336130/free-photo-of-man-smoking-cigarette-in-darkness.jpeg?cs=tinysrgb&dpr=1&w=1280",
+        "https://images.pexels.com/videos/34796505/pexels-photo-34796505.jpeg?auto=1&w=1280",
+        "https://images.pexels.com/photos/7833935/pexels-photo-7833935.jpeg?cs=tinysrgb&dpr=1&w=1280",
+        "https://images.pexels.com/photos/12394051/pexels-photo-12394051.jpeg?cs=tinysrgb&dpr=1&w=1280",
+        "https://images.pexels.com/photos/22481866/pexels-photo-22481866/free-photo-of-man-in-cap-and-coat-standing-in-dark.jpeg?cs=tinysrgb&dpr=1&w=1280"
+      ]
+    },
+    {
+      "id": "naga-transit",
+      "slug": "naga-transit",
+      "title": "Naga Transit",
+      "type": "series",
+      "year": 2026,
+      "link": "/film/gallery/naga-transit",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
+      "aspect": 1.78,
+      "imageCount": 5,
+      "published": true,
+      "locked": false,
+      "director": "Naga Films Studio",
+      "cinematographer": "AI · Cinema Studio",
+      "runtime": "—",
+      "country": "Germany",
+      "genres": ["Suspense", "Drama"],
+      "synopsis": "An original AI-generated series frame study: a silhouetted figure on an empty underground platform at night. A suspense reference set generated in Naga Films Studio.",
+      "stills": [
+        "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
+        "https://images.unsplash.com/photo-1707128551040-e512534e499d?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1702126952831-2225b214adc4?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1702126952818-2ea3d6176281?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1702126952856-f366d8cb5462?fm=jpg&q=60&w=1280&auto=format&fit=crop"
+      ]
+    },
+    {
+      "id": "naga-frequency",
+      "slug": "naga-frequency",
+      "title": "Naga - Frequency",
+      "type": "music",
+      "year": 2026,
+      "link": "/film/gallery/naga-frequency",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
+      "aspect": 1.78,
+      "imageCount": 4,
+      "published": true,
+      "locked": false,
+      "director": "Naga Films Studio",
+      "cinematographer": "AI · Cinema Studio",
+      "runtime": "—",
+      "country": "Germany",
+      "genres": ["Music Video"],
+      "synopsis": "An original AI-generated music-video frame study: a silhouetted singer under a single warm spotlight on a smoky stage. Concert-film reference set from Naga Films Studio.",
+      "stills": [
+        "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
+        "https://images.unsplash.com/photo-1707128551040-e512534e499d?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1718874380569-7a44071f01c3?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1702126952818-2ea3d6176281?fm=jpg&q=60&w=1280&auto=format&fit=crop"
+      ]
+    },
+    {
+      "id": "naga-aura",
+      "slug": "naga-aura",
+      "title": "Naga Aura",
+      "type": "commercial",
+      "year": 2026,
+      "link": "/film/gallery/naga-aura",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DFP_HHN19PBG1K65J79D/da7f880f-8a51-4ebe-a12f-a8fb5c2c9b09.png",
+      "aspect": 1.78,
+      "imageCount": 4,
+      "published": true,
+      "locked": false,
+      "director": "Naga Films Studio",
+      "cinematographer": "AI · Cinema Studio",
+      "runtime": "—",
+      "country": "Germany",
+      "genres": ["Commercial", "Luxury"],
+      "synopsis": "An original AI-generated commercial frame study: an unlabeled perfume bottle on wet black stone with dramatic rim lighting. Product-advertising reference set from Naga Films Studio.",
+      "stills": [
+        "https://pub.hyperagent.com/api/published/pbf01M0A71DFP_HHN19PBG1K65J79D/da7f880f-8a51-4ebe-a12f-a8fb5c2c9b09.png",
+        "https://images.unsplash.com/photo-1707128551040-e512534e499d?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1702126952856-f366d8cb5462?fm=jpg&q=60&w=1280&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1702126952818-2ea3d6176281?fm=jpg&q=60&w=1280&auto=format&fit=crop"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "p-naga-noir",
+      "slug": "naga-noir",
+      "title": "Naga Noir",
+      "year": "2026",
+      "typeLabel": "Experimental",
+      "link": "/film/gallery/naga-noir",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
+      "frameCount": 6,
+      "aspect": 1.78
+    },
+    {
+      "id": "p-naga-frequency",
+      "slug": "naga-frequency",
+      "title": "Naga - Frequency",
+      "year": "2026",
+      "typeLabel": "Music Video",
+      "link": "/film/gallery/naga-frequency",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
+      "frameCount": 4,
+      "aspect": 1.78
+    },
+    {
+      "id": "p-naga-transit",
+      "slug": "naga-transit",
+      "title": "Naga Transit",
+      "year": "2026",
+      "typeLabel": "Music Video",
+      "link": "/film/gallery/naga-transit",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
+      "frameCount": 5,
+      "aspect": 1.78
+    },
+    {
+      "id": "p-naga-aura",
+      "slug": "naga-aura",
+      "title": "Naga Aura",
+      "year": "2026",
+      "typeLabel": "Experimental",
+      "link": "/film/gallery/naga-aura",
+      "thumbUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DFP_HHN19PBG1K65J79D/da7f880f-8a51-4ebe-a12f-a8fb5c2c9b09.png",
+      "frameCount": 4,
+      "aspect": 1.78
+    }
+  ],
+  "heroSlides": [
+    {
+      "id": "s1",
+      "title": "Your next shoot references itself.",
+      "subtitle": "Movie stills, series frames & music-video references — browse, study, plan. Original AI cinema from Naga Films Studio.",
+      "imageUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png",
+      "buttonText": "Get Started",
+      "buttonUrl": "/film/movie",
+      "showButton": true
+    },
+    {
+      "id": "s2",
+      "title": "From the studio, not from someone else's film.",
+      "subtitle": "Every frame here is original AI-generated cinema from Naga Films Studio — or freely-licensed CC0 stock. No copyrighted film frames, ever.",
+      "imageUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png",
+      "buttonText": "Browse Music",
+      "buttonUrl": "/film/music-video",
+      "showButton": true
+    },
+    {
+      "id": "s3",
+      "title": "Study the frame. Plan the shot.",
+      "subtitle": "Director, cinematographer, runtime, frame count. Open a title and page through its frames like a real film archive.",
+      "imageUrl": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png",
+      "buttonText": "Explore Series",
+      "buttonUrl": "/film/series",
+      "showButton": true
+    }
+  ],
+  "collections": [
+    { "id": "c1", "title": "Personal Picks", "creator": "admin", "stills": 19, "likes": 5, "followers": 5, "tab": "Featured", "thumb": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png" },
+    { "id": "c2", "title": "Neon & Rain", "creator": "Naga Films", "stills": 6, "likes": 3, "followers": 0, "tab": "Featured", "thumb": "https://pub.hyperagent.com/api/published/pbf01M0A71DGR_T0WTMEBJV7B1XVZM/1c5239b6-d038-4e74-a054-0afce955c968.png" },
+    { "id": "c3", "title": "Stage & Spotlight", "creator": "Naga Films", "stills": 4, "likes": 2, "followers": 1, "tab": "Trending", "thumb": "https://pub.hyperagent.com/api/published/pbf01M0A71DKK_TERKX6N93YKHSEWG/407cc004-af38-4ac7-8fc1-b7bc5f7b90cb.png" },
+    { "id": "c4", "title": "Dark Series", "creator": "Naga Films", "stills": 5, "likes": 2, "followers": 0, "tab": "Featured", "thumb": "https://pub.hyperagent.com/api/published/pbf01M0A71DGH_AP6C5C4FZC8M7NZA/1253658e-ec78-4506-abf1-ebea3cf29dfe.png" },
+    { "id": "c5", "title": "Product Hero", "creator": "Naga Films", "stills": 4, "likes": 1, "followers": 0, "tab": "New", "thumb": "https://pub.hyperagent.com/api/published/pbf01M0A71DFP_HHN19PBG1K65J79D/da7f880f-8a51-4ebe-a12f-a8fb5c2c9b09.png" },
+    { "id": "c6", "title": "Black & White", "creator": "Naga Films", "stills": 4, "likes": 1, "followers": 0, "tab": "Most Liked", "thumb": "https://images.pexels.com/photos/21336130/pexels-photo-21336130/free-photo-of-man-smoking-cigarette-in-darkness.jpeg?cs=tinysrgb&dpr=1&w=800" }
+  ]
+}

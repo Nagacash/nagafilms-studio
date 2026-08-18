@@ -97,6 +97,13 @@ export default function Home() {
             Buy credits
           </Link>
           <Link
+            href="/film"
+            title="Naga Film — movie stills, TV frames & cinematic references"
+            className="hidden text-[13px] font-semibold text-white/70 hover:text-[#00ff88] sm:inline"
+          >
+            Film
+          </Link>
+          <Link
             href="/login"
             title="Sign in to use your Naga credit wallet in the studio"
             className="rounded-md border border-white/20 bg-black/40 px-4 py-2 text-[13px] font-semibold text-white backdrop-blur-md transition-colors hover:border-[#00ff88]/50 hover:bg-black/60 hover:text-[#00ff88]"
