@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
 import { resolveRole } from '@/lib/admin';
+import { clientKey, rateLimit, tooMany } from '@/lib/rate-limit';
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -13,6 +14,9 @@ const bodySchema = z.object({
 
 export async function POST(req) {
   try {
+    const limited = rateLimit(`signup:${clientKey(req)}`, { limit: 8, windowMs: 15 * 60 * 1000 });
+    if (!limited.ok) return tooMany(limited.retryAfter);
+
     const json = await req.json();
     const parsed = bodySchema.safeParse(json);
     if (!parsed.success) {
@@ -53,6 +57,6 @@ export async function POST(req) {
     return NextResponse.json({ user }, { status: 201 });
   } catch (err) {
     console.error('[signup]', err);
-    return NextResponse.json({ error: err.message || 'Signup failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Signup failed' }, { status: 500 });
   }
 }

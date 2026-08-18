@@ -9,7 +9,7 @@ import { safeCallbackUrl } from '@/lib/safe-callback-url';
 export default function LoginClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { status } = useSession();
+  const { status, update } = useSession();
   const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
 
   const [email, setEmail] = useState('');
@@ -38,7 +38,8 @@ export default function LoginClient() {
       setError('Invalid email or password');
       return;
     }
-    router.push(callbackUrl);
+    await update();
+    router.replace(callbackUrl);
     router.refresh();
   }
 

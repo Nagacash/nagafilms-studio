@@ -15,6 +15,7 @@ import {
   extractResultUrls,
   isPredictionDone,
 } from '@/lib/muapi-server';
+import { clientKey, rateLimit, tooMany } from '@/lib/rate-limit';
 
 const bodySchema = z.object({
   modality: z.enum(['image']).default('image'),
@@ -29,6 +30,12 @@ export async function POST(req) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Login required' }, { status: 401 });
     }
+
+    const limited = rateLimit(`generate:${session.user.id}:${clientKey(req)}`, {
+      limit: 30,
+      windowMs: 15 * 60 * 1000,
+    });
+    if (!limited.ok) return tooMany(limited.retryAfter);
 
     const parsed = bodySchema.safeParse(await req.json());
     if (!parsed.success) {
