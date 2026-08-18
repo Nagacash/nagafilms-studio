@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import BrandMark from '@/components/gallery/BrandMark';
 
 const NAV = [
   { label: 'Filter', href: '/film/filter' },
@@ -10,20 +14,27 @@ const NAV = [
   { label: 'Contact', href: '/film/contact' },
 ];
 
-export default function GalleryHeader({ activeHref }) {
+const MOBILE_NAV = [
+  { label: 'Filter', href: '/film/filter' },
+  { label: 'Discover', href: '/film/discover' },
+  { label: 'Movies', href: '/film/movie' },
+  { label: 'Studio', href: '/studio' },
+];
+
+export default function GalleryHeader() {
+  const pathname = usePathname();
+
   return (
     <header className="nf-header">
       <div className="nf-header-inner">
-        <Link href="/film" className="nf-logo" aria-label="Naga Film home">
-          Naga<span>Film</span>
-        </Link>
+        <BrandMark href="/film" />
 
         <nav className="nf-nav" aria-label="Gallery">
           {NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href}
-              className={activeHref === n.href ? 'is-active' : undefined}
+              className={pathname === n.href || pathname.startsWith(`${n.href}/`) ? 'is-active' : undefined}
             >
               {n.label}
             </Link>
@@ -31,6 +42,12 @@ export default function GalleryHeader({ activeHref }) {
         </nav>
 
         <div className="nf-header-right">
+          <Link href="/" className="nf-header-bridge" title="Naga Films Studio landing">
+            Studio
+          </Link>
+          <Link href="/credits" className="nf-header-bridge nf-header-bridge-hide-sm" title="Buy credit packs">
+            Credits
+          </Link>
           <form className="nf-search" action="/film/filter" method="get" role="search">
             <SearchIcon />
             <input
@@ -40,12 +57,24 @@ export default function GalleryHeader({ activeHref }) {
               aria-label="Search frames, movies, people"
             />
           </form>
-          <Link href="/film/contact" className="nf-btn nf-btn-outline">+ Request</Link>
-          <Link href="/login" className="nf-icon-btn" aria-label="Sign in">
-            <SignInIcon />
+          <Link href="/film/contact" className="nf-btn nf-btn-outline nf-btn-hide-sm">+ Request</Link>
+          <Link href="/login" className="nf-btn nf-btn-login" title="Sign in to Naga Films Studio">
+            Log in
           </Link>
         </div>
       </div>
+
+      <nav className="nf-nav-mobile" aria-label="Gallery quick links">
+        {MOBILE_NAV.map((n) => (
+          <Link
+            key={n.href}
+            href={n.href}
+            className={pathname === n.href || pathname.startsWith(`${n.href}/`) ? 'is-active' : undefined}
+          >
+            {n.label}
+          </Link>
+        ))}
+      </nav>
     </header>
   );
 }
@@ -55,16 +84,6 @@ function SearchIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-
-function SignInIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-      <polyline points="10 17 15 12 10 7" />
-      <line x1="15" y1="12" x2="3" y2="12" />
     </svg>
   );
 }

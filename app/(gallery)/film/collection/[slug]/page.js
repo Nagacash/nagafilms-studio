@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getCollectionBySlug, getAllCollections } from '@/lib/gallery/data';
-import FrameGrid from '@/components/gallery/FrameGrid';
+import SceneFeed from '@/components/gallery/SceneFeed';
+import { getScenesForCollection } from '@/lib/gallery/data';
 
 export function generateStaticParams() {
   return getAllCollections().map((c) => ({ slug: c.slug }));
@@ -49,7 +50,7 @@ export default function CollectionPage({ params }) {
         </div>
       </header>
 
-      <FrameGrid frames={col.frames} alt={col.title} />
+      <SceneFeed scenes={getScenesForCollection(params.slug)} />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import BrandMark from '@/components/gallery/BrandMark';
 
 const EXPLORE = [
   { label: 'Home', href: '/film' },
@@ -14,16 +15,17 @@ const COMPANY = [
   { label: 'Guide', href: '/film/guide' },
   { label: 'FAQ', href: '/film/news#faq' },
   { label: 'Studio', href: '/studio' },
+  { label: 'Landing', href: '/' },
+  { label: 'Buy credits', href: '/credits' },
   { label: 'Contact', href: '/film/contact' },
   { label: 'Pricing', href: '/film/pricing' },
-  { label: 'For Rights Holders', href: '/film/contact' },
 ];
 
 const LEGAL = [
   { label: 'Terms Of Use', href: '/policy' },
   { label: 'Privacy Policy', href: '/policy' },
   { label: 'Impressum', href: '/impressum' },
-  { label: 'AI Act notice', href: '/policy' },
+  { label: 'AI Act notice', href: '/policy#eu-ai-act' },
 ];
 
 export default function GalleryFooter() {
@@ -32,10 +34,13 @@ export default function GalleryFooter() {
       <div className="nf-footer-inner">
         <div className="nf-footer-top">
           <div className="nf-footer-brand">
-            <Link href="/film" className="nf-logo" aria-label="Naga Film home">
-              Naga<span style={{ color: 'var(--nf-gold)' }}>Film</span>
-            </Link>
-            <p>Movie stills, film frames &amp; TV screenshots for filmmakers — original AI cinema and freely-licensed imagery only.</p>
+            <BrandMark href="/film" className="nf-brand-footer" />
+            <p>
+              Movie stills, film frames &amp; TV screenshots for filmmakers — original AI cinema from
+              {' '}
+              <Link href="/">Naga Films Studio</Link>.
+              No copyrighted film frames, ever.
+            </p>
             <div className="nf-footer-connect">
               <a href="https://x.com" target="_blank" rel="noopener noreferrer">X</a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
@@ -72,7 +77,22 @@ export default function GalleryFooter() {
         </div>
 
         <div className="nf-footer-bottom">
-          © {new Date().getFullYear()} Naga Film · Hamburg · A Naga Films Studio surface. Built on Open Generative AI · MIT.
+          <p>© {new Date().getFullYear()} Naga Films · Hamburg</p>
+          <p>
+            Official brand:{' '}
+            <a href="https://nagaclub.de" target="_blank" rel="noreferrer">Naga Apparel</a>
+            {' · '}
+            Designed by{' '}
+            <a href="https://nagacodex.cloud" target="_blank" rel="noreferrer">Naga Codex</a>
+          </p>
+          <p className="nf-footer-note">
+            A Naga Films Studio surface · Built on{' '}
+            <a href="https://github.com/Anil-matcha/Open-Generative-AI" target="_blank" rel="noreferrer">
+              Open Generative AI
+            </a>
+            {' · '}
+            MIT
+          </p>
         </div>
       </div>
     </footer>

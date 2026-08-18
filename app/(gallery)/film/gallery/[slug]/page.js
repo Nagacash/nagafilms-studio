@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getBySlug, getAll, typeToSegment } from '@/lib/gallery/data';
-import FrameGrid from '@/components/gallery/FrameGrid';
+import SceneFeed from '@/components/gallery/SceneFeed';
 import ColorPalette from '@/components/gallery/ColorPalette';
+import { getScenesForItem } from '@/lib/gallery/data';
 
 export function generateStaticParams() {
   return getAll().map((i) => ({ slug: i.slug }));
@@ -24,7 +25,7 @@ export default function GalleryDetail({ params }) {
   if (!item) notFound();
 
   const catSegment = typeToSegment(item.type);
-  const frames = item.stills && item.stills.length > 0 ? item.stills : [item.thumbUrl];
+  const scenes = getScenesForItem(item);
 
   return (
     <>
@@ -94,7 +95,7 @@ export default function GalleryDetail({ params }) {
         </div>
       </header>
 
-      <FrameGrid frames={frames} alt={item.title} />
+      <SceneFeed scenes={scenes} />
     </>
   );
 }
