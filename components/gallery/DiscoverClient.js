@@ -1,11 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { getCollectionsByTab } from '@/lib/gallery/data';
 
 const TABS = ['Trending', 'Featured', 'New', 'Most Liked'];
 
-export default function DiscoverClient({ collections }) {
+export default function DiscoverClient() {
   const [tab, setTab] = useState('Featured');
   const shown = getCollectionsByTab(tab);
 
@@ -15,6 +16,7 @@ export default function DiscoverClient({ collections }) {
         {TABS.map((t) => (
           <button
             key={t}
+            type="button"
             role="tab"
             aria-selected={tab === t}
             className={`nf-tab${tab === t ? ' is-active' : ''}`}
@@ -27,9 +29,14 @@ export default function DiscoverClient({ collections }) {
 
       <div className="nf-grid">
         {shown.map((c) => (
-          <div key={c.id} className="nf-collection-card">
+          <Link
+            key={c.id}
+            href={`/film/collection/${c.slug}`}
+            className="nf-collection-card nf-collection-card-link"
+            aria-label={`Open collection ${c.title}`}
+          >
             <div className="nf-collection-media">
-              <img src={c.thumb} alt={c.title} loading="lazy" decoding="async" />
+              <img src={c.thumb} alt="" loading="lazy" decoding="async" />
             </div>
             <div className="nf-collection-body">
               <span className="nf-collection-tag">{c.tab}</span>
@@ -44,7 +51,7 @@ export default function DiscoverClient({ collections }) {
                 <span>{c.followers} followers</span>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </>

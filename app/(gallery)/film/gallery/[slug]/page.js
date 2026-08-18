@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getBySlug, getAll, typeToSegment } from '@/lib/gallery/data';
 import FrameGrid from '@/components/gallery/FrameGrid';
+import ColorPalette from '@/components/gallery/ColorPalette';
 
 export function generateStaticParams() {
   return getAll().map((i) => ({ slug: i.slug }));
@@ -47,6 +48,7 @@ export default function GalleryDetail({ params }) {
               <span>{item.imageCount} frames</span>
             </div>
             {item.synopsis && <p className="nf-detail-synopsis">{item.synopsis}</p>}
+            <ColorPalette colors={item.palette} />
           </div>
 
           <div>
@@ -71,10 +73,20 @@ export default function GalleryDetail({ params }) {
               )}
             </div>
             <div className="nf-detail-actions">
-              <button className="nf-btn nf-btn-outline">
+              <button
+                type="button"
+                className="nf-btn nf-btn-outline nf-btn-soon"
+                disabled
+                title="Coming soon"
+              >
                 <HeartIcon /> Favorite
               </button>
-              <button className="nf-btn nf-btn-outline">
+              <button
+                type="button"
+                className="nf-btn nf-btn-outline nf-btn-soon"
+                disabled
+                title="Coming soon"
+              >
                 <ClockIcon /> Watch Later
               </button>
             </div>

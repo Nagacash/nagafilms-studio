@@ -12,7 +12,7 @@ export default function DiscoverPage() {
           <span className="nf-section-count">{collections.length} collections</span>
         </div>
       </div>
-      <DiscoverClient collections={collections} />
+      <DiscoverClient />
     </section>
   );
 }

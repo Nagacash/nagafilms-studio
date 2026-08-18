@@ -9,7 +9,7 @@ const TYPE_LABEL = {
 
 export default function GalleryCard({ item }) {
   return (
-    <Link href={item.link || `/gallery/${item.slug}`} className="nf-card">
+    <Link href={item.link || `/film/gallery/${item.slug}`} className="nf-card">
       <div className="nf-card-media">
         <span className="nf-card-badge">{TYPE_LABEL[item.type] || item.typeLabel || 'Film'}</span>
         <img

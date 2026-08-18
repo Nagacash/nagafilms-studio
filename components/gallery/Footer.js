@@ -11,8 +11,9 @@ const EXPLORE = [
 
 const COMPANY = [
   { label: 'About', href: '/film/news' },
-  { label: 'Guide', href: '/film/news' },
-  { label: 'FAQ', href: '/film/pricing' },
+  { label: 'Guide', href: '/film/guide' },
+  { label: 'FAQ', href: '/film/news#faq' },
+  { label: 'Studio', href: '/studio' },
   { label: 'Contact', href: '/film/contact' },
   { label: 'Pricing', href: '/film/pricing' },
   { label: 'For Rights Holders', href: '/film/contact' },
@@ -31,7 +32,7 @@ export default function GalleryFooter() {
       <div className="nf-footer-inner">
         <div className="nf-footer-top">
           <div className="nf-footer-brand">
-            <Link href="/" className="nf-logo" aria-label="Naga Film home">
+            <Link href="/film" className="nf-logo" aria-label="Naga Film home">
               Naga<span style={{ color: 'var(--nf-gold)' }}>Film</span>
             </Link>
             <p>Movie stills, film frames &amp; TV screenshots for filmmakers — original AI cinema and freely-licensed imagery only.</p>

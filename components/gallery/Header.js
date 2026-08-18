@@ -31,7 +31,7 @@ export default function GalleryHeader({ activeHref }) {
         </nav>
 
         <div className="nf-header-right">
-          <form className="nf-search" action="/filter" method="get" role="search">
+          <form className="nf-search" action="/film/filter" method="get" role="search">
             <SearchIcon />
             <input
               type="search"
@@ -40,7 +40,7 @@ export default function GalleryHeader({ activeHref }) {
               aria-label="Search frames, movies, people"
             />
           </form>
-          <Link href="/contact" className="nf-btn nf-btn-outline">+ Request</Link>
+          <Link href="/film/contact" className="nf-btn nf-btn-outline">+ Request</Link>
           <Link href="/login" className="nf-icon-btn" aria-label="Sign in">
             <SignInIcon />
           </Link>
