@@ -1,5 +1,5 @@
-import { GalleryGrid } from '../../../components/gallery/Card';
-import { search, getAll } from '../../../lib/gallery/data';
+import { GalleryGrid } from '@/components/gallery/Card';
+import { search, getAll } from '@/lib/gallery/data';
 
 export const metadata = { title: 'Filter — Naga Film' };
 

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getBySlug, getAll, typeToSegment } from '../../../lib/gallery/data';
-import FrameGrid from '../../../components/gallery/FrameGrid';
+import { getBySlug, getAll, typeToSegment } from '@/lib/gallery/data';
+import FrameGrid from '@/components/gallery/FrameGrid';
 
 export function generateStaticParams() {
   return getAll().map((i) => ({ slug: i.slug }));

@@ -1,5 +1,5 @@
-import DiscoverClient from '../../../components/gallery/DiscoverClient';
-import { collections } from '../../../lib/gallery/data';
+import DiscoverClient from '@/components/gallery/DiscoverClient';
+import { collections } from '@/lib/gallery/data';
 
 export const metadata = { title: 'Discover Collections — Naga Film' };
 

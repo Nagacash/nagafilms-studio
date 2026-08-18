@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import HeroCarousel from '../../components/gallery/HeroCarousel';
-import BrowseContent from '../../components/gallery/BrowseContent';
-import { GalleryGrid } from '../../components/gallery/Card';
-import { getAll, projects, heroSlides } from '../../lib/gallery/data';
+import HeroCarousel from '@/components/gallery/HeroCarousel';
+import BrowseContent from '@/components/gallery/BrowseContent';
+import { GalleryGrid } from '@/components/gallery/Card';
+import { getAll, projects, heroSlides } from '@/lib/gallery/data';
 
 export const metadata = {
   title: 'Naga Film — Movie Stills, TV Frames & Cinematic References',

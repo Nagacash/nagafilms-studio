@@ -1,5 +1,5 @@
-import BrowseContent from '../../../components/gallery/BrowseContent';
-import { getByType } from '../../../lib/gallery/data';
+import BrowseContent from '@/components/gallery/BrowseContent';
+import { getByType } from '@/lib/gallery/data';
 
 export const metadata = { title: 'Commercials — Naga Film' };
 
