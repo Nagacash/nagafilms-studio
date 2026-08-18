@@ -76,6 +76,17 @@ export default function SignupPage() {
               className="w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 text-sm"
             />
           </div>
+          <p className="text-[11px] leading-relaxed text-white/35">
+            By signing up you agree to the{' '}
+            <Link href="/terms" className="text-[#00ff88]">
+              Terms of Use
+            </Link>{' '}
+            and{' '}
+            <Link href="/policy" className="text-[#00ff88]">
+              Privacy Policy
+            </Link>
+            . Studio outputs are AI-generated.
+          </p>
           {error && <p className="text-red-400 text-xs">{error}</p>}
           <button
             type="submit"

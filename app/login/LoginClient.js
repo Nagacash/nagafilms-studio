@@ -88,6 +88,10 @@ export default function LoginClient() {
           >
             Sign up
           </Link>
+          {' · '}
+          <Link href="/terms" className="text-white/40 hover:text-[#00ff88]">
+            Terms
+          </Link>
         </p>
         <p className="mt-2 text-center text-xs">
           <Link href={callbackUrl === '/studio' ? '/' : callbackUrl} className="text-white/25 hover:text-white/50">
