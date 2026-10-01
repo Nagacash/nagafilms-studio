@@ -58,3 +58,4 @@ out/
 
 # Direnv (can export secrets)
 .envrc
+.vercel
