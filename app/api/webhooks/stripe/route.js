@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe';
-import { creditFromStripeSession } from '@/lib/credits';
-import { getPack } from '@/lib/packs';
+import { fulfillCheckoutSession } from '@/lib/stripe-fulfill';
 
 export const runtime = 'nodejs';
 
@@ -29,36 +28,15 @@ export async function POST(req) {
   try {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
-      if (session.mode !== 'payment' || session.payment_status !== 'paid') {
-        return NextResponse.json({ received: true, skipped: true });
+      const result = await fulfillCheckoutSession(session, { source: 'webhook' });
+
+      if (!result.ok) {
+        console.error('[stripe webhook] fulfill failed', session.id, result);
+        return NextResponse.json({ error: result.error || 'Fulfill failed' }, { status: 400 });
       }
-
-      const userId = session.metadata?.userId || session.client_reference_id;
-      const packId = session.metadata?.packId;
-      const pack = getPack(packId);
-      const credits = Number(session.metadata?.credits || pack?.credits || 0);
-
-      if (!userId || !credits) {
-        console.error('[stripe webhook] missing userId/credits', session.id);
-        return NextResponse.json({ error: 'Invalid metadata' }, { status: 400 });
-      }
-
-      // Unlock app credits only. Never issue Stripe refunds for pack purchases.
-      const result = await creditFromStripeSession({
-        userId,
-        credits,
-        stripeSessionId: session.id,
-        paymentIntentId:
-          typeof session.payment_intent === 'string'
-            ? session.payment_intent
-            : session.payment_intent?.id,
-        packId,
-      });
 
       console.log('[stripe webhook] credited', {
         sessionId: session.id,
-        userId,
-        credits,
         ...result,
       });
     }

@@ -25,11 +25,44 @@ export default function CreditsClient() {
 
   useEffect(() => {
     if (status !== 'authenticated') return;
-    fetch('/api/me')
-      .then((r) => r.json())
-      .then((d) => setBalance(d.wallet?.balance ?? 0))
-      .catch(() => {});
-  }, [status, success]);
+
+    let cancelled = false;
+    async function refresh() {
+      const sessionId = searchParams.get('session_id');
+      if (success && sessionId) {
+        try {
+          const res = await fetch('/api/credits/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId }),
+          });
+          const data = await res.json();
+          if (!cancelled && res.ok && typeof data.balance === 'number') {
+            setBalance(data.balance);
+            return;
+          }
+          if (!cancelled && !res.ok) {
+            setError(data.error || 'Could not unlock credits yet — refresh in a moment.');
+          }
+        } catch {
+          /* fall through to /api/me */
+        }
+      }
+
+      try {
+        const r = await fetch('/api/me');
+        const d = await r.json();
+        if (!cancelled) setBalance(d.wallet?.balance ?? 0);
+      } catch {
+        /* ignore */
+      }
+    }
+
+    refresh();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, success, searchParams]);
 
   async function buy(packId) {
     setBusy(packId);

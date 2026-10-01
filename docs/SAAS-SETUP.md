@@ -11,8 +11,9 @@ Copy `.env.example` → `.env.local` and fill:
 | `DATABASE_URL` | Neon Postgres connection string |
 | `AUTH_SECRET` | `openssl rand -base64 32` |
 | `STRIPE_SECRET_KEY` | Stripe secret (test `sk_test_…`) |
-| `STRIPE_WEBHOOK_SECRET` | From Stripe CLI or Dashboard webhook |
+| `STRIPE_WEBHOOK_SECRET` | From Stripe Dashboard endpoint (not CLI) for production |
 | `STRIPE_PRICE_STARTER` / `_CREATOR` / `_PRO` | One-time Price IDs (mode=payment) |
+| `ORDER_NOTIFY_WEBHOOK_URL` | Optional Discord/Slack webhook for pack-purchase alerts |
 | `MUAPI_API_KEY` | Your server MuAPI key |
 | `NEXT_PUBLIC_APP_URL` | e.g. `http://localhost:3000` |
 
@@ -32,6 +33,17 @@ Local webhook:
 stripe listen --forward-to localhost:3000/api/webhooks/stripe
 ```
 
+Production webhook (Stripe Dashboard → Developers → Webhooks):
+
+- URL: `https://naga-films.com/api/webhooks/stripe` (or your Vercel URL)
+- Event: `checkout.session.completed` only
+- Copy the **endpoint signing secret** (`whsec_…`) into Vercel `STRIPE_WEBHOOK_SECRET`
+- Do **not** use a `stripe listen` CLI secret in production — that rejects every Dashboard delivery
+
+If the webhook fails, `/credits?success=1&session_id=…` also calls `POST /api/credits/confirm` so the buyer still gets credits. Admin repair: `POST /api/admin/orders/reconcile` with `{ "email": "…" }`.
+
+Owner alerts: set `ORDER_NOTIFY_WEBHOOK_URL` to a Discord or Slack incoming webhook.
+
 ## 4. Run
 
 ```bash
@@ -48,7 +60,9 @@ pnpm dev
 - `POST /api/auth/signup` — create account + empty wallet
 - `GET /api/me` — user + credit balance
 - `POST /api/credits/topup` — Stripe Checkout
+- `POST /api/credits/confirm` — unlock credits after redirect (webhook fallback)
 - `POST /api/webhooks/stripe` — unlock credits after payment
+- `POST /api/admin/orders/reconcile` — admin re-apply paid sessions
 - `POST /api/generate` — image gen with credit hold
 - `GET /api/generations` — history
 - `/api/v1/*` — session-aware MuAPI proxy
