@@ -13,7 +13,10 @@ Copy `.env.example` → `.env.local` and fill:
 | `STRIPE_SECRET_KEY` | Stripe secret (test `sk_test_…`) |
 | `STRIPE_WEBHOOK_SECRET` | From Stripe Dashboard endpoint (not CLI) for production |
 | `STRIPE_PRICE_STARTER` / `_CREATOR` / `_PRO` | One-time Price IDs (mode=payment) |
-| `ORDER_NOTIFY_WEBHOOK_URL` | Optional Discord/Slack webhook for pack-purchase alerts |
+| `ORDER_NOTIFY_EMAIL` | Owner inbox for pack alerts (default `chosenfewrecords@hotmail.de`) |
+| `RESEND_API_KEY` | Resend API key — required to email order alerts |
+| `RESEND_FROM_EMAIL` | Optional verified from-address (else Resend onboarding sender) |
+| `ORDER_NOTIFY_WEBHOOK_URL` | Optional Discord/Slack webhook fallback |
 | `MUAPI_API_KEY` | Your server MuAPI key |
 | `NEXT_PUBLIC_APP_URL` | e.g. `http://localhost:3000` |
 
@@ -42,7 +45,7 @@ Production webhook (Stripe Dashboard → Developers → Webhooks):
 
 If the webhook fails, `/credits?success=1&session_id=…` also calls `POST /api/credits/confirm` so the buyer still gets credits. Admin repair: `POST /api/admin/orders/reconcile` with `{ "email": "…" }`.
 
-Owner alerts: set `ORDER_NOTIFY_WEBHOOK_URL` to a Discord or Slack incoming webhook.
+Owner alerts (email): create a free [Resend](https://resend.com) API key, set `RESEND_API_KEY` on Vercel, and `ORDER_NOTIFY_EMAIL=chosenfewrecords@hotmail.de`. Until you verify a domain, Resend’s `onboarding@resend.dev` can only send to the email on your Resend account — sign up with that Hotmail address (or verify `naga-films.com` and set `RESEND_FROM_EMAIL`).
 
 ## 4. Run
 
