@@ -641,7 +641,15 @@ export default function StandaloneShell() {
 
       <div className="relative z-10 min-h-0 flex-1 overflow-hidden">
         {activeTab === 'image' && (
-          <ImageStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+          <ImageStudio
+            apiKey={studioKey}
+            droppedFiles={droppedFiles}
+            onFilesHandled={handleFilesHandled}
+            filmCraftEnabled={
+              process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === 'true' ||
+              process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === '1'
+            }
+          />
         )}
         {activeTab === 'video' && (
           <VideoStudio

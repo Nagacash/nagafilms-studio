@@ -79,7 +79,13 @@ async function submitAndPoll(endpoint, payload, key, onRequestId, maxAttempts = 
     const submitWallet = parseNagaWalletPayload(submitData);
     if (submitWallet) emitWalletUpdate(submitWallet);
     const requestId = submitData.request_id || submitData.id;
-    if (!requestId) return submitData;
+    const generationId =
+      submitData?.naga?.generationId || submitData?.generationId || null;
+    if (!requestId) {
+      return generationId
+        ? { ...submitData, id: generationId, generationId }
+        : submitData;
+    }
     if (onRequestId) onRequestId(requestId);
     const result = await pollForResult(requestId, key, maxAttempts);
     const outputUrl = result.outputs?.[0] || result.url || result.output?.url;
@@ -89,7 +95,15 @@ async function submitAndPoll(endpoint, payload, key, onRequestId, maxAttempts = 
       result.output?.character_id ||
       result.outputs?.find?.((o) => typeof o === 'string' && o.startsWith('char_')) ||
       null;
-    return { ...result, url: outputUrl, id: requestId, request_id: requestId, character_id: characterId };
+    return {
+      ...result,
+      url: outputUrl,
+      id: generationId || requestId,
+      request_id: requestId,
+      generationId: generationId || undefined,
+      naga: submitData.naga,
+      character_id: characterId,
+    };
 }
 
 export async function generateImage(apiKey, params) {

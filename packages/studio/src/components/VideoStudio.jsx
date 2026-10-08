@@ -940,11 +940,13 @@ export default function VideoStudio({
         res = await processV2V(apiKey, v2vParams);
         if (!res?.url) throw new Error("No video URL returned by API");
 
-        const genId = res.id || Date.now().toString();
+        const genId =
+          res.generationId || res.naga?.generationId || res.id || Date.now().toString();
         setLastGenerationId(null);
         setLastGenerationModel(null);
         const entry = {
           id: genId,
+          requestId: res.request_id || null,
           url: res.url,
           prompt: currentModel?.hasPrompt ? trimmedPrompt : "",
           model: selectedModel,
@@ -1037,9 +1039,11 @@ export default function VideoStudio({
         res = await generateI2V(apiKey, i2vParams);
         if (!res?.url) throw new Error("No video URL returned by API");
 
-        const genId = res.id || Date.now().toString();
+        const requestId = res.request_id || null;
+        const genId =
+          res.generationId || res.naga?.generationId || res.id || Date.now().toString();
         if (selectedModel === "seedance-v2.0-i2v") {
-          setLastGenerationId(genId);
+          setLastGenerationId(requestId || genId);
           setLastGenerationModel(selectedModel);
         } else {
           setLastGenerationId(null);
@@ -1047,6 +1051,7 @@ export default function VideoStudio({
         }
         const entry = {
           id: genId,
+          requestId,
           url: res.url,
           prompt: finalPrompt,
           model: selectedModel,
@@ -1090,12 +1095,14 @@ export default function VideoStudio({
         res = await generateVideo(apiKey, params);
         if (!res?.url) throw new Error("No video URL returned by API");
 
-        const genId = res.id || Date.now().toString();
+        const requestId = res.request_id || null;
+        const genId =
+          res.generationId || res.naga?.generationId || res.id || Date.now().toString();
         if (
           selectedModel === "seedance-v2.0-t2v" ||
           selectedModel === "seedance-v2.0-i2v"
         ) {
-          setLastGenerationId(genId);
+          setLastGenerationId(requestId || genId);
           setLastGenerationModel(selectedModel);
         } else {
           setLastGenerationId(null);
@@ -1103,6 +1110,7 @@ export default function VideoStudio({
         }
         const entry = {
           id: genId,
+          requestId,
           url: res.url,
           prompt: trimmedPrompt,
           model: selectedModel,

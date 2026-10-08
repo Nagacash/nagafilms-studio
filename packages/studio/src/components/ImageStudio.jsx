@@ -648,6 +648,13 @@ function SimpleDropdown({ title, options, selected, onSelect, onClose }) {
   );
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isGenerationUuid(id) {
+  return typeof id === "string" && UUID_RE.test(id);
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ImageStudio({
@@ -656,6 +663,7 @@ export default function ImageStudio({
   historyItems,
   droppedFiles,
   onFilesHandled,
+  filmCraftEnabled = false,
 }) {
   const PERSIST_KEY = "hg_image_studio_persistent";
 
@@ -687,9 +695,49 @@ export default function ImageStudio({
   const [activeHistoryIdx, setActiveHistoryIdx] = useState(0);
   const [batchSize, setBatchSize] = useState(1);
   const [localHistory, setLocalHistory] = useState([]); // [{id,url,prompt,model,aspect_ratio,timestamp}]
+  const [filmCraftSelected, setFilmCraftSelected] = useState(() => new Set());
+  const [filmCraftBusy, setFilmCraftBusy] = useState(false);
+  const [filmCraftError, setFilmCraftError] = useState("");
 
   // Use prop history if provided, otherwise local
   const history = historyItems ?? localHistory;
+
+  const toggleFilmCraftSelect = useCallback((id) => {
+    if (!isGenerationUuid(id)) return;
+    setFilmCraftSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const createFilmCraftProject = useCallback(async () => {
+    const generationIds = [...filmCraftSelected];
+    if (!generationIds.length) return;
+    setFilmCraftBusy(true);
+    setFilmCraftError("");
+    try {
+      const res = await fetch("/api/editor/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ generationIds }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not create FilmCraft project");
+      const projectId = data.project?.id;
+      if (projectId) {
+        window.location.href = `/editor/${projectId}`;
+        return;
+      }
+      throw new Error("No project id returned");
+    } catch (err) {
+      setFilmCraftError(err.message || "FilmCraft handoff failed");
+    } finally {
+      setFilmCraftBusy(false);
+    }
+  }, [filmCraftSelected]);
 
   // ── Refs ────────────────────────────────────────────────────────────────
   const textareaRef = useRef(null);
@@ -984,7 +1032,12 @@ export default function ImageStudio({
       results.forEach((res) => {
         if (res && res.url) {
           const entry = {
-            id: res.id || Math.random().toString(36).substring(7),
+            id:
+              res.generationId ||
+              res.naga?.generationId ||
+              res.id ||
+              Math.random().toString(36).substring(7),
+            requestId: res.request_id || null,
             url: res.url,
             prompt: prompt.trim(),
             model: selectedModelId,
@@ -1022,12 +1075,22 @@ export default function ImageStudio({
       
       {/* ── CENTRAL GALLERY AREA ── */}
       <div className="flex-1 w-full max-w-7xl mx-auto overflow-y-auto custom-scrollbar pb-40 lg:pb-32 px-2">
+        {filmCraftEnabled && filmCraftError && (
+          <p className="mt-4 text-center text-sm text-red-400">{filmCraftError}</p>
+        )}
         {history.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full pt-8 animate-fade-in-up">
-            {history.map((entry, idx) => (
+            {history.map((entry, idx) => {
+              const canSelect = filmCraftEnabled && isGenerationUuid(entry.id);
+              const selected = canSelect && filmCraftSelected.has(entry.id);
+              return (
               <div
                 key={entry.id || idx}
-                className="relative group rounded-lg overflow-hidden border border-white/10 bg-[#0a0a0a] shadow-xl hover:border-primary/50 transition-all duration-300 flex flex-col"
+                className={`relative group rounded-lg overflow-hidden border bg-[#0a0a0a] shadow-xl transition-all duration-300 flex flex-col ${
+                  selected
+                    ? "border-primary ring-1 ring-primary/40"
+                    : "border-white/10 hover:border-primary/50"
+                }`}
               >
                 <img
                   src={entry.url}
@@ -1036,6 +1099,20 @@ export default function ImageStudio({
                   onClick={() => setFullscreenUrl(entry.url)}
                 />
                 <AiGeneratedMark className="absolute top-2 left-2 z-10" />
+                {canSelect && (
+                  <label
+                    className="absolute bottom-3 left-3 z-10 flex items-center gap-2 rounded-md bg-black/70 px-2 py-1 text-[11px] text-white/80 backdrop-blur-md border border-white/10 cursor-pointer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      onChange={() => toggleFilmCraftSelect(entry.id)}
+                      className="accent-[var(--primary,#00ff88)]"
+                    />
+                    FilmCraft
+                  </label>
+                )}
                 
                 {/* Overlay actions */}
                 <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1091,7 +1168,8 @@ export default function ImageStudio({
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full animate-fade-in-up transition-all duration-700 min-h-[50vh]">
@@ -1129,6 +1207,29 @@ export default function ImageStudio({
           </div>
         )}
       </div>
+
+      {filmCraftEnabled && filmCraftSelected.size > 0 && (
+        <div className="absolute bottom-28 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full border border-primary/30 bg-black/85 px-4 py-2 shadow-xl backdrop-blur-md">
+          <span className="text-xs text-white/70">
+            {filmCraftSelected.size} image{filmCraftSelected.size === 1 ? "" : "s"} selected
+          </span>
+          <button
+            type="button"
+            disabled={filmCraftBusy}
+            onClick={createFilmCraftProject}
+            className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-black disabled:opacity-50"
+          >
+            {filmCraftBusy ? "Creating…" : "Edit in FilmCraft"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilmCraftSelected(new Set())}
+            className="text-[11px] text-white/40 hover:text-white/70"
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* ── BOTTOM PROMPT BAR ── */}
       <div 
