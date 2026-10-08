@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const FILMCRAFT_SRC = '/filmcraft-web/index.html?empty&norecover';
+// naga=3 busts sticky iframe/html cache after rebrand builds
+const FILMCRAFT_SRC = '/filmcraft-web/index.html?empty&norecover&naga=3';
 
 function isWebEnabled() {
   const v = String(process.env.NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED || '').toLowerCase();
