@@ -1,11 +1,10 @@
-import fs from 'node:fs';
-import path from 'node:path';
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { assertFilmCraftEnabled } from '@/lib/filmcraft/gate';
-import { loadOwnedProject } from '@/lib/filmcraft/projects';
+import { getProjectZipBuffer } from '@/lib/filmcraft/projects';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 export async function GET(_req, { params }) {
   const disabled = assertFilmCraftEnabled();
@@ -18,29 +17,19 @@ export async function GET(_req, { params }) {
     }
 
     const { id } = await params;
-    const project = await loadOwnedProject(session.user.id, id);
-    if (!project) {
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    }
-    if (!project.packagePath || !fs.existsSync(project.packagePath)) {
-      return NextResponse.json(
-        { error: 'Package not ready — re-export or recreate the project' },
-        { status: 404 }
-      );
-    }
+    const { buffer, filename } = await getProjectZipBuffer(session.user.id, id);
 
-    const buf = fs.readFileSync(project.packagePath);
-    const filename = path.basename(project.packagePath) || `${id}.zip`;
-    return new NextResponse(buf, {
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': String(buf.length),
+        'Content-Length': String(buffer.length),
       },
     });
   } catch (err) {
+    const status = err.status || 500;
     console.error('[editor/projects/:id/download]', err);
-    return NextResponse.json({ error: err.message || 'Failed' }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Failed' }, { status });
   }
 }
