@@ -109,6 +109,40 @@ async function main() {
   await sql`CREATE INDEX IF NOT EXISTS generations_user_created_idx ON generations (user_id, created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS generations_muapi_req_idx ON generations (muapi_request_id)`;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS editor_projects (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name text NOT NULL,
+      status text NOT NULL DEFAULT 'draft',
+      filmcraft_ref text,
+      package_path text,
+      export_url text,
+      export_error text,
+      metadata jsonb,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS editor_assets (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      project_id uuid NOT NULL REFERENCES editor_projects(id) ON DELETE CASCADE,
+      generation_id uuid REFERENCES generations(id) ON DELETE SET NULL,
+      kind text NOT NULL DEFAULT 'video',
+      source_url text NOT NULL,
+      local_name text NOT NULL,
+      duration_ms integer,
+      sort_order integer NOT NULL DEFAULT 0,
+      metadata jsonb,
+      created_at timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS editor_projects_user_created_idx ON editor_projects (user_id, created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS editor_assets_project_order_idx ON editor_assets (project_id, sort_order)`;
+
   console.log('Migration complete');
 }
 

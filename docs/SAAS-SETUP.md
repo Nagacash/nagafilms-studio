@@ -47,6 +47,10 @@ If the webhook fails, `/credits?success=1&session_id=…` also calls `POST /api/
 
 Owner alerts (email): create a free [Resend](https://resend.com) API key, set `RESEND_API_KEY` on Vercel, and `ORDER_NOTIFY_EMAIL=chosenfewrecords@hotmail.de`. Until you verify a domain, Resend’s `onboarding@resend.dev` can only send to the email on your Resend account — sign up with that Hotmail address (or verify `naga-films.com` and set `RESEND_FROM_EMAIL`).
 
+## FilmCraft handoff (beta)
+
+Optional. See README “FilmCraft handoff”. Enable `FILMCRAFT_ENABLED` + `NEXT_PUBLIC_FILMCRAFT_ENABLED`, run `pnpm db:migrate`, keep `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED=false` until WASM embed. Default mode `download` builds an OTIO + media zip.
+
 ## 4. Run
 
 ```bash

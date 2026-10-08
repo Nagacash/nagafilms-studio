@@ -12,6 +12,7 @@
     "build": "pnpm run build:packages && next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "node --test lib/filmcraft/*.test.js",
     "build:studio": "pnpm --filter ./packages/studio run build",
     "build:packages": "node scripts/build-packages.js",
     "setup": "pnpm install && pnpm run build:packages",

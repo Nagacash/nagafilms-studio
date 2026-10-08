@@ -455,6 +455,16 @@ export default function StandaloneShell() {
         </nav>
 
         <div className="flex items-center justify-end gap-2 sm:gap-3">
+          {(process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === 'true' ||
+            process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === '1') && (
+            <Link
+              href="/editor"
+              title="FilmCraft handoff projects"
+              className="hidden sm:inline-flex border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45 hover:border-[#00ff88]/35 hover:text-[#00ff88]"
+            >
+              Editor
+            </Link>
+          )}
           <Link
             href="/credits"
             title="Wallet balance and credit packs"
@@ -634,7 +644,15 @@ export default function StandaloneShell() {
           <ImageStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
         )}
         {activeTab === 'video' && (
-          <VideoStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />
+          <VideoStudio
+            apiKey={studioKey}
+            droppedFiles={droppedFiles}
+            onFilesHandled={handleFilesHandled}
+            filmCraftEnabled={
+              process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === 'true' ||
+              process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === '1'
+            }
+          />
         )}
         {activeTab === 'lipsync' && (
           <LipSyncStudio apiKey={studioKey} droppedFiles={droppedFiles} onFilesHandled={handleFilesHandled} />

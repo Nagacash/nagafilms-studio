@@ -59,6 +59,53 @@ workspaces:
 
 ---
 
+## FilmCraft handoff (beta)
+
+Optional beta: package Video Studio clips for [FilmCraft](https://github.com/storytold/filmcraft) (open-source NLE). Naga Films does **not** embed FilmCraft UI in v1 and does **not** use ArtCraft branding.
+
+### Setup
+
+1. Clone FilmCraft beside this repo (reference only — do not copy its source into Naga):
+
+```sh
+git clone https://github.com/storytold/filmcraft.git ../filmcraft
+```
+
+2. Run DB migration: `pnpm db:migrate`
+3. Enable flags in `.env.local` / Vercel:
+
+| Variable | Purpose |
+|----------|---------|
+| `FILMCRAFT_ENABLED=true` | Server APIs |
+| `NEXT_PUBLIC_FILMCRAFT_ENABLED=true` | Video Studio UI |
+| `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED=false` | Keep off until WASM embed |
+| `FILMCRAFT_MODE=download` | Default: OTIO + media zip |
+| `FILMCRAFT_CLI_PATH` | Optional path to `filmcraft-cli` |
+| `FILMCRAFT_MCP_URL` | Optional HTTP bridge to FilmCraft MCP |
+| `FILMCRAFT_PROJECT_BUCKET` | Package storage dir (default `.data/filmcraft-projects`) |
+
+### Workflow
+
+1. Generate clips in Video Studio (logged in).
+2. Select clips → **Edit in FilmCraft**.
+3. Open `/editor/[id]` → **Download FilmCraft package**.
+4. Unzip → in FilmCraft desktop: import `timeline.otio` (media under `media/`).
+
+`FILMCRAFT_MODE=cli` uses documented `filmcraft-cli --project … --save import …`. `mcp` calls documented MCP tools via `FILMCRAFT_MCP_URL`.
+
+### Limitations
+
+- Editing happens in FilmCraft desktop (or CLI), not inside Naga.
+- Download packages use **OpenTimelineIO** (documented interchange). Native `.fcproj` is only produced when CLI mode succeeds — we do not invent `.fcproj` JSON.
+- Generation result URLs must still be fetchable when the package is built.
+- License notices for FilmCraft live in `third_party/filmcraft/`.
+
+### Future WebAssembly
+
+`FilmCraftWebLoader` + `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED` are placeholders for embedding `filmcraft-web` (COOP/COEP, `window.filmcraft`) per FilmCraft `docs/web.md`. Not implemented in v1.
+
+---
+
 ## License & Attribution
 
 **© 2026 Naga Films / Naga Codex — All Rights Reserved (where applicable)**
