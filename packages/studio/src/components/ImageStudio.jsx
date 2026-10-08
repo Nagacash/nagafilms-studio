@@ -664,6 +664,7 @@ export default function ImageStudio({
   droppedFiles,
   onFilesHandled,
   filmCraftEnabled = false,
+  motionEnabled = false,
 }) {
   const PERSIST_KEY = "hg_image_studio_persistent";
 
@@ -698,6 +699,9 @@ export default function ImageStudio({
   const [filmCraftSelected, setFilmCraftSelected] = useState(() => new Set());
   const [filmCraftBusy, setFilmCraftBusy] = useState(false);
   const [filmCraftError, setFilmCraftError] = useState("");
+  const [motionBusy, setMotionBusy] = useState(false);
+  const [motionError, setMotionError] = useState("");
+  const handoffSelectEnabled = filmCraftEnabled || motionEnabled;
 
   // Use prop history if provided, otherwise local
   const history = historyItems ?? localHistory;
@@ -736,6 +740,33 @@ export default function ImageStudio({
       setFilmCraftError(err.message || "FilmCraft handoff failed");
     } finally {
       setFilmCraftBusy(false);
+    }
+  }, [filmCraftSelected]);
+
+  const createMotionProject = useCallback(async () => {
+    const generationIds = [...filmCraftSelected];
+    if (!generationIds.length) return;
+    setMotionBusy(true);
+    setMotionError("");
+    try {
+      const res = await fetch("/api/motion/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ generationIds }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not create Motion project");
+      const projectId = data.project?.id;
+      if (projectId) {
+        window.location.href = `/motion/${projectId}`;
+        return;
+      }
+      throw new Error("No project id returned");
+    } catch (err) {
+      setMotionError(err.message || "Motion & VFX handoff failed");
+    } finally {
+      setMotionBusy(false);
     }
   }, [filmCraftSelected]);
 
@@ -1075,13 +1106,15 @@ export default function ImageStudio({
       
       {/* ── CENTRAL GALLERY AREA ── */}
       <div className="flex-1 w-full max-w-7xl mx-auto overflow-y-auto custom-scrollbar pb-40 lg:pb-32 px-2">
-        {filmCraftEnabled && filmCraftError && (
-          <p className="mt-4 text-center text-sm text-red-400">{filmCraftError}</p>
+        {(filmCraftEnabled || motionEnabled) && (filmCraftError || motionError) && (
+          <p className="mt-4 text-center text-sm text-red-400">
+            {filmCraftError || motionError}
+          </p>
         )}
         {history.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full pt-8 animate-fade-in-up">
             {history.map((entry, idx) => {
-              const canSelect = filmCraftEnabled && isGenerationUuid(entry.id);
+              const canSelect = handoffSelectEnabled && isGenerationUuid(entry.id);
               const selected = canSelect && filmCraftSelected.has(entry.id);
               return (
               <div
@@ -1110,7 +1143,7 @@ export default function ImageStudio({
                       onChange={() => toggleFilmCraftSelect(entry.id)}
                       className="accent-[var(--primary,#00ff88)]"
                     />
-                    FilmCraft
+                    Select
                   </label>
                 )}
                 
@@ -1208,19 +1241,31 @@ export default function ImageStudio({
         )}
       </div>
 
-      {filmCraftEnabled && filmCraftSelected.size > 0 && (
+      {handoffSelectEnabled && filmCraftSelected.size > 0 && (
         <div className="absolute bottom-28 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-full border border-primary/30 bg-black/85 px-4 py-2 shadow-xl backdrop-blur-md">
           <span className="text-xs text-white/70">
             {filmCraftSelected.size} image{filmCraftSelected.size === 1 ? "" : "s"} selected
           </span>
-          <button
-            type="button"
-            disabled={filmCraftBusy}
-            onClick={createFilmCraftProject}
-            className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-black disabled:opacity-50"
-          >
-            {filmCraftBusy ? "Creating…" : "Edit in FilmCraft"}
-          </button>
+          {filmCraftEnabled && (
+            <button
+              type="button"
+              disabled={filmCraftBusy}
+              onClick={createFilmCraftProject}
+              className="rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-black disabled:opacity-50"
+            >
+              {filmCraftBusy ? "Creating…" : "Edit in FilmCraft"}
+            </button>
+          )}
+          {motionEnabled && (
+            <button
+              type="button"
+              disabled={motionBusy}
+              onClick={createMotionProject}
+              className="rounded-full border border-primary/50 bg-primary/15 px-4 py-1.5 text-xs font-bold text-primary disabled:opacity-50"
+            >
+              {motionBusy ? "Creating…" : "Open Motion & VFX"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setFilmCraftSelected(new Set())}

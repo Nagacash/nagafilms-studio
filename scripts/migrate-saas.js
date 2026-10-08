@@ -143,6 +143,48 @@ async function main() {
   await sql`CREATE INDEX IF NOT EXISTS editor_projects_user_created_idx ON editor_projects (user_id, created_at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS editor_assets_project_order_idx ON editor_assets (project_id, sort_order)`;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS motion_projects (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      naga_project_id uuid NOT NULL,
+      editor_project_id uuid REFERENCES editor_projects(id) ON DELETE SET NULL,
+      source_asset_id uuid REFERENCES editor_assets(id) ON DELETE SET NULL,
+      source_timeline_clip_id text,
+      source_generation_id uuid REFERENCES generations(id) ON DELETE SET NULL,
+      title text NOT NULL,
+      status text NOT NULL DEFAULT 'draft',
+      effectcraft_project_ref text,
+      package_path text,
+      metadata jsonb,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS motion_outputs (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      motion_project_id uuid NOT NULL REFERENCES motion_projects(id) ON DELETE CASCADE,
+      asset_id uuid REFERENCES editor_assets(id) ON DELETE SET NULL,
+      filename text NOT NULL,
+      storage_key text,
+      source_url text,
+      format text NOT NULL DEFAULT 'mp4',
+      has_alpha integer NOT NULL DEFAULT 0,
+      duration_ms integer,
+      width integer,
+      height integer,
+      fps integer,
+      status text NOT NULL DEFAULT 'uploaded',
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS motion_projects_user_created_idx ON motion_projects (user_id, created_at DESC)`;
+  await sql`CREATE INDEX IF NOT EXISTS motion_outputs_project_created_idx ON motion_outputs (motion_project_id, created_at DESC)`;
+
   console.log('Migration complete');
 }
 

@@ -66,3 +66,6 @@ out/
 # macOS AppleDouble next to filmcraft-web binaries
 public/filmcraft-web/._*
 
+
+# macOS AppleDouble next to effectcraft-web binaries
+public/effectcraft-web/._*

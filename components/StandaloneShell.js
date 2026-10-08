@@ -465,6 +465,16 @@ export default function StandaloneShell() {
               Editor
             </Link>
           )}
+          {(process.env.NEXT_PUBLIC_MOTION_ENABLED === 'true' ||
+            process.env.NEXT_PUBLIC_MOTION_ENABLED === '1') && (
+            <Link
+              href="/motion"
+              title="Motion & VFX — download package, import render"
+              className="hidden sm:inline-flex border border-[#00ff88]/25 bg-[#00ff88]/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#00ff88]/90 hover:border-[#00ff88]/50 hover:bg-[#00ff88]/10"
+            >
+              Motion
+            </Link>
+          )}
           <Link
             href="/credits"
             title="Wallet balance and credit packs"
@@ -649,6 +659,10 @@ export default function StandaloneShell() {
               process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === 'true' ||
               process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === '1'
             }
+            motionEnabled={
+              process.env.NEXT_PUBLIC_MOTION_ENABLED === 'true' ||
+              process.env.NEXT_PUBLIC_MOTION_ENABLED === '1'
+            }
           />
         )}
         {activeTab === 'video' && (
@@ -659,6 +673,10 @@ export default function StandaloneShell() {
             filmCraftEnabled={
               process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === 'true' ||
               process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === '1'
+            }
+            motionEnabled={
+              process.env.NEXT_PUBLIC_MOTION_ENABLED === 'true' ||
+              process.env.NEXT_PUBLIC_MOTION_ENABLED === '1'
             }
           />
         )}

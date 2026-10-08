@@ -40,6 +40,35 @@ export default function EditorDetailClient({ initialProject, initialAssets }) {
     window.location.href = `/api/editor/projects/${project.id}/download`;
   }
 
+  const motionEnabled =
+    process.env.NEXT_PUBLIC_MOTION_ENABLED === 'true' ||
+    process.env.NEXT_PUBLIC_MOTION_ENABLED === '1';
+
+  async function openMotionVfx(assetId) {
+    setBusy(assetId ? `motion-${assetId}` : 'motion');
+    setError('');
+    try {
+      const body = {
+        editorProjectId: project.id,
+        title: `${project.name} — Motion`,
+      };
+      if (assetId) body.editorAssetId = assetId;
+      const res = await fetch('/api/motion/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not open Motion & VFX');
+      const id = data.project?.id;
+      if (!id) throw new Error('No Motion project id');
+      window.location.href = `/motion/${id}`;
+    } catch (err) {
+      setError(err.message);
+      setBusy('');
+    }
+  }
+
   return (
     <main className="flex h-[100svh] flex-col overflow-hidden bg-[#050505] text-white">
       <header className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 px-4 py-3 sm:px-6">
@@ -122,6 +151,18 @@ export default function EditorDetailClient({ initialProject, initialAssets }) {
             >
               Refresh
             </button>
+            {motionEnabled && (
+              <button
+                type="button"
+                disabled={busy === 'motion' || assets.length === 0}
+                onClick={() => openMotionVfx(assets[0]?.id)}
+                className="rounded-md border border-[#00ff88]/30 bg-[#00ff88]/10 px-3 py-2 text-left text-xs font-semibold text-[#00ff88] disabled:opacity-40"
+              >
+                {busy === 'motion' || String(busy).startsWith('motion-')
+                  ? 'Opening…'
+                  : 'Open Motion & VFX'}
+              </button>
+            )}
           </div>
 
           <div>
@@ -162,6 +203,16 @@ export default function EditorDetailClient({ initialProject, initialAssets }) {
                         {a.kind}
                         {a.durationMs ? ` · ${(a.durationMs / 1000).toFixed(1)}s` : ''}
                       </p>
+                      {motionEnabled && (
+                        <button
+                          type="button"
+                          disabled={busy === `motion-${a.id}`}
+                          onClick={() => openMotionVfx(a.id)}
+                          className="mt-1 text-[10px] text-[#00ff88]/80 hover:text-[#00ff88] disabled:opacity-40"
+                        >
+                          Open Motion & VFX
+                        </button>
+                      )}
                     </div>
                   </li>
                 ))}

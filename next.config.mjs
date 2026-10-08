@@ -38,6 +38,22 @@ const nextConfig = {
         ],
       },
       {
+        // EffectCraft web: wasm MIME + CORP. COOP/COEP optional (no SharedArrayBuffer).
+        source: '/effectcraft-web/:path*',
+        headers: [
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+      {
+        source: '/effectcraft-web/:path*.wasm',
+        headers: [
+          { key: 'Content-Type', value: 'application/wasm' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+      {
         source: '/video/:path*',
         headers: [
           {

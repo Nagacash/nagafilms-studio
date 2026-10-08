@@ -98,6 +98,19 @@ const FAQ = [
     ),
   },
   {
+    q: 'What is Motion & VFX?',
+    a: (
+      <>
+        A download handoff for desktop effects work. Select a clip, open{' '}
+        <Link href="/motion" className="text-[#00ff88] hover:underline">
+          Motion & VFX
+        </Link>
+        , download the package, finish the pass outside Naga, then import the render and add it to
+        your Film Timeline when you have a linked editor project.
+      </>
+    ),
+  },
+  {
     q: 'Are outputs AI-generated (EU AI Act)?',
     a: 'Yes. Image, video, cinema, and lip-sync results from the Studio are artificially generated or manipulated by AI models. If you publish a deepfake of a real person, you must disclose that. See Terms of Use and the Privacy Policy (AI Act notice).',
   },

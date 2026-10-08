@@ -51,6 +51,10 @@ Owner alerts (email): create a free [Resend](https://resend.com) API key, set `R
 
 Optional. See README “Naga Film Editor”. Enable `FILMCRAFT_ENABLED` + `NEXT_PUBLIC_FILMCRAFT_ENABLED` + `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED`, run `pnpm db:migrate`, ship `public/filmcraft-web/` (from `cargo xtask web`). Default mode `download` still builds an OTIO + media zip fallback.
 
+## Motion & VFX handoff (beta)
+
+Optional. See README “Motion & VFX”. Enable `MOTION_ENABLED` + `NEXT_PUBLIC_MOTION_ENABLED` + `NEXT_PUBLIC_EFFECTCRAFT_WEB_ENABLED` + `EFFECTCRAFT_WEB_ENABLED`, run `pnpm db:migrate`, ship `public/effectcraft-web/` (from `cargo xtask web` in sibling `effectcraft`). Zip download remains as fallback. No invented `.ecproj`. Attribution: `third_party/effectcraft/`.
+
 ## 4. Run
 
 ```bash
@@ -64,6 +68,8 @@ pnpm dev
 - `/signup` `/login` auth
 - `/credits` pack checkout
 - `/studio` session or BYO key
+- `/editor` Naga Film Editor (when FilmCraft flags on)
+- `/motion` Motion & VFX handoff (when Motion flags on)
 - `POST /api/auth/signup` — create account + empty wallet
 - `GET /api/me` — user + credit balance
 - `POST /api/credits/topup` — Stripe Checkout

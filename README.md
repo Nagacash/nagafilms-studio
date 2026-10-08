@@ -87,6 +87,40 @@ License notices: `third_party/filmcraft/`.
 
 ---
 
+## Motion & VFX (beta)
+
+In-browser Motion & VFX on `/motion` (EffectCraft web WASM under `public/effectcraft-web/`). Studio/Editor send clips into a project; optional zip for desktop. UI says **Motion & VFX** only — no ArtCraft trademarks. Naga does not invent `.ecproj` files.
+
+### Setup
+
+1. Build web assets (sibling clone):  
+   `cd ../effectcraft && CARGO_TARGET_DIR=./target cargo xtask web`  
+   copy `target/web/dist` → `public/effectcraft-web/`.
+2. Run DB migration: `pnpm db:migrate`
+3. Enable flags:
+
+| Variable | Purpose |
+|----------|---------|
+| `MOTION_ENABLED=true` | Server APIs |
+| `NEXT_PUBLIC_MOTION_ENABLED=true` | Nav + Studio buttons |
+| `NEXT_PUBLIC_EFFECTCRAFT_WEB_ENABLED=true` | In-page WASM editor |
+| `EFFECTCRAFT_WEB_ENABLED=true` | Server handoff mode `web` |
+| `EFFECTCRAFT_MODE=download` | Zip package still built as fallback |
+| `MOTION_PROJECT_BUCKET` | Local package/output cache (Vercel uses `/tmp`) |
+
+### Workflow
+
+1. Generate in Image or Video Studio (or open a Film Editor project).
+2. Select → **Open Motion & VFX** → edit on `/motion/[id]`.
+3. Optional: **Download for Motion & VFX** for desktop.
+4. **Import Motion Render** → **Add to Film Timeline** (when linked to an editor project).
+
+Zip contents: `media/`, `naga-motion-project.json`, `OPEN_IN_MOTION.md`, `third_party/effectcraft/` licenses.
+
+License notices: `third_party/effectcraft/`. Upstream: [EffectCraft](https://github.com/storytold/effectcraft) (MIT OR Apache-2.0).
+
+---
+
 ## License & Attribution
 
 **© 2026 Naga Films / Naga Codex — All Rights Reserved (where applicable)**

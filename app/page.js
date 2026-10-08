@@ -9,7 +9,7 @@ import { SHOWCASE_CLIPS } from '@/lib/showcase-clips';
 export const metadata = {
   title: 'Naga Films Studio — Generative Production Stack',
   description:
-    'AI image, video, cinema, lip sync, and Naga Film Editor across 200+ models. Buy credit packs, generate and cut in the studio — no subscription, no API key required.',
+    'AI image, video, cinema, lip sync, Naga Film Editor, and Motion & VFX across 200+ models. Buy credit packs, generate and cut in the studio — no subscription, no API key required.',
 };
 
 const STUDIOS = [
@@ -30,6 +30,12 @@ const STUDIOS = [
     href: '/editor',
     desc: 'Cut Studio clips in the browser — timeline, bins, playback. Built in.',
     howTo: 'Generate → select clips → Edit in FilmCraft → cut on /editor',
+  },
+  {
+    name: 'Motion & VFX',
+    href: '/motion',
+    desc: 'Download a Motion package, finish effects on desktop, import the render back.',
+    howTo: 'Select clip → Open Motion & VFX → download → import render → Add to Film Timeline',
   },
   {
     name: 'Cinema Studio',
