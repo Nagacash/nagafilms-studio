@@ -5,8 +5,8 @@ import { listProjectsForUser } from '@/lib/filmcraft/projects';
 import FilmCraftWebLoader from '@/components/FilmCraftWebLoader';
 
 export const metadata = {
-  title: 'FilmCraft editor — Naga Films',
-  description: 'Beta FilmCraft handoff projects from generated clips.',
+  title: 'Naga Film Editor — Naga Films',
+  description: 'Cut Studio generations in the browser with Naga Film Editor.',
 };
 
 export default async function EditorListPage() {
@@ -27,27 +27,37 @@ export default async function EditorListPage() {
     <main className="min-h-screen bg-[#050505] text-white px-6 py-12">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-[#00ff88]/70">
-              Beta
-            </p>
-            <h1 className="text-3xl font-black tracking-tight">FilmCraft handoff</h1>
-            <p className="mt-2 text-sm text-white/45">
-              Package generated clips for FilmCraft. Editing still happens in FilmCraft
-              desktop — the web embed is not active yet.
-            </p>
+          <div className="flex items-start gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/assets/NAGA_round.png"
+              alt="Naga Films"
+              width={40}
+              height={40}
+              className="mt-0.5 h-10 w-10 object-contain"
+            />
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-[#00ff88]/70">
+                Beta
+              </p>
+              <h1 className="text-3xl font-black tracking-tight">Naga Film Editor</h1>
+              <p className="mt-2 text-sm text-white/45">
+                Timeline editing in the browser. Send clips from Image or Video Studio,
+                then cut here — or download an OTIO package for FilmCraft desktop.
+              </p>
+            </div>
           </div>
-          <Link href="/" className="text-xs text-white/40 hover:text-[#00ff88]">
+          <Link href="/" className="shrink-0 text-xs text-white/40 hover:text-[#00ff88]">
             ← Studio
           </Link>
         </div>
 
-        <FilmCraftWebLoader className="mb-8" />
+        <FilmCraftWebLoader className="mb-8" variant="compact" />
 
         {!enabled && (
           <p className="rounded-md border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/50">
-            FilmCraft handoff is off. Set FILMCRAFT_ENABLED=true and
-            NEXT_PUBLIC_FILMCRAFT_ENABLED=true, then redeploy.
+            Editor is off. Set FILMCRAFT_ENABLED=true and NEXT_PUBLIC_FILMCRAFT_ENABLED=true,
+            then redeploy.
           </p>
         )}
 
@@ -64,7 +74,7 @@ export default async function EditorListPage() {
 
         {enabled && session?.user?.id && !error && projects.length === 0 && (
           <p className="rounded-md border border-dashed border-white/15 px-4 py-10 text-center text-sm text-white/40">
-            No editor projects yet. In Video Studio, select clips and click Edit in
+            No projects yet. In Image or Video Studio, select clips and click Edit in
             FilmCraft.
           </p>
         )}

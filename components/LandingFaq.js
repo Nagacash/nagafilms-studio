@@ -81,7 +81,21 @@ const FAQ = [
   },
   {
     q: 'Which models and studios are included?',
-    a: 'Image, Video, Cinema, and Lip Sync studios with 200+ live models from the MuAPI catalog — FLUX, Kling, Veo, Seedance, Wan, lip-sync engines, and more. The model picker syncs from the live catalog and shows approximate credit cost per model.',
+    a: 'Image, Video, Cinema, Lip Sync, Storyboard, and Marketing studios with 200+ live models from the MuAPI catalog — FLUX, Kling, Veo, Seedance, Wan, lip-sync engines, and more. Naga Film Editor is included: select clips in Studio and cut them on a timeline in the browser. The model picker syncs from the live catalog and shows approximate credit cost per model.',
+  },
+  {
+    q: 'What is Naga Film Editor?',
+    a: (
+      <>
+        An in-browser timeline editor built into Studio. After you generate images or video, select
+        clips and open{' '}
+        <Link href="/editor" className="text-[#00ff88] hover:underline">
+          Editor
+        </Link>
+        . You get bins, timeline, and playback on the page — no separate install required for the
+        web cut. You can still download an OTIO package for FilmCraft desktop if you want.
+      </>
+    ),
   },
   {
     q: 'Are outputs AI-generated (EU AI Act)?',

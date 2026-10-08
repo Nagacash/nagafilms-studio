@@ -9,7 +9,7 @@ import { SHOWCASE_CLIPS } from '@/lib/showcase-clips';
 export const metadata = {
   title: 'Naga Films Studio — Generative Production Stack',
   description:
-    'AI image, video, cinema and lip sync across 200+ models. Buy credit packs, generate in the studio — no subscription, no API key required.',
+    'AI image, video, cinema, lip sync, and Naga Film Editor across 200+ models. Buy credit packs, generate and cut in the studio — no subscription, no API key required.',
 };
 
 const STUDIOS = [
@@ -24,6 +24,12 @@ const STUDIOS = [
     href: '/studio/video',
     desc: 'Short clips from text, or turn a still into motion.',
     howTo: 'Open → pick a model → prompt (optional start frame) → Generate',
+  },
+  {
+    name: 'Naga Film Editor',
+    href: '/editor',
+    desc: 'Cut Studio clips in the browser — timeline, bins, playback. Built in.',
+    howTo: 'Generate → select clips → Edit in FilmCraft → cut on /editor',
   },
   {
     name: 'Cinema Studio',
@@ -65,7 +71,7 @@ const ONBOARDING = [
 
 const STATS = [
   { figure: '200+', label: 'Live models' },
-  { figure: '6', label: 'Studios' },
+  { figure: '7', label: 'Studios + editor' },
   { figure: '0', label: 'Subscriptions' },
   { figure: '100%', label: 'Pay per use' },
 ];
@@ -128,7 +134,7 @@ export default function Home() {
             <span className="text-white/40">Every model. No gatekeeper.</span>
           </h1>
           <p className="mt-7 max-w-lg animate-fade-in-up text-[15px] leading-relaxed text-white/55 [animation-delay:160ms]">
-            Image, video, cinema and lip sync — 200+ models behind one studio. Buy credit packs, generate, pay only for what you use. No subscription.
+            Generate with 200+ models, then cut in Naga Film Editor — in the browser. Credit packs, no subscription.
           </p>
 
           <div className="mt-10 flex flex-wrap items-start gap-4 animate-fade-in-up [animation-delay:240ms]">

@@ -41,103 +41,143 @@ export default function EditorDetailClient({ initialProject, initialAssets }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#050505] text-white px-6 py-12">
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-8 flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-[#00ff88]/70">
-              Beta
+    <main className="flex h-[100svh] flex-col overflow-hidden bg-[#050505] text-white">
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-white/10 px-4 py-3 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <Link href="/" className="shrink-0" title="Naga Films home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/assets/NAGA_round.png"
+              alt="Naga Films"
+              width={36}
+              height={36}
+              className="h-9 w-9 object-contain"
+            />
+          </Link>
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-[#00ff88]/70">
+              Naga Film Editor
             </p>
-            <h1 className="text-3xl font-black tracking-tight">{project.name}</h1>
-            <p className="mt-2 text-sm text-white/45">
-              Status:{' '}
-              <span className="text-[#00ff88]">{project.status}</span>
-              {project.createdAt
-                ? ` · Created ${new Date(project.createdAt).toLocaleString()}`
-                : ''}
-            </p>
+            <h1 className="truncate text-base font-bold tracking-tight sm:text-lg">
+              {project.name}
+            </h1>
           </div>
-          <Link href="/editor" className="text-xs text-white/40 hover:text-[#00ff88]">
-            ← Projects
+        </div>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <span className="hidden text-[11px] text-white/35 sm:inline">
+            <span className="text-[#00ff88]">{project.status}</span>
+          </span>
+          <Link
+            href="/editor"
+            className="text-xs text-white/40 hover:text-[#00ff88]"
+          >
+            Projects
+          </Link>
+          <Link href="/studio/video" className="text-xs text-white/40 hover:text-[#00ff88]">
+            Studio
           </Link>
         </div>
+      </header>
 
-        <FilmCraftWebLoader className="mb-6" />
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <aside className="flex w-full shrink-0 flex-col gap-4 border-b border-white/10 bg-[#0a0a0a] px-4 py-4 lg:w-[280px] lg:border-b-0 lg:border-r lg:overflow-y-auto">
+          <div>
+            <h2 className="text-sm font-bold text-white">Cut in the browser</h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-white/50">
+              Naga Film Editor is built in — timeline, bins, and playback on this page.
+              Clips from Studio land here when you use Edit in FilmCraft.
+            </p>
+            <ul className="mt-3 space-y-1.5 text-[12px] text-white/40">
+              <li>· Trim and arrange on the timeline</li>
+              <li>· Drop more media onto the canvas</li>
+              <li>· Download OTIO zip for desktop FilmCraft if you need it</li>
+            </ul>
+          </div>
 
-        {error && <p className="mb-4 text-sm text-red-400">{error}</p>}
-        {project.exportError && (
-          <p className="mb-4 text-sm text-red-400">{project.exportError}</p>
-        )}
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          {project.exportError && (
+            <p className="text-sm text-red-400">{project.exportError}</p>
+          )}
 
-        <div className="mb-8 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={downloadPackage}
-            className="rounded-md bg-[#00ff88] px-4 py-2 text-sm font-bold text-black"
-          >
-            Download FilmCraft package
-          </button>
-          <button
-            type="button"
-            disabled={busy === 'export'}
-            onClick={requestExport}
-            className="rounded-md border border-white/15 px-4 py-2 text-sm text-white/80 hover:border-[#00ff88]/40 disabled:opacity-40"
-          >
-            {busy === 'export' ? 'Exporting…' : 'Request export'}
-          </button>
-          <button
-            type="button"
-            onClick={() => refresh().catch((e) => setError(e.message))}
-            className="rounded-md border border-white/10 px-4 py-2 text-sm text-white/50"
-          >
-            Refresh
-          </button>
-        </div>
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={downloadPackage}
+              className="rounded-md border border-white/15 px-3 py-2 text-left text-xs text-white/80 hover:border-[#00ff88]/40"
+            >
+              Download package
+            </button>
+            <button
+              type="button"
+              disabled={busy === 'export'}
+              onClick={requestExport}
+              className="rounded-md border border-white/15 px-3 py-2 text-left text-xs text-white/80 hover:border-[#00ff88]/40 disabled:opacity-40"
+            >
+              {busy === 'export' ? 'Exporting…' : 'Request export'}
+            </button>
+            <button
+              type="button"
+              onClick={() => refresh().catch((e) => setError(e.message))}
+              className="rounded-md border border-white/10 px-3 py-2 text-left text-xs text-white/50"
+            >
+              Refresh
+            </button>
+          </div>
 
-        <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-white/40">
-          Source clips
-        </h2>
-        {assets.length === 0 ? (
-          <p className="text-sm text-white/40">No assets on this project.</p>
-        ) : (
-          <ul className="space-y-3">
-            {assets.map((a) => (
-              <li
-                key={a.id}
-                className="flex gap-3 rounded-lg border border-white/10 bg-[#0a0a0a] p-3"
-              >
-                {a.kind === 'video' || a.kind === 'image' ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  a.kind === 'image' ? (
-                    <img
-                      src={a.sourceUrl}
-                      alt=""
-                      className="h-16 w-28 rounded object-cover bg-black"
-                    />
-                  ) : (
-                    <video
-                      src={a.sourceUrl}
-                      className="h-16 w-28 rounded object-cover bg-black"
-                      muted
-                      playsInline
-                    />
-                  )
-                ) : (
-                  <div className="flex h-16 w-28 items-center justify-center rounded bg-white/5 text-xs text-white/40">
-                    {a.kind}
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{a.localName}</p>
-                  <p className="text-[11px] text-white/35">
-                    {a.kind}
-                    {a.durationMs ? ` · ${(a.durationMs / 1000).toFixed(1)}s` : ''}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+          <div>
+            <h3 className="mb-2 text-[10px] font-bold uppercase tracking-wider text-white/35">
+              Source clips
+            </h3>
+            {assets.length === 0 ? (
+              <p className="text-xs text-white/35">No assets on this project.</p>
+            ) : (
+              <ul className="max-h-48 space-y-2 overflow-y-auto lg:max-h-none">
+                {assets.map((a) => (
+                  <li
+                    key={a.id}
+                    className="flex gap-2 rounded-md border border-white/10 bg-black/40 p-2"
+                  >
+                    {a.kind === 'image' ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={a.sourceUrl}
+                        alt=""
+                        className="h-12 w-16 shrink-0 rounded object-cover bg-black"
+                      />
+                    ) : a.kind === 'video' ? (
+                      <video
+                        src={a.sourceUrl}
+                        className="h-12 w-16 shrink-0 rounded object-cover bg-black"
+                        muted
+                        playsInline
+                      />
+                    ) : (
+                      <div className="flex h-12 w-16 shrink-0 items-center justify-center rounded bg-white/5 text-[10px] text-white/40">
+                        {a.kind}
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[11px] font-medium">{a.localName}</p>
+                      <p className="text-[10px] text-white/35">
+                        {a.kind}
+                        {a.durationMs ? ` · ${(a.durationMs / 1000).toFixed(1)}s` : ''}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </aside>
+
+        <section className="min-h-0 min-w-0 flex-1 p-3 sm:p-4">
+          <FilmCraftWebLoader
+            className="h-full"
+            projectId={project.id}
+            assets={assets}
+            variant="workspace"
+          />
+        </section>
       </div>
     </main>
   );

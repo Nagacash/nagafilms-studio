@@ -63,3 +63,6 @@ out/
 # Local FilmCraft handoff packages
 .data/
 
+# macOS AppleDouble next to filmcraft-web binaries
+public/filmcraft-web/._*
+

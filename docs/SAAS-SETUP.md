@@ -49,7 +49,7 @@ Owner alerts (email): create a free [Resend](https://resend.com) API key, set `R
 
 ## FilmCraft handoff (beta)
 
-Optional. See README “FilmCraft handoff”. Enable `FILMCRAFT_ENABLED` + `NEXT_PUBLIC_FILMCRAFT_ENABLED`, run `pnpm db:migrate`, keep `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED=false` until WASM embed. Default mode `download` builds an OTIO + media zip.
+Optional. See README “Naga Film Editor”. Enable `FILMCRAFT_ENABLED` + `NEXT_PUBLIC_FILMCRAFT_ENABLED` + `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED`, run `pnpm db:migrate`, ship `public/filmcraft-web/` (from `cargo xtask web`). Default mode `download` still builds an OTIO + media zip fallback.
 
 ## 4. Run
 

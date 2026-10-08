@@ -459,8 +459,8 @@ export default function StandaloneShell() {
             process.env.NEXT_PUBLIC_FILMCRAFT_ENABLED === '1') && (
             <Link
               href="/editor"
-              title="FilmCraft handoff projects"
-              className="hidden sm:inline-flex border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45 hover:border-[#00ff88]/35 hover:text-[#00ff88]"
+              title="Naga Film Editor — cut Studio clips in the browser"
+              className="hidden sm:inline-flex border border-[#00ff88]/25 bg-[#00ff88]/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#00ff88]/90 hover:border-[#00ff88]/50 hover:bg-[#00ff88]/10"
             >
               Editor
             </Link>
@@ -677,7 +677,8 @@ export default function StandaloneShell() {
           <div className="w-full max-w-sm rounded-xl border border-[#ff6ec7]/20 bg-[var(--bg-panel)] p-8 shadow-2xl shadow-[#ff6ec7]/10">
             <h2 className="mb-2 text-lg font-bold text-white">Settings</h2>
             <p className="mb-8 text-[13px] text-white/55">
-              Your studio wallet and account preferences.
+              Wallet, gallery, and Naga Film Editor (timeline cut in the browser via Editor
+              in the top bar).
             </p>
 
             <div className="mb-8 space-y-4">

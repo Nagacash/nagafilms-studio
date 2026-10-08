@@ -59,50 +59,31 @@ workspaces:
 
 ---
 
-## FilmCraft handoff (beta)
+## Naga Film Editor (beta)
 
-Optional beta: package Video Studio clips for [FilmCraft](https://github.com/storytold/filmcraft) (open-source NLE). Naga Films does **not** embed FilmCraft UI in v1 and does **not** use ArtCraft branding.
+In-browser timeline editor on `/editor` (FilmCraft web WASM, hosted under `public/filmcraft-web/`). Studio multi-select sends clips into a project; optional OTIO zip for [FilmCraft](https://github.com/storytold/filmcraft) desktop. No ArtCraft branding in the Naga UI.
 
 ### Setup
 
-1. Clone FilmCraft beside this repo (reference only — do not copy its source into Naga):
-
-```sh
-git clone https://github.com/storytold/filmcraft.git ../filmcraft
-```
-
+1. Build web assets (sibling clone): `cd ../filmcraft && cargo xtask web`, copy `target/web/dist` → `public/filmcraft-web/`.
 2. Run DB migration: `pnpm db:migrate`
-3. Enable flags in `.env.local` / Vercel:
+3. Enable flags:
 
 | Variable | Purpose |
 |----------|---------|
 | `FILMCRAFT_ENABLED=true` | Server APIs |
-| `NEXT_PUBLIC_FILMCRAFT_ENABLED=true` | Video Studio UI |
-| `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED=false` | Keep off until WASM embed |
-| `FILMCRAFT_MODE=download` | Default: OTIO + media zip |
-| `FILMCRAFT_CLI_PATH` | Optional path to `filmcraft-cli` |
-| `FILMCRAFT_MCP_URL` | Optional HTTP bridge to FilmCraft MCP |
-| `FILMCRAFT_PROJECT_BUCKET` | Package storage dir (default `.data/filmcraft-projects`) |
+| `NEXT_PUBLIC_FILMCRAFT_ENABLED=true` | Studio select UI |
+| `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED=true` | In-page WASM editor |
+| `FILMCRAFT_MODE=download` | OTIO + media zip fallback |
+| `FILMCRAFT_PROJECT_BUCKET` | Local package cache (Vercel uses `/tmp`) |
 
 ### Workflow
 
-1. Generate clips in Video Studio (logged in).
-2. Select clips → **Edit in FilmCraft**.
-3. Open `/editor/[id]` → **Download FilmCraft package**.
-4. Unzip → in FilmCraft desktop: import `timeline.otio` (media under `media/`).
+1. Generate in Image or Video Studio.
+2. Select → **Edit in FilmCraft** → cut on `/editor/[id]`.
+3. Optional: **Download package** → import `timeline.otio` in FilmCraft desktop.
 
-`FILMCRAFT_MODE=cli` uses documented `filmcraft-cli --project … --save import …`. `mcp` calls documented MCP tools via `FILMCRAFT_MCP_URL`.
-
-### Limitations
-
-- Editing happens in FilmCraft desktop (or CLI), not inside Naga.
-- Download packages use **OpenTimelineIO** (documented interchange). Native `.fcproj` is only produced when CLI mode succeeds — we do not invent `.fcproj` JSON.
-- Generation result URLs must still be fetchable when the package is built.
-- License notices for FilmCraft live in `third_party/filmcraft/`.
-
-### Future WebAssembly
-
-`FilmCraftWebLoader` + `NEXT_PUBLIC_FILMCRAFT_WEB_ENABLED` are placeholders for embedding `filmcraft-web` (COOP/COEP, `window.filmcraft`) per FilmCraft `docs/web.md`. Not implemented in v1.
+License notices: `third_party/filmcraft/`.
 
 ---
 

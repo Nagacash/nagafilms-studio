@@ -1,6 +1,6 @@
 {
   "name": "naga-films-studio",
-  "description": "Naga Films Studio — self-hostable AI image, video, cinema and lip-sync studio. A Naga Films distribution of Open Generative AI (MIT).",
+  "description": "Naga Films Studio — AI image, video, cinema, lip-sync, and Naga Film Editor. A Naga Films distribution of Open Generative AI (MIT).",
   "homepage": "https://github.com/Nagacash/naga-films",
   "private": true,
   "version": "1.0.10",
